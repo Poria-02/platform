@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.poria.upms.mapper.SysTreeDictMapper">
+
+
+	<select id="selectDicts" resultType="cn.poria.upms.api.entity.SysTreeDict">
+		select *
+		from sys_tree_dict
+		where `type`=#{type}
+		<if test="name != null">
+			and name=#{name}
+		</if>
+		<if test="code != null">
+			and code=#{code}
+		</if>
+		limit #{start},#{limit}
+	</select>
+	<select id="selectDictsCount" resultType="java.lang.Integer">
+		select *
+		from sys_tree_dict
+		where `type`=#{type}
+		<if test="name != null">
+			and name=#{name}
+		</if>
+		<if test="code != null">
+			and code=#{code}
+		</if>
+		limit #{start},#{limit}
+	</select>
+	<select id="findById" resultType="cn.poria.upms.api.entity.SysTreeDict">
+        select *
+        from sys_tree_dict
+        where id=#{id}
+    </select>
+
+
+	<delete id="deleteTreeDict" parameterType="java.util.List">
+		delete
+		from sys_tree_dict
+		where sys_tree_dict.code = #{list}
+
+	</delete>
+	<select id="selectByCode" resultType="cn.poria.upms.api.entity.SysTreeDict">
+		select *
+		from sys_tree_dict
+		where code=#{code}
+	</select>
+</mapper>

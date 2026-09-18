@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cn.poria</groupId>
+		<artifactId>poria</artifactId>
+		<version>2026-SNAPSHOT</version>
+	</parent>
+
+	<packaging>pom</packaging>
+	<artifactId>poria-common</artifactId>
+	<description>公共模块</description>
+
+
+	<modules>
+		<module>poria-common-bom</module>
+		<module>poria-common-core</module>
+		<module>poria-common-data</module>
+		<module>poria-common-feign</module>
+		<module>poria-common-security</module>
+		<module>poria-common-swagger</module>
+		<module>poria-common-gateway</module>
+		<module>poria-common-log</module>
+		<module>poria-common-seata</module>
+		<module>poria-common-excel</module>
+		<module>poria-common-kafka</module>
+	</modules>
+</project>

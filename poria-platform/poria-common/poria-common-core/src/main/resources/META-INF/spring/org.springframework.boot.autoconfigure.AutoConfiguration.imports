@@ -1,0 +1,6 @@
+cn.poria.common.core.config.JacksonConfiguration
+cn.poria.common.core.config.RestTemplateConfiguration
+cn.poria.common.core.util.SpringContextHolder
+cn.poria.common.core.config.WebMvcConfiguration
+cn.poria.common.core.requestlock.RequestLockAspect
+cn.poria.common.core.config.RedissonConfig

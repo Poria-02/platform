@@ -1,0 +1,116 @@
+package cn.poria.common.security.xss.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import cn.poria.common.security.xss.core.XssType;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Xss配置类
+ *
+ * @author L.cm
+ */
+@Getter
+@Setter
+@RefreshScope
+@ConfigurationProperties(MicaXssProperties.PREFIX)
+public class MicaXssProperties {
+	public static final String PREFIX = "mica.xss";
+
+	/**
+	 * 开启xss
+	 */
+	private boolean enabled = true;
+	/**
+	 * 全局：对文件进行首尾 trim
+	 * @deprecated 3.4.3，form 使用 {@link FormConfig#trimText} 代替.
+	 * jackson 使用 {@link JacksonConfig#trimText} 代替.
+	 */
+	@Deprecated(since = "3.4.3", forRemoval = true)
+	private boolean trimText = true;
+	/**
+	 * 全局：{@link XssType#FORM}配置
+	 */
+	private FormConfig form = new FormConfig();
+	/**
+	 * 全局：{@link XssType#JACKSON}配置
+	 */
+	private JacksonConfig jackson = new JacksonConfig();
+	/**
+	 * 模式：clear 清理（默认），escape 转义
+	 */
+	private Mode mode = Mode.CLEAR;
+	/**
+	 * [clear 专用] prettyPrint，默认关闭： 保留换行
+	 */
+	private boolean prettyPrint = false;
+	/**
+	 * [clear 专用] 使用转义，默认关闭
+	 */
+	private boolean enableEscape = false;
+	/**
+	 * 拦截的路由，默认为空
+	 */
+	private List<String> pathPatterns = new ArrayList<>();
+	/**
+	 * 放行的路由，默认为空
+	 */
+	private List<String> pathExcludePatterns = new ArrayList<>();
+
+	public enum Mode {
+		/**
+		 * 清理
+		 */
+		CLEAR,
+		/**
+		 * 转义
+		 */
+		ESCAPE,
+		/**
+		 * 校验，抛出异常
+		 */
+		VALIDATE
+	}
+
+	@Getter
+	@Setter
+	public static class FormConfig {
+		/**
+		 * 对字符串首尾 trim
+		 */
+		boolean trimText = true;
+		/**
+		 * 对字符串去除特殊字符
+		 */
+		String charsToDelete = "";
+		/**
+		 * 对字符串trim后，如果为空字符串，转null
+		 */
+		boolean emptyAsNull = false;
+		/**
+		 * [charsToDelete, trimText, emptyAsNull]三个规则，对集合中的元素也生效
+		 */
+		boolean enableInCollection = false;
+	}
+
+	@Getter
+	@Setter
+	public static class JacksonConfig {
+		/**
+		 * 对字符串首尾 trim
+		 */
+		boolean trimText = true;
+		/**
+		 * 对字符串去除特殊字符
+		 */
+		String charsToDelete = "";
+		/**
+		 * 对字符串trim后，如果为空字符串，转null
+		 */
+		boolean emptyAsNull = false;
+	}
+}

@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "name": "excel",
+      "type": "cn.poria.common.excel.config.ExcelConfigProperties",
+      "sourceType": "cn.poria.common.excel.config.ExcelConfigProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "excel.template-path",
+      "type": "java.lang.String",
+      "description": "模板路径",
+      "defaultValue": "excel",
+      "sourceType": "cn.shanxincd.common.excel.config.ExcelConfigProperties"
+    }
+  ],
+  "hints": []
+}

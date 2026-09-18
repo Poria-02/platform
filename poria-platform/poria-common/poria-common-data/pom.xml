@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cn.poria</groupId>
+		<artifactId>poria-common</artifactId>
+		<version>2026-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>poria-common-data</artifactId>
+	<description>poria-数据操作相关</description>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-feign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-security</artifactId>
+		</dependency>
+		<!--mybatis plus-->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-spring</artifactId>
+		</dependency>
+		<!-- mybatis-plus 3.5.9 需要单独引入此依赖-->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser</artifactId>
+		</dependency>
+		<!-- 缓存-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<!--mybatis-->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+		</dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cn.poria</groupId>
+		<artifactId>poria-upms</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>poria-upms-biz</artifactId>
+	<packaging>jar</packaging>
+	<description>通用用户权限管理模块</description>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<dependencies>
+		
+
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-common-seata</artifactId>-->
+<!--		</dependency>-->
+		<!--upms api、model 模块-->
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-upms-api</artifactId>
+		</dependency>
+		<!--日志处理-->
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-log</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-data</artifactId>
+		</dependency>
+		<!-- 字典导入/导出使用 Fastjson 1.x API；版本由 poria-common-bom 统一管理。 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<!--spring security 、oauth、jwt依赖-->
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-security</artifactId>
+		</dependency>
+		<!--数据库-->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
