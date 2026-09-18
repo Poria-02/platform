@@ -1,0 +1,28 @@
+server:
+  port: 3000
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+#    include: kafka
+  data:
+    redis:
+      #      host: ${REDIS_HOST:poria-redis}
+      #      port: ${REDIS_PORT:6380}
+      host: ${REDIS_HOST:43.136.75.223}
+      port: ${REDIS_PORT:26379}
+      password: ${REDIS_PASSWORD:zyt20260831aA;}
+
+auth:
+  enable: ${ENCRYPT_ENABLE:true}
+  encodeKey: ${ENCODE_KEY:shanxincdJinkang}
+  cLHisTokenUrl: ${CL_HIS_TOKEN_URL:}
+  tSHisTokenUrl: ${TS_HIS_TOKEN_URL:}
+
+ky:
+  host: ${KY_HOST:http://ky-server.fastgpt:8998}
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLE:true}

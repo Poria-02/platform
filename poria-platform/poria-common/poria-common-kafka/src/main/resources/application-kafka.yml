@@ -1,0 +1,25 @@
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:poria-kafka:9096}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        fetch.max.bytes: 10485760  # 10MB
+        max.partition.fetch.bytes: 10485760  # 10MB
+        security.protocol: SASL_PLAINTEXT
+        sasl:
+          mechanism: SCRAM-SHA-512
+          jaas:
+            config: org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME:poria}" password="${KAFKA_PASSWORD:L30N4Qsgr4~$TKqrQ9NKr4@y2Zbzj+Xn}";
+    poria-producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        max.request.size: 10485760  # 10MB
+        security:
+          protocol: SASL_PLAINTEXT
+        sasl:
+          mechanism: SCRAM-SHA-512
+          jaas:
+            config: org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME:poria}" password="${KAFKA_PASSWORD:L30N4Qsgr4~$TKqrQ9NKr4@y2Zbzj+Xn}";

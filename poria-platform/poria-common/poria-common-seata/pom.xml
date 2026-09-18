@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cn.poria</groupId>
+		<artifactId>poria-common</artifactId>
+		<version>2026-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>poria-common-seata</artifactId>
+	<description>分布式事务</description>
+	<packaging>jar</packaging>
+
+	<dependencies>
+
+        <dependency>
+            <groupId>cn.poria</groupId>
+            <artifactId>poria-common-core</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <version>2025.0.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba</groupId>
+					<artifactId>druid</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-alibaba-commons</artifactId>
+            <version>2025.0.0.0</version>
+		</dependency>
+<!--		&lt;!&ndash;  seata kryo 序列化&ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>io.seata</groupId>-->
+<!--			<artifactId>seata-serializer-kryo</artifactId>-->
+<!--			<version>1.6.1</version>-->
+<!--		</dependency>-->
+	</dependencies>
+</project>

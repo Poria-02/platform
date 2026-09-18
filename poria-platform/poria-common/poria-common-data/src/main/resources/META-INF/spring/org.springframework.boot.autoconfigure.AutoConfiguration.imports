@@ -1,0 +1,13 @@
+cn.poria.common.data.cache.RedisCacheAutoConfiguration
+cn.poria.common.data.cache.RedisCacheManagerConfiguration
+cn.poria.common.data.cache.RedisTemplateConfiguration
+cn.poria.common.data.mybatis.MybatisPlusConfiguration
+cn.poria.common.data.resolver.WebMvcConfig
+cn.poria.common.data.conver.ConverAspect
+cn.poria.common.data.conver.DefaultValueAspect
+cn.poria.common.data.conver.DictAspect
+cn.poria.common.data.conver.TagAspect
+cn.poria.common.data.conver.ConvertController
+cn.poria.common.data.handler.SourceContextHolderFilter
+cn.poria.common.data.conver.ReviewAspect
+cn.poria.common.data.conver.ReviewController

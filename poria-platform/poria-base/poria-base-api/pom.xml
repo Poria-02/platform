@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.poria</groupId>
+        <artifactId>poria-base</artifactId>
+        <version>2026-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>poria-base-api</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.poria</groupId>
+            <artifactId>poria-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.poria</groupId>
+            <artifactId>poria-common-feign</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+

@@ -1,0 +1,5 @@
+cn.poria.common.security.service.PlatRedisOAuth2AuthorizationService
+cn.poria.common.security.service.PlatRedisOAuth2AuthorizationConsentService
+cn.poria.common.security.component.PlatSecurityInnerAspect
+cn.poria.common.security.component.GlobalExceptionHandlerResolver
+cn.poria.common.security.xss.config.MicaXssConfiguration

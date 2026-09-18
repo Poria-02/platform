@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cn.poria</groupId>
+		<artifactId>poria</artifactId>
+		<version>2026-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+	<artifactId>poria-auth</artifactId>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-customer-api</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-staff-api</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-message-api</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-visual-api</artifactId>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-data</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.baomidou</groupId>
+					<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>mybatis-plus-extension</artifactId>
+					<groupId>com.baomidou</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-upms-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-feign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-common-log</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-visual-api</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>cn.poria</groupId>-->
+<!--			<artifactId>poria-common-kafka</artifactId>-->
+<!--		</dependency>-->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

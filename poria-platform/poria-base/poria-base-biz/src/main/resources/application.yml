@@ -1,0 +1,61 @@
+server:
+  port: ${SERVER_PORT:8009}
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+  data:
+    redis:
+      host: ${REDIS_HOST:43.136.75.223}
+      port: ${REDIS_PORT:26379}
+      password: ${REDIS_PASSWORD:zyt20260831aA;}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    username: ${MYSQL_USERNAME:admin}
+    password: ${MYSQL_PASSWORD:zyt20260831aA;}
+    url: jdbc:mysql://${MYSQL_HOST:43.136.75.223}:${MYSQL_PORT:23306}/poria?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      minimum-idle: 1
+  servlet:
+    multipart:
+      max-file-size: ${BASE_MAX_FILE_SIZE:50MB}
+      max-request-size: ${BASE_MAX_FILE_SIZE:50MB}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLE:true}
+
+logging:
+  level:
+    cn.poria.base.dao: debug
+
+oss:
+  enable: ${OSS_ENABLE:true}
+  info: ${OSS_INFO:false}
+  path-style-access: ${OSS_PATH_STYLE_ACCESS:false}
+  endpoint: ${OSS_ENDPOINT:}
+  region: ${OSS_REGION:}
+  access-key: ${OSS_ACCESS_KEY:}
+  secret-key: ${OSS_SECRET_KEY:}
+
+bucket:
+  publicBucket: ${PUBLIC_BUCKET:poria-public}
+  privateBucket: ${PRIVATE_BUCKET:poria-private}
+
+rebuild:
+  appid: ${REBUILD_APPID:}
+  appSecret: ${REBUILD_APP_SECRET:}
+  url: ${REBUILD_URL:}
+  user: ${REBUILD_USER:}
+  password: ${REBUILD_PASSWORD:}
+
+audio:
+  convert:
+    ffmpeg:
+      path: ${FFMPEG_PATH:/opt/ffmpeg}
+      temp-path: ${FFMPEG_TEMP_PATH:/opt/tempUpload}

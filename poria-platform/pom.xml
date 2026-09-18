@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<version>2026-SNAPSHOT</version>
+	<groupId>cn.poria</groupId>
+	<artifactId>poria</artifactId>
+	<name>${project.artifactId}</name>
+	<packaging>pom</packaging>
+
+
+	<properties>
+		<poria.version>2026-SNAPSHOT</poria.version>
+        <spring-boot.version>3.5.9</spring-boot.version>
+		<spring-cloud.version>2025.0.2</spring-cloud.version>
+		<java.version>21</java.version>
+        <maven.compiler.version>3.14.0</maven.compiler.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<swagger.fox.version>3.0.0</swagger.fox.version>
+		<knife4j.ui.version>3.0.5</knife4j.ui.version>
+		<spring.checkstyle.plugin>0.0.39</spring.checkstyle.plugin>
+		<spring-boot-admin.version>3.5.5</spring-boot-admin.version>
+        <ttl.version>2.12.6</ttl.version>
+        <skywalking.version>9.4.0</skywalking.version>
+	</properties>
+
+	<modules>
+		<module>poria-common</module>
+		<module>poria-auth</module>
+		<module>poria-upms</module>
+		<module>poria-gateway</module>
+		<module>poria-job</module>
+		<module>poria-base</module>
+    </modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!--监控-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+
+
+	<dependencyManagement>
+		<dependencies>
+			<!--poria 公共版本定义-->
+			<dependency>
+				<groupId>cn.poria</groupId>
+				<artifactId>poria-common-bom</artifactId>
+				<version>${poria.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>cn.poria</groupId>
+				<artifactId>poria-upms-api</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- Spring Cloud 2025.0.x 与 Spring Boot 3.5.x 对应，统一管理 Cloud 组件版本。 -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!--web 模块-->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${spring-boot.version}</version>
+				<exclusions>
+					<!--排除tomcat依赖-->
+					<exclusion>
+						<artifactId>spring-boot-starter-tomcat</artifactId>
+						<groupId>org.springframework.boot</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+	<build>
+		<finalName>${project.name}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring-boot.version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <target>${maven.compiler.target}</target>
+                    <source>${maven.compiler.source}</source>
+                    <release>${maven.compiler.source}</release>
+                    <encoding>UTF-8</encoding>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+		</plugins>
+	</build>
+
+
+	<!-- 设置插件仓库 -->
+	<pluginRepositories>
+
+	</pluginRepositories>
+
+	<repositories>
+
+		<repository>
+			<id>aliyun</id>
+			<name>aliyun</name>
+			<url>https://maven.aliyun.com/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<profiles.active>dev</profiles.active>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<properties>
+				<profiles.active>prod</profiles.active>
+			</properties>
+		</profile>
+	</profiles>
+
+</project>

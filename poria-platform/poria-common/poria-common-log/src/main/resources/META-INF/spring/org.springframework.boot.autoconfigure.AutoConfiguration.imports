@@ -1,0 +1,3 @@
+cn.poria.common.log.init.ApplicationLoggerInitializer
+cn.poria.common.log.aspect.SysLogAspect
+cn.poria.common.log.filter.TraceIdFilter
