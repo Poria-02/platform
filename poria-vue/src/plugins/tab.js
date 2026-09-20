@@ -4,7 +4,11 @@ import router from '@/router'
 export default {
   // 刷新当前tab页签
   refreshPage(obj) {
-    const { path, query, matched } = router.currentRoute.value
+    const {
+      path,
+      query,
+      matched
+    } = router.currentRoute.value
     // 防止在重定向过程中重复刷新
     if (path.startsWith('/redirect/')) {
       return Promise.resolve()
@@ -13,13 +17,20 @@ export default {
       matched.forEach((m) => {
         if (m.components && m.components.default && m.components.default.name) {
           if (!['Layout', 'ParentView'].includes(m.components.default.name)) {
-            obj = { name: m.components.default.name, path: path, query: query }
+            obj = {
+              name: m.components.default.name,
+              path: path,
+              query: query
+            }
           }
         }
       })
     }
     return useTagsViewStore().delCachedView(obj).then(() => {
-      const { path, query } = obj
+      const {
+        path,
+        query
+      } = obj
       router.replace({
         path: '/redirect' + path,
         query: query
@@ -36,7 +47,9 @@ export default {
   // 关闭指定tab页签
   closePage(obj) {
     if (obj === undefined) {
-      return useTagsViewStore().delView(router.currentRoute.value).then(({ visitedViews }) => {
+      return useTagsViewStore().delView(router.currentRoute.value).then(({
+        visitedViews
+      }) => {
         const latestView = visitedViews.slice(-1)[0]
         if (latestView) {
           return router.push(latestView.fullPath)
@@ -64,9 +77,17 @@ export default {
   },
   // 打开tab页签
   openPage(title, url, params) {
-    const obj = { path: url, meta: { title: title } }
+    const obj = {
+      path: url,
+      meta: {
+        title: title
+      }
+    }
     useTagsViewStore().addView(obj)
-    return router.push({ path: url, query: params })
+    return router.push({
+      path: url,
+      query: params
+    })
   },
   // 修改tab页签
   updatePage(obj) {

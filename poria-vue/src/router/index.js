@@ -1,4 +1,7 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import {
+  createWebHistory,
+  createRouter
+} from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
 
@@ -25,17 +28,14 @@ import Layout from '@/layout'
  */
 
 // 公共路由
-export const constantRoutes = [
-  {
+export const constantRoutes = [{
     path: '/redirect',
     component: Layout,
     hidden: true,
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect/index.vue')
-      }
-    ]
+    children: [{
+      path: '/redirect/:path(.*)',
+      component: () => import('@/views/redirect/index.vue')
+    }]
   },
   {
     path: '/login',
@@ -56,20 +56,24 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: '/index',
-    children: [
-      {
-        path: '/index',
-        component: () => import('@/views/login/home/index'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+    children: [{
+      path: '/index',
+      component: () => import('@/views/login/home/index'),
+      name: 'Index',
+      meta: {
+        title: '首页',
+        icon: 'dashboard',
+        affix: true
       }
-    ]
+    }]
   },
   {
     path: '/lock',
     component: () => import('@/views/login/lock'),
     hidden: true,
-    meta: { title: '锁定屏幕' }
+    meta: {
+      title: '锁定屏幕'
+    }
   }
 ]
 
@@ -83,7 +87,9 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition
     }
-    return { top: 0 }
+    return {
+      top: 0
+    }
   },
 })
 

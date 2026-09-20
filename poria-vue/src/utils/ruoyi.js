@@ -35,7 +35,9 @@ export function parseTime(time, pattern) {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -54,9 +56,9 @@ export function resetForm(refName) {
 // 添加日期范围
 export function addDateRange(params, dateRange, propName) {
   let search = params
-  search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {}
+  search.params = typeof(search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {}
   dateRange = Array.isArray(dateRange) ? dateRange : []
-  if (typeof (propName) === 'undefined') {
+  if (typeof(propName) === 'undefined') {
     search.params['beginTime'] = dateRange[0]
     search.params['endTime'] = dateRange[1]
   } else {
@@ -86,7 +88,7 @@ export function selectDictLabel(datas, value) {
 
 // 回显数据字典（字符串、数组）
 export function selectDictLabels(datas, value, separator) {
-  if (value === undefined || value.length ===0) {
+  if (value === undefined || value.length === 0) {
     return ""
   }
   if (Array.isArray(value)) {
@@ -112,8 +114,9 @@ export function selectDictLabels(datas, value, separator) {
 
 // 字符串格式化(%s )
 export function sprintf(str) {
-  let flag = true, i = 1
-  str = str.replace(/%s/g, function () {
+  let flag = true,
+    i = 1
+  str = str.replace(/%s/g, function() {
     const arg = args[i++]
     if (typeof arg === 'undefined') {
       flag = false
@@ -185,18 +188,18 @@ export function handleTree(data, id, parentId, children) {
 }
 
 /**
-* 参数处理
-* @param {*} params  参数
-*/
+ * 参数处理
+ * @param {*} params  参数
+ */
 export function tansParams(params) {
   let result = ''
   for (const propName of Object.keys(params)) {
     const value = params[propName]
     const part = encodeURIComponent(propName) + "="
-    if (value !== null && value !== "" && typeof (value) !== "undefined") {
+    if (value !== null && value !== "" && typeof(value) !== "undefined") {
       if (typeof value === 'object') {
         for (const key of Object.keys(value)) {
-          if (value[key] !== null && value[key] !== "" && typeof (value[key]) !== 'undefined') {
+          if (value[key] !== null && value[key] !== "" && typeof(value[key]) !== 'undefined') {
             const params = propName + '[' + key + ']'
             const subPart = encodeURIComponent(params) + "="
             result += subPart + encodeURIComponent(value[key]) + "&"

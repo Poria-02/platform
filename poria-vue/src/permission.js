@@ -1,16 +1,27 @@
 import router from './router'
-import { ElMessage } from 'element-plus'
+import {
+  ElMessage
+} from 'element-plus'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { getToken } from '@/utils/auth'
-import { isHttp, isPathMatch } from '@/utils/validate'
-import { isRelogin } from '@/utils/request'
+import {
+  getToken
+} from '@/utils/auth'
+import {
+  isHttp,
+  isPathMatch
+} from '@/utils/validate'
+import {
+  isRelogin
+} from '@/utils/request'
 import useUserStore from '@/store/modules/user'
 import useLockStore from '@/store/modules/lock'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
 
-NProgress.configure({ showSpinner: false })
+NProgress.configure({
+  showSpinner: false
+})
 
 const whiteList = ['/login']
 
@@ -25,18 +36,24 @@ router.beforeEach(async (to, from) => {
     const isLock = useLockStore().isLock
     if (to.path === '/login') {
       NProgress.done()
-      return { path: '/' }
+      return {
+        path: '/'
+      }
     }
     if (isWhiteList(to.path)) {
       return true
     }
     if (isLock && to.path !== '/lock') {
       NProgress.done()
-      return { path: '/lock' }
+      return {
+        path: '/lock'
+      }
     }
     if (!isLock && to.path === '/lock') {
       NProgress.done()
-      return { path: '/' }
+      return {
+        path: '/'
+      }
     }
     if (useUserStore().roles.length === 0) {
       isRelogin.show = true
@@ -52,11 +69,16 @@ router.beforeEach(async (to, from) => {
           }
         })
         // 重新导航到目标路由，确保动态路由已注册
-        return { ...to, replace: true }
+        return {
+          ...to,
+          replace: true
+        }
       } catch (err) {
         await useUserStore().logOut()
         ElMessage.error(err)
-        return { path: '/' }
+        return {
+          path: '/'
+        }
       }
     }
     return true

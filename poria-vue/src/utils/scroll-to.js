@@ -9,7 +9,9 @@ Math.easeInOutQuad = function(t, b, c, d) {
 
 // requestAnimationFrame for Smart Animating http://goo.gl/sx5sts
 const requestAnimFrame = (function() {
-  return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) { window.setTimeout(callback, 1000 / 60) }
+  return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) {
+    window.setTimeout(callback, 1000 / 60)
+  }
 })()
 
 /**
@@ -36,7 +38,7 @@ export function scrollTo(to, duration, callback) {
   const change = to - start
   const increment = 20
   let currentTime = 0
-  duration = (typeof (duration) === 'undefined') ? 500 : duration
+  duration = (typeof(duration) === 'undefined') ? 500 : duration
   const animateScroll = function() {
     // increment the time
     currentTime += increment
@@ -48,7 +50,7 @@ export function scrollTo(to, duration, callback) {
     if (currentTime < duration) {
       requestAnimFrame(animateScroll)
     } else {
-      if (callback && typeof (callback) === 'function') {
+      if (callback && typeof(callback) === 'function') {
         // the animation is done so lets callback
         callback()
       }

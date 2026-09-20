@@ -64,4 +64,3 @@ export default {
    */
   footerContent: 'Copyright © 2026 Poria Platform. All Rights Reserved.'
 }
-

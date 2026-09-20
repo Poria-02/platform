@@ -1,5 +1,8 @@
+// 登录页面接口
 import request from '@/utils/request'
-import { encryptAesCfb } from '@/utils/aes'
+import {
+  encryptAesCfb
+} from '@/utils/aes'
 
 // Must match Auth's ENCODE_KEY. The default preserves the current backend setup;
 // deployments overriding ENCODE_KEY must set VITE_AUTH_ENCODE_KEY at build time.
@@ -25,32 +28,39 @@ export function login(data = {}) {
     encryptAesCfb(username, authEncodeKey),
     encryptAesCfb(data.password || '', authEncodeKey)
   ]).then(([encryptedUsername, encryptedPassword]) => request({
-      url: '/auth/plat/login',
-      method: 'post',
-      headers: {
-        isToken: false,
-        repeatSubmit: false,
-        Authorization: `Basic ${window.btoa(`${clientId}:${clientSecret}`)}`
-      },
-      params: { grant_type: 'plat' },
-      data: {
-        username: encryptedUsername,
-        password: encryptedPassword,
-        loginType: data.loginType || 'ADMIN_PWD',
-        userType: data.userType ?? defaultUserType,
-        verifyCode: data.verifyCode ?? '',
-        randomStr: data.randomStr ?? '',
-        appId: data.appId ?? '',
-        scope: data.scope || scope,
-        additionalParameters: data.additionalParameters ?? {}
-      }
-    })
-  )
+    url: '/auth/plat/login',
+    method: 'post',
+    headers: {
+      isToken: false,
+      repeatSubmit: false,
+      Authorization: `Basic ${window.btoa(`${clientId}:${clientSecret}`)}`
+    },
+    // 用户名、密码或验证码错误同样会由认证服务返回 401。该请求尚未建立
+    // 用户会话，不能触发全局的“登录状态已过期”处理。
+    skipAuthExpiredHandling: true,
+    params: {
+      grant_type: 'plat'
+    },
+    data: {
+      username: encryptedUsername,
+      password: encryptedPassword,
+      loginType: data.loginType || 'ADMIN_PWD',
+      userType: data.userType ?? defaultUserType,
+      verifyCode: data.verifyCode ?? '',
+      randomStr: data.randomStr ?? '',
+      appId: data.appId ?? '',
+      scope: data.scope || scope,
+      additionalParameters: data.additionalParameters ?? {}
+    }
+  }))
 }
 
 // 锁屏不调用不存在的服务端端点；重新走当前账号的正式登录校验。
 export function unlockScreen(username, password) {
-  return login({ username, password })
+  return login({
+    username,
+    password
+  })
 }
 
 // 获取用户详细信息
@@ -61,7 +71,9 @@ export function getInfo() {
     method: 'get',
     // SysMenuController 按当前令牌的角色及 platform 返回已授权的菜单树。
     // 未配置 platform 时不发送空参数，由后端保留其默认筛选行为。
-    params: platform ? { platform } : undefined
+    params: platform ? {
+      platform
+    } : undefined
   })
 }
 
@@ -72,4 +84,3 @@ export function logout() {
     method: 'delete'
   })
 }
-

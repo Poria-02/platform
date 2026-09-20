@@ -1,13 +1,32 @@
 import cache from '@/plugins/cache'
-import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import {
+  login,
+  logout,
+  getInfo
+} from '@/views/login/api'
+import {
+  getToken,
+  setToken,
+  removeToken
+} from '@/utils/auth'
 import useLockStore from '@/store/modules/lock'
 import defAva from '@/assets/images/profile.jpg'
 
-function permissionsOf(items = []) { return items.flatMap(item => [item.permission, ...permissionsOf(item.children || [])]).filter(Boolean) }
+function permissionsOf(items = []) {
+  return items.flatMap(item => [item.permission, ...permissionsOf(item.children || [])]).filter(Boolean)
+}
 
 const useUserStore = defineStore('user', {
-  state: () => ({ token: getToken(), id: '', name: '', nickName: '', avatar: defAva, roles: [], permissions: [], menus: [] }),
+  state: () => ({
+    token: getToken(),
+    id: '',
+    name: '',
+    nickName: '',
+    avatar: defAva,
+    roles: [],
+    permissions: [],
+    menus: []
+  }),
   actions: {
     login(userInfo) {
       return login(userInfo).then(res => {
@@ -17,9 +36,9 @@ const useUserStore = defineStore('user', {
         const accessToken = tokenResponse?.access_token ?? tokenResponse?.accessToken ?? tokenResponse?.token
         const token = typeof accessToken === 'string' ? accessToken : accessToken?.tokenValue
         if (!token) throw new Error('认证服务未返回 access_token')
-        const expiresIn = tokenResponse?.expires_in
-          ?? tokenResponse?.expiresIn
-          ?? (accessToken?.expiresAt ? Math.floor((new Date(accessToken.expiresAt).getTime() - Date.now()) / 1000) : undefined)
+        const expiresIn = tokenResponse?.expires_in ??
+          tokenResponse?.expiresIn ??
+          (accessToken?.expiresAt ? Math.floor((new Date(accessToken.expiresAt).getTime() - Date.now()) / 1000) : undefined)
         setToken(token, Number(expiresIn))
         this.token = token
         this.name = userInfo.username
@@ -35,10 +54,22 @@ const useUserStore = defineStore('user', {
         // 不参与任何页面或接口的权限判定。
         this.roles = ['AUTHENTICATED']
         cache.session.set('pwrChrtype', null)
-        return { menus: this.menus, roles: this.roles, permissions: this.permissions }
+        return {
+          menus: this.menus,
+          roles: this.roles,
+          permissions: this.permissions
+        }
       })
     },
-    logOut() { return logout().catch(() => {}).finally(() => { this.token = ''; this.roles = []; this.permissions = []; this.menus = []; removeToken() }) }
+    logOut() {
+      return logout().catch(() => {}).finally(() => {
+        this.token = '';
+        this.roles = [];
+        this.permissions = [];
+        this.menus = [];
+        removeToken()
+      })
+    }
   }
 })
 export default useUserStore
