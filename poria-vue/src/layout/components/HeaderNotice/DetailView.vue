@@ -58,7 +58,9 @@
         </div>
 
         <div class="notice-body">
-          <div v-if="hasContent" class="notice-content" v-html="detail.noticeContent" />
+          <!-- 内容在 safeNoticeContent 中移除了脚本、事件属性和危险 URL。 -->
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div v-if="hasContent" class="notice-content" v-html="safeNoticeContent(detail.noticeContent)" />
           <div v-else class="notice-empty notice-empty--inner">
             <el-icon>
               <Document />
@@ -89,8 +91,24 @@
     return content != null && String(content).trim() !== ''
   })
 
+  function safeNoticeContent(content) {
+    const template = document.createElement('template')
+    template.innerHTML = String(content ?? '')
+    template.content.querySelectorAll('script, iframe, object, embed, link, style').forEach(element => element.remove())
+    template.content.querySelectorAll('*').forEach(element => {
+      Array.from(element.attributes).forEach(attribute => {
+        const name = attribute.name.toLowerCase()
+        const value = attribute.value.trim().toLowerCase()
+        if (name.startsWith('on') || ((name === 'href' || name === 'src') && (value.startsWith('javascript:') || value.startsWith('data:')))) {
+          element.removeAttribute(attribute.name)
+        }
+      })
+    })
+    return template.innerHTML
+  }
+
   function open(payload) {
-    let id = null
+    let id
     let preset = null
     if (payload != null && typeof payload === 'object') {
       id = payload.noticeId

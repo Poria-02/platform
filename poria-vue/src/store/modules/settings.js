@@ -56,7 +56,7 @@ const useSettingsStore = defineStore(
           key,
           value
         } = data
-        if (this.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(this, key)) {
           this[key] = value
         }
       },

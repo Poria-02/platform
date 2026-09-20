@@ -13,7 +13,7 @@
       <el-table v-loading="loading" :data="rows" border>
         <el-table-column type="index" width="55" />
         <el-table-column v-for="c in props.columns" :key="c.prop" :prop="c.prop" :label="c.label" :min-width="c.width||130">
-          <template #default="s">{{display(s.row[c.prop])}}</template>
+          <template #default="s">{{ display(s.row[c.prop]) }}</template>
         </el-table-column>
         <el-table-column label="操作" width="140">
           <template #default="s">

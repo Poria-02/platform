@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <el-card>
-      <template #header>{{props.title}}</template>
+      <template #header>{{ props.title }}</template>
       <el-button type="primary" @click="load">刷新</el-button>
       <el-table v-loading="loading" :data="rows" border>
         <el-table-column v-for="c in props.columns" :key="c.prop" :prop="c.prop" :label="c.label">
-          <template #default="s">{{display(s.row[c.prop])}}</template>
+          <template #default="s">{{ display(s.row[c.prop]) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="s">

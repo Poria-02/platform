@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
-      <template #header>{{props.title}}</template>
+      <template #header>{{ props.title }}</template>
       <el-form :inline="true" :model="query">
         <el-form-item v-for="f in props.queryFields" :key="f.prop" :label="f.label">
           <el-input v-model="query[f.prop]" @keyup.enter="search" />
@@ -13,7 +13,7 @@
       <el-table v-loading="loading" :data="rows" border>
         <el-table-column type="index" width="55" />
         <el-table-column v-for="c in props.columns" :key="c.prop" :prop="c.prop" :label="c.label">
-          <template #default="s">{{display(s.row[c.prop])}}</template>
+          <template #default="s">{{ display(s.row[c.prop]) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="s">
