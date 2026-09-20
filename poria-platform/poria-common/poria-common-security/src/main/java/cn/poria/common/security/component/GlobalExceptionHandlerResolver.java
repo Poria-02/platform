@@ -67,15 +67,14 @@ public class GlobalExceptionHandlerResolver {
 	public R handleGlobalException(Exception e) {
 		log.error("全局异常信息 ex={}", e.getMessage(), e);
         String tid = StrUtil.isEmpty(TraceContext.traceId())? "Tid:" +  MDC.get("tid"): "TID:" + TraceContext.traceId();
-        JSONObject log = JSONUtil.createObj()
-                .set("service", System.getProperty("spring.application.name", "unknown-service"))
-//                .set("userType", SecurityUtils.getUser().getStaffType())
-                .set("userId", SecurityUtils.getSId())
-                .set("clientId", SecurityUtils.getUser().getLoginType())
-                .set("errorMsg", e.getMessage())
-                .set("traceId", tid)
-                .set("createTime",new Date())
-                .set("status", 0);
+//        JSONObject log = JSONUtil.createObj()
+//                .set("service", System.getProperty("spring.application.name", "unknown-service"))
+//                .set("userId", SecurityUtils.getSId())
+//                .set("clientId", SecurityUtils.getUser().getLoginType())
+//                .set("errorMsg", e.getMessage())
+//                .set("traceId", tid)
+//                .set("createTime",new Date())
+//                .set("status", 0);
 //        KafkaUtil.send(PlatAuthConstant.LOG_SYS_ERROR_LOG_TOPIC, JSONUtil.toJsonStr(log));
 		return R.failed(tid, "服务器内部错误");
 	}

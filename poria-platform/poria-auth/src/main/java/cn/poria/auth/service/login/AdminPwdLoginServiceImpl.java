@@ -74,7 +74,8 @@ public class AdminPwdLoginServiceImpl implements PlatUserLoginService {
             token.getLoginModel().setUsername(username);
         }
         log.info("token参数:{}", token);
-		R<UserInfo> result = remoteUserService.info(token.getLoginModel().getUsername(),token.getLoginModel().getUserType(), SecurityConstants.FROM_IN);
+//		R<UserInfo> result = remoteUserService.info(token.getLoginModel().getUsername(),token.getLoginModel().getUserType(), SecurityConstants.FROM_IN);
+		R<UserInfo> result = remoteUserService.info(token.getLoginModel().getUsername(), SecurityConstants.FROM_IN);
         return getUserDetails(token,result);
     }
 
