@@ -55,9 +55,13 @@ export function unlockScreen(username, password) {
 
 // 获取用户详细信息
 export function getInfo() {
+  const platform = import.meta.env.VITE_MENU_PLATFORM || import.meta.env.VITE_AUTH_USER_TYPE
   return request({
     url: '/upms/menu',
-    method: 'get'
+    method: 'get',
+    // SysMenuController 按当前令牌的角色及 platform 返回已授权的菜单树。
+    // 未配置 platform 时不发送空参数，由后端保留其默认筛选行为。
+    params: platform ? { platform } : undefined
   })
 }
 

@@ -11,7 +11,10 @@ function menuEntries(items = []) { return (Array.isArray(items) ? items : []).fl
 function isExternal(path) { return /^https?:\/\//i.test(path || '') }
 function isMenuPage(menu) { return String(menu.type) !== '1' && Boolean(menu.path) && !isExternal(menu.path) }
 function pageFileCandidates(path) {
-  const normalized = `/${String(path).replace(/^\/+|\/+$/g, '')}`
+  const normalizedPath = String(path).replace(/^\/+|\/+$/g, '')
+  // 菜单来自后端，但只能解析构建时已登记的本地 Vue 文件；拒绝路径遍历、查询串和任意模块路径。
+  if (!normalizedPath || !/^[A-Za-z0-9_/-]+$/.test(normalizedPath) || normalizedPath.includes('..')) return []
+  const normalized = `/${normalizedPath}`
   return [`/src/views${normalized}.vue`]
 }
 function componentFor(path) {
