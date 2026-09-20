@@ -109,7 +109,7 @@
     visibleNumber.value = Math.max(1, parseInt(width / 85))
   }
 
-  function handleSelect(key, keyPath) {
+  function handleSelect(key, _keyPath) {
     currentIndex.value = key
     const route = routers.value.find(item => item.path === key)
     if (isHttp(key)) {

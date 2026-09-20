@@ -114,7 +114,6 @@
   } = getCurrentInstance()
   const route = useRoute()
   const router = useRouter()
-  const settingsStore = useSettingsStore()
 
   const visitedViews = computed(() => useTagsViewStore().visitedViews)
   const routes = computed(() => usePermissionStore().routes)
@@ -182,7 +181,7 @@
     try {
       const tag = selectedTag.value && selectedTag.value.fullPath ? selectedTag.value : selectedDropdownTag.value
       return tag.fullPath === '/index' || tag.fullPath === visitedViews.value[1].fullPath
-    } catch (err) {
+    } catch (_error) {
       return false
     }
   }
@@ -191,7 +190,7 @@
     try {
       const tag = selectedTag.value && selectedTag.value.fullPath ? selectedTag.value : selectedDropdownTag.value
       return tag.fullPath === visitedViews.value[visitedViews.value.length - 1].fullPath
-    } catch (err) {
+    } catch (_error) {
       return false
     }
   }

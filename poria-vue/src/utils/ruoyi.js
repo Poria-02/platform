@@ -113,7 +113,7 @@ export function selectDictLabels(datas, value, separator) {
 }
 
 // 字符串格式化(%s )
-export function sprintf(str) {
+export function sprintf(str, ...args) {
   let flag = true,
     i = 1
   str = str.replace(/%s/g, function() {
@@ -144,7 +144,7 @@ export function mergeRecursive(source, target) {
       } else {
         source[p] = target[p]
       }
-    } catch (e) {
+    } catch (_error) {
       source[p] = target[p]
     }
   }

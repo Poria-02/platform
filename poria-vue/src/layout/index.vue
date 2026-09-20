@@ -4,7 +4,7 @@
     <sidebar v-if="!sidebar.hide" class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }">
-        <navbar @setLayout="setLayout" />
+        <navbar @set-layout="setLayout" />
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
@@ -17,7 +17,6 @@
   import {
     useWindowSize
   } from '@vueuse/core'
-  import Sidebar from './components/Sidebar/index.vue'
   import {
     AppMain,
     Navbar,
@@ -41,10 +40,7 @@
     mobile: device.value === 'mobile'
   }))
 
-  const {
-    width,
-    height
-  } = useWindowSize()
+  const { width } = useWindowSize()
   const WIDTH = 992 // refer to Bootstrap's responsive design
 
   watch(() => device.value, () => {

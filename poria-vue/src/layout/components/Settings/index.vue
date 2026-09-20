@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="showSettings" :withHeader="false" :lock-scroll="false" direction="rtl" size="300px">
+  <el-drawer v-model="showSettings" :with-header="false" :lock-scroll="false" direction="rtl" size="300px">
     <div class="setting-drawer-title">
       <h3 class="drawer-title">菜单导航设置</h3>
     </div>

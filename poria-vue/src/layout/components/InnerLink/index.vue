@@ -6,13 +6,14 @@
 </template>
 
 <script setup>
-  const props = defineProps({
+  defineProps({
     src: {
       type: String,
       default: "/"
     },
     iframeId: {
-      type: String
+      type: String,
+      default: ''
     }
   })
 

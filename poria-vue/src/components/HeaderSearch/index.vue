@@ -18,9 +18,11 @@
                 <svg-icon class="menu-icon" :icon-class="item.icon" />
               </div>
               <div class="search-info" @click="change(item)">
-                <div class="menu-title" v-html="highlightText(item.title.join(' / '))">
+                <div class="menu-title">
+                  <span v-for="(part, partIndex) in highlightParts(item.title.join(' / '))" :key="partIndex" :class="{ highlight: part.matched }">{{ part.text }}</span>
                 </div>
-                <div class="menu-path" v-html="highlightText(item.path)">
+                <div class="menu-path">
+                  <span v-for="(part, partIndex) in highlightParts(item.path)" :key="partIndex" :class="{ highlight: part.matched }">{{ part.text }}</span>
                 </div>
               </div>
               <svg-icon icon-class="enter" v-show="index === activeIndex" />
@@ -211,12 +213,12 @@
     }
   }
 
-  function highlightText(text) {
-    if (!text) return ''
-    if (!search.value) return text
+  function highlightParts(text) {
+    const value = String(text ?? '')
+    if (!search.value) return [{ text: value, matched: false }]
     const keyword = escapeRegExp(search.value)
     const reg = new RegExp(`(${keyword})`, 'gi')
-    return text.replace(reg, '<span class="highlight">$1</span>')
+    return value.split(reg).map((part, index) => ({ text: part, matched: index % 2 === 1 }))
   }
 
   function escapeRegExp(str) {

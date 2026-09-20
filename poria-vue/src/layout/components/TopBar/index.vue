@@ -1,30 +1,26 @@
 <template>
   <el-menu class="topbar-menu" :ellipsis="false" :default-active="activeMenu" :active-text-color="theme" mode="horizontal">
-    <sidebar-item :key="route.path + index" v-for="(route, index) in topMenus" :item="route" :base-path="route.path" />
+    <sidebar-item :key="menuRoute.path + index" v-for="(menuRoute, index) in topMenus" :item="menuRoute" :base-path="menuRoute.path" />
 
     <el-sub-menu index="more" class="el-sub-menu__hide-arrow" v-if="moreRoutes.length > 0">
       <template #title>
         <span>更多菜单</span>
       </template>
-      <sidebar-item :key="route.path + index" v-for="(route, index) in moreRoutes" :item="route" :base-path="route.path" />
+      <sidebar-item :key="menuRoute.path + index" v-for="(menuRoute, index) in moreRoutes" :item="menuRoute" :base-path="menuRoute.path" />
     </el-sub-menu>
   </el-menu>
 </template>
 
 <script setup>
   import SidebarItem from '../Sidebar/SidebarItem'
-  import useAppStore from '@/store/modules/app'
   import useSettingsStore from '@/store/modules/settings'
   import usePermissionStore from '@/store/modules/permission'
 
   const route = useRoute()
-  const appStore = useAppStore()
   const settingsStore = useSettingsStore()
   const permissionStore = usePermissionStore()
 
-  const sidebarRouters = computed(() => permissionStore.sidebarRouters)
   const theme = computed(() => settingsStore.theme)
-  const device = computed(() => appStore.device)
   const activeMenu = computed(() => {
     const {
       meta,
