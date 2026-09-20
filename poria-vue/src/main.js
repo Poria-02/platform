@@ -1,4 +1,6 @@
-import { createApp } from 'vue'
+import {
+  createApp
+} from 'vue'
 
 import Cookies from 'js-cookie'
 
@@ -15,7 +17,9 @@ import router from './router'
 
 // 注册指令
 import plugins from './plugins' // plugins
-import { download } from '@/utils/request'
+import {
+  download
+} from '@/utils/request'
 
 // svg图标
 import 'virtual:svg-icons-register'

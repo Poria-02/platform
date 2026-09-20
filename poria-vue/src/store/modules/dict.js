@@ -1,6 +1,5 @@
 const useDictStore = defineStore(
-  'dict',
-  {
+  'dict', {
     state: () => ({
       dict: new Array()
     }),
@@ -49,8 +48,7 @@ const useDictStore = defineStore(
         this.dict = new Array()
       },
       // 初始字典
-      initDict() {
-      }
+      initDict() {}
     }
   })
 

@@ -4,7 +4,8 @@
     <breadcrumb v-if="settingsStore.navType == 1" id="breadcrumb-container" class="breadcrumb-container" />
     <top-nav v-if="settingsStore.navType == 2" id="topmenu-container" class="topmenu-container" />
     <template v-if="settingsStore.navType == 3">
-      <logo v-show="settingsStore.sidebarLogo" :collapse="false"></logo>
+      <logo v-show="settingsStore.sidebarLogo" :collapse="false">
+      </logo>
       <top-bar id="topbar-container" class="topbar-container" />
     </template>
 
@@ -49,10 +50,10 @@
               <el-dropdown-item>个人中心</el-dropdown-item>
             </router-link>
             <el-dropdown-item command="setLayout" v-if="settingsStore.showSettings">
-                <span>布局设置</span>
+              <span>布局设置</span>
             </el-dropdown-item>
             <el-dropdown-item command="lockScreen">
-                <span>锁定屏幕</span>
+              <span>锁定屏幕</span>
             </el-dropdown-item>
             <el-dropdown-item divided command="logout">
               <span>退出登录</span>
@@ -65,242 +66,245 @@
 </template>
 
 <script setup>
-import { ElMessageBox } from 'element-plus'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from './TopNav'
-import TopBar from './TopBar'
-import Logo from './Sidebar/Logo'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import HeaderSearch from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
-import RuoYiDoc from '@/components/RuoYi/Doc'
-import useAppStore from '@/store/modules/app'
-import useUserStore from '@/store/modules/user'
-import useLockStore from '@/store/modules/lock'
-import useSettingsStore from '@/store/modules/settings'
-import HeaderNotice from './HeaderNotice'
+  import {
+    ElMessageBox
+  } from 'element-plus'
+  import Breadcrumb from '@/components/Breadcrumb'
+  import TopNav from './TopNav'
+  import TopBar from './TopBar'
+  import Logo from './Sidebar/Logo'
+  import Hamburger from '@/components/Hamburger'
+  import Screenfull from '@/components/Screenfull'
+  import SizeSelect from '@/components/SizeSelect'
+  import HeaderSearch from '@/components/HeaderSearch'
+  import RuoYiGit from '@/components/RuoYi/Git'
+  import RuoYiDoc from '@/components/RuoYi/Doc'
+  import useAppStore from '@/store/modules/app'
+  import useUserStore from '@/store/modules/user'
+  import useLockStore from '@/store/modules/lock'
+  import useSettingsStore from '@/store/modules/settings'
+  import HeaderNotice from './HeaderNotice'
 
-const route = useRoute()
-const router = useRouter()
-const appStore = useAppStore()
-const userStore = useUserStore()
-const lockStore = useLockStore()
-const settingsStore = useSettingsStore()
+  const route = useRoute()
+  const router = useRouter()
+  const appStore = useAppStore()
+  const userStore = useUserStore()
+  const lockStore = useLockStore()
+  const settingsStore = useSettingsStore()
 
-function toggleSideBar() {
-  appStore.toggleSideBar()
-}
-
-function handleCommand(command) {
-  switch (command) {
-    case "setLayout":
-      setLayout()
-      break
-    case "lockScreen":
-      lockScreen()
-      break
-    case "logout":
-      logout()
-      break
-    default:
-      break
-  }
-}
-
-function logout() {
-  ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    userStore.logOut().then(() => {
-      location.href = '/index'
-    })
-  }).catch(() => { })
-}
-
-const emits = defineEmits(['setLayout'])
-function setLayout() {
-  emits('setLayout')
-}
-
-function lockScreen() {
-  const currentPath = route.fullPath
-  lockStore.lockScreen(currentPath)
-  router.push('/lock')
-}
-
-async function toggleTheme(event) {
-  const x = event?.clientX || window.innerWidth / 2
-  const y = event?.clientY || window.innerHeight / 2
-  const wasDark = settingsStore.isDark
-
-  const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  const isSupported = document.startViewTransition && !isReducedMotion
-
-  if (!isSupported) {
-    settingsStore.toggleTheme()
-    return
+  function toggleSideBar() {
+    appStore.toggleSideBar()
   }
 
-  try {
-    const transition = document.startViewTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10))
+  function handleCommand(command) {
+    switch (command) {
+      case "setLayout":
+        setLayout()
+        break
+      case "lockScreen":
+        lockScreen()
+        break
+      case "logout":
+        logout()
+        break
+      default:
+        break
+    }
+  }
+
+  function logout() {
+    ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      userStore.logOut().then(() => {
+        location.href = '/index'
+      })
+    }).catch(() => {})
+  }
+
+  const emits = defineEmits(['setLayout'])
+
+  function setLayout() {
+    emits('setLayout')
+  }
+
+  function lockScreen() {
+    const currentPath = route.fullPath
+    lockStore.lockScreen(currentPath)
+    router.push('/lock')
+  }
+
+  async function toggleTheme(event) {
+    const x = event?.clientX || window.innerWidth / 2
+    const y = event?.clientY || window.innerHeight / 2
+    const wasDark = settingsStore.isDark
+
+    const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const isSupported = document.startViewTransition && !isReducedMotion
+
+    if (!isSupported) {
       settingsStore.toggleTheme()
-      await nextTick()
-    })
-    await transition.ready
+      return
+    }
 
-    const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
-    const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`]
-    document.documentElement.animate(
-      {
+    try {
+      const transition = document.startViewTransition(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10))
+        settingsStore.toggleTheme()
+        await nextTick()
+      })
+      await transition.ready
+
+      const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+      const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`]
+      document.documentElement.animate({
         clipPath: !wasDark ? [...clipPath].reverse() : clipPath
       }, {
         duration: 650,
         easing: "cubic-bezier(0.4, 0, 0.2, 1)",
         fill: "forwards",
         pseudoElement: !wasDark ? "::view-transition-old(root)" : "::view-transition-new(root)"
-      }
-    )
-    await transition.finished
-  } catch (error) {
-    console.warn("View transition failed, falling back to immediate toggle:", error)
-    settingsStore.toggleTheme()
+      })
+      await transition.finished
+    } catch (error) {
+      console.warn("View transition failed, falling back to immediate toggle:", error)
+      settingsStore.toggleTheme()
+    }
   }
-}
+
 </script>
 
 <style lang='scss' scoped>
-.navbar.nav3 {
-  .hamburger-container {
-    display: none !important;
-  }
-}
-
-.navbar {
-  height: 50px;
-  overflow: hidden;
-  position: relative;
-  background: var(--navbar-bg);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  display: flex;
-  align-items: center;
-  // padding: 0 8px;
-  box-sizing: border-box;
-
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    cursor: pointer;
-    transition: background 0.3s;
-    -webkit-tap-highlight-color: transparent;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    margin-right: 8px;
-
-    &:hover {
-      background: rgba(0, 0, 0, 0.025);
+  .navbar.nav3 {
+    .hamburger-container {
+      display: none !important;
     }
   }
 
-  .breadcrumb-container {
-    flex-shrink: 0;
-  }
-
-  .topmenu-container {
-    position: absolute;
-    left: 50px;
-  }
-
-  .topbar-container {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    align-items: center;
+  .navbar {
+    height: 50px;
     overflow: hidden;
-    margin-left: 8px;
-  }
-
-  .right-menu {
-    height: 100%;
-    line-height: 50px;
+    position: relative;
+    background: var(--navbar-bg);
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     display: flex;
     align-items: center;
-    margin-left: auto;
+    // padding: 0 8px;
+    box-sizing: border-box;
 
-    &:focus {
-      outline: none;
+    .hamburger-container {
+      line-height: 46px;
+      height: 100%;
+      cursor: pointer;
+      transition: background 0.3s;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      margin-right: 8px;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.025);
+      }
     }
 
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
+    .breadcrumb-container {
+      flex-shrink: 0;
+    }
+
+    .topmenu-container {
+      position: absolute;
+      left: 50px;
+    }
+
+    .topbar-container {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      margin-left: 8px;
+    }
+
+    .right-menu {
       height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
+      line-height: 50px;
+      display: flex;
+      align-items: center;
+      margin-left: auto;
 
-      &.hover-effect {
-        cursor: pointer;
-        transition: background 0.3s;
+      &:focus {
+        outline: none;
+      }
 
-        &:hover {
-          background: rgba(0, 0, 0, 0.025);
+      .right-menu-item {
+        display: inline-block;
+        padding: 0 8px;
+        height: 100%;
+        font-size: 18px;
+        color: #5a5e66;
+        vertical-align: text-bottom;
+
+        &.hover-effect {
+          cursor: pointer;
+          transition: background 0.3s;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.025);
+          }
+        }
+
+        &.theme-switch-wrapper {
+          display: flex;
+          align-items: center;
+
+          svg {
+            transition: transform 0.3s;
+
+            &:hover {
+              transform: scale(1.15);
+            }
+          }
         }
       }
 
-      &.theme-switch-wrapper {
-        display: flex;
-        align-items: center;
+      .avatar-container {
+        margin-right: 0px;
+        padding-right: 0px;
 
-        svg {
-          transition: transform 0.3s;
-          
-          &:hover {
-            transform: scale(1.15);
+        .avatar-wrapper {
+          margin-top: 10px;
+          right: 8px;
+          position: relative;
+
+          .user-avatar {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            margin-right: 8px;
+            border-radius: 50%;
+          }
+
+          .user-nickname {
+            position: relative;
+            left: 0px;
+            bottom: 10px;
+            font-size: 14px;
+            font-weight: bold;
+          }
+
+          i {
+            cursor: pointer;
+            position: absolute;
+            right: -20px;
+            top: 25px;
+            font-size: 12px;
           }
         }
       }
     }
-
-    .avatar-container {
-      margin-right: 0px;
-      padding-right: 0px;
-
-      .avatar-wrapper {
-        margin-top: 10px;
-        right: 8px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 30px;
-          height: 30px;
-          margin-right: 8px;
-          border-radius: 50%;
-        }
-
-        .user-nickname{
-          position: relative;
-          left: 0px;
-          bottom: 10px;
-          font-size: 14px;
-          font-weight: bold;
-        }
-
-        i {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
-    }
   }
-}
+
 </style>

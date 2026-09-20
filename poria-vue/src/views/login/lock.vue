@@ -8,11 +8,25 @@
   </div>
 </template>
 <script setup>
-import useUserStore from '@/store/modules/user'
-const router = useRouter()
-async function relogin() { await useUserStore().logOut(); router.replace('/login') }
+  import useUserStore from '@/store/modules/user'
+  const router = useRouter()
+  async function relogin() {
+    await useUserStore().logOut();
+    router.replace('/login')
+  }
+
 </script>
 <style scoped>
-.lock-page { min-height: 100vh; display: grid; place-items: center; background: #001529; }
-.lock-card { width: min(360px, calc(100vw - 40px)); text-align: center; }
+  .lock-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #001529;
+  }
+
+  .lock-card {
+    width: min(360px, calc(100vw - 40px));
+    text-align: center;
+  }
+
 </style>

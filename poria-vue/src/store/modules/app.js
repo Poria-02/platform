@@ -1,8 +1,7 @@
 import Cookies from 'js-cookie'
 
 const useAppStore = defineStore(
-  'app',
-  {
+  'app', {
     state: () => ({
       sidebar: {
         opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
@@ -25,7 +24,9 @@ const useAppStore = defineStore(
           Cookies.set('sidebarStatus', 0)
         }
       },
-      closeSideBar({ withoutAnimation }) {
+      closeSideBar({
+        withoutAnimation
+      }) {
         Cookies.set('sidebarStatus', 0)
         this.sidebar.opened = false
         this.sidebar.withoutAnimation = withoutAnimation

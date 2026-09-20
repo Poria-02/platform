@@ -1,16 +1,18 @@
-import { parseTime } from './ruoyi'
+import {
+  parseTime
+} from './ruoyi'
 
 /**
  * 表格时间格式化
  */
 export function formatDate(cellValue) {
   if (cellValue == null || cellValue == "") return ""
-  const date = new Date(cellValue) 
+  const date = new Date(cellValue)
   const year = date.getFullYear()
   const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-  const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate() 
-  const hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours() 
-  const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes() 
+  const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+  const hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+  const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
   const seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
   return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds
 }
@@ -326,11 +328,11 @@ export function makeMap(str, expectsLowerCase) {
   for (let i = 0; i < list.length; i++) {
     map[list[i]] = true
   }
-  return expectsLowerCase
-    ? val => map[val.toLowerCase()]
-    : val => map[val]
+  return expectsLowerCase ?
+    val => map[val.toLowerCase()] :
+    val => map[val]
 }
- 
+
 export const exportDefault = 'export default '
 
 export const beautifierConf = {
@@ -387,4 +389,3 @@ export function camelCase(str) {
 export function isNumberStr(str) {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }
- 

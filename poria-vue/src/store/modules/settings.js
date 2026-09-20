@@ -1,18 +1,37 @@
 import defaultSettings from '@/settings'
-import { useDark, useToggle } from '@vueuse/core'
-import { useDynamicTitle } from '@/utils/dynamicTitle'
-import { handleThemeStyle } from '@/utils/theme'
+import {
+  useDark,
+  useToggle
+} from '@vueuse/core'
+import {
+  useDynamicTitle
+} from '@/utils/dynamicTitle'
+import {
+  handleThemeStyle
+} from '@/utils/theme'
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
-const { sideTheme, showSettings, navType, tagsView, tagsViewPersist, tagsIcon, tagsViewStyle, fixedHeader, sidebarLogo, dynamicTitle, footerVisible, footerContent } = defaultSettings
+const {
+  sideTheme,
+  showSettings,
+  navType,
+  tagsView,
+  tagsViewPersist,
+  tagsIcon,
+  tagsViewStyle,
+  fixedHeader,
+  sidebarLogo,
+  dynamicTitle,
+  footerVisible,
+  footerContent
+} = defaultSettings
 
 const storageSetting = JSON.parse(localStorage.getItem('layout-setting')) || ''
 
 const useSettingsStore = defineStore(
-  'settings',
-  {
+  'settings', {
     state: () => ({
       title: '',
       theme: storageSetting.theme || '#409EFF',
@@ -33,7 +52,10 @@ const useSettingsStore = defineStore(
     actions: {
       // 修改布局设置
       changeSetting(data) {
-        const { key, value } = data
+        const {
+          key,
+          value
+        } = data
         if (this.hasOwnProperty(key)) {
           this[key] = value
         }

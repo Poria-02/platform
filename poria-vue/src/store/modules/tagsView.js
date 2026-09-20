@@ -9,7 +9,14 @@ function isPersistEnabled() {
 
 function saveVisitedViews(views) {
   if (!isPersistEnabled()) return
-  const toSave = views.filter(v => !(v.meta && v.meta.affix)).map(v => ({ path: v.path, fullPath: v.fullPath, name: v.name, title: v.title, query: v.query, meta: v.meta }))
+  const toSave = views.filter(v => !(v.meta && v.meta.affix)).map(v => ({
+    path: v.path,
+    fullPath: v.fullPath,
+    name: v.name,
+    title: v.title,
+    query: v.query,
+    meta: v.meta
+  }))
   cache.local.setJSON(PERSIST_KEY, toSave)
 }
 
@@ -22,8 +29,7 @@ function clearVisitedViews() {
 }
 
 const useTagsViewStore = defineStore(
-  'tags-view',
-  {
+  'tags-view', {
     state: () => ({
       visitedViews: [],
       cachedViews: [],
@@ -179,7 +185,7 @@ const useTagsViewStore = defineStore(
             if (i > -1) {
               this.cachedViews.splice(i, 1)
             }
-            if(item.meta.link) {
+            if (item.meta.link) {
               const fi = this.iframeViews.findIndex(v => v.path === item.path)
               this.iframeViews.splice(fi, 1)
             }
@@ -203,7 +209,7 @@ const useTagsViewStore = defineStore(
             if (i > -1) {
               this.cachedViews.splice(i, 1)
             }
-            if(item.meta.link) {
+            if (item.meta.link) {
               const fi = this.iframeViews.findIndex(v => v.path === item.path)
               this.iframeViews.splice(fi, 1)
             }

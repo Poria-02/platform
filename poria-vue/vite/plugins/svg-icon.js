@@ -1,4 +1,6 @@
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import {
+  createSvgIconsPlugin
+} from 'vite-plugin-svg-icons'
 import path from 'path'
 
 export default function createSvgIcon(isBuild) {

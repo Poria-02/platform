@@ -20,8 +20,10 @@ function bytesToBase64(bytes) {
 async function encryptBlock(key, feedback) {
   // AES-CBC pads a 16-byte input. Its first ciphertext block is AES(K, feedback)
   // because the IV is all zeros, which is exactly the block primitive CFB needs.
-  const encrypted = await window.crypto.subtle.encrypt(
-    { name: 'AES-CBC', iv: new Uint8Array(16) },
+  const encrypted = await window.crypto.subtle.encrypt({
+      name: 'AES-CBC',
+      iv: new Uint8Array(16)
+    },
     key,
     feedback
   )
@@ -39,8 +41,9 @@ export async function encryptAesCfb(plainText, encodeKey) {
 
   const cryptoKey = await window.crypto.subtle.importKey(
     'raw',
-    keyBytes,
-    { name: 'AES-CBC' },
+    keyBytes, {
+      name: 'AES-CBC'
+    },
     false,
     ['encrypt']
   )

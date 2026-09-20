@@ -1,3 +1,4 @@
+// 顶部公告组件接口
 import request from '@/utils/request'
 
 // 查询公告列表
@@ -56,7 +57,9 @@ export function markNoticeRead(noticeId) {
   return request({
     url: '/system/notice/markRead',
     method: 'post',
-    params: { noticeId }
+    params: {
+      noticeId
+    }
   })
 }
 
@@ -65,7 +68,9 @@ export function markNoticeReadAll(ids) {
   return request({
     url: '/system/notice/markReadAll',
     method: 'post',
-    params: { ids }
+    params: {
+      ids
+    }
   })
 }
 
