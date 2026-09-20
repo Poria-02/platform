@@ -1,4 +1,5 @@
 cn.poria.common.data.cache.RedisCacheAutoConfiguration
+cn.poria.common.data.cache.RedisMessageConfiguration
 cn.poria.common.data.cache.RedisCacheManagerConfiguration
 cn.poria.common.data.cache.RedisTemplateConfiguration
 cn.poria.common.data.mybatis.MybatisPlusConfiguration

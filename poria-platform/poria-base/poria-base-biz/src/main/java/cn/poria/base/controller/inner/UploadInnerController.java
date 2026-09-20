@@ -162,14 +162,6 @@ public class UploadInnerController {
         return R.ok(baseFile.getId());
     }
 
-
-    @Inner(value = false)
-    @Operation(summary = "阳曲录音转换清洗")
-    @PostMapping("/yangqu/converter")
-    public void yangqu(@RequestParam String id, @RequestParam String startTime, @RequestParam String endTime) {
-        //id，查单条调试;
-        uploadService.yangqu(id, startTime, endTime);
-    }
     @SneakyThrows
     @Inner
     @Operation(summary = "删除公有文件")
