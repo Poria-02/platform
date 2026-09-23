@@ -1,42 +1,10 @@
-import request from '@/utils/request'
-
-export const pageApi = {
-  dictionaries: params => request({
-    url: '/upms/dict/page',
-    method: 'get',
-    params
-  }),
-  saveDictionary: data => request({
-    url: '/upms/dict',
-    method: 'post',
-    data
-  }),
-  updateDictionary: data => request({
-    url: '/upms/dict',
-    method: 'put',
-    data
-  }),
-  deleteDictionary: id => request({
-    url: `/upms/dict/${id}`,
-    method: 'delete'
-  }),
-  dictionaryItems: params => request({
-    url: '/upms/dict/item/page',
-    method: 'get',
-    params
-  }),
-  saveDictionaryItem: data => request({
-    url: '/upms/dict/item',
-    method: 'post',
-    data
-  }),
-  updateDictionaryItem: data => request({
-    url: '/upms/dict/item',
-    method: 'put',
-    data
-  }),
-  deleteDictionaryItem: id => request({
-    url: `/upms/dict/item/${id}`,
-    method: 'delete'
-  })
-}
+import { http } from '@/core/http'
+export const list = params => http.get('/upms/dict/page', { params })
+export const create = data => http.post('/upms/dict', data)
+export const update = data => http.put('/upms/dict', data)
+export const remove = id => http.delete(`/upms/dict/${id}`)
+export const listItems = params => http.get('/upms/dict/item/page', { params })
+export const createItem = data => http.post('/upms/dict/item', data)
+export const updateItem = data => http.put('/upms/dict/item', data)
+export const removeItem = id => http.delete(`/upms/dict/item/${id}`)
+export const dictionaryItems = () => http.get('/upms/dict/item/page', { params: { type: 'dict_type', current: 1, size: 1000 }, silent: true }).then(data => data.records || [])

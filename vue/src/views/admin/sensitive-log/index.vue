@@ -1,62 +1,13 @@
-<template>
-  <div class="app-container">
-    <el-card>
-      <template #header>{{ props.title }}</template>
-      <el-form :inline="true" :model="query">
-        <el-form-item v-for="f in props.queryFields" :key="f.prop" :label="f.label">
-          <el-input v-model="query[f.prop]" @keyup.enter="search" />
-        </el-form-item>
-        <el-button type="primary" @click="search">查询</el-button>
-      </el-form>
-      <el-table v-loading="loading" :data="rows" border>
-        <el-table-column type="index" width="55" />
-        <el-table-column v-for="c in props.columns" :key="c.prop" :prop="c.prop" :label="c.label">
-          <template #default="s">{{ display(s.row[c.prop]) }}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="90" fixed="right">
-          <template #default="scope"><el-button link type="primary" @click="openDetail(scope.row)">查看</el-button></template>
-        </el-table-column>
-      </el-table>
-      <Pagination v-show="total>0" v-model:page="page.current" v-model:limit="page.size" :total="total" @pagination="load" />
-    </el-card>
-    <el-dialog v-model="detail.open" title="敏感日志详情" width="min(760px, calc(100vw - 32px))" append-to-body>
-      <el-descriptions :column="1" border>
-        <el-descriptions-item v-for="item in detail.items" :key="item.label" :label="item.label">{{ display(item.value) }}</el-descriptions-item>
-      </el-descriptions>
-    </el-dialog>
-  </div>
-</template>
+<template><ResourcePage title="敏感数据日志" section="审计与记录" description="审阅敏感数据访问与操作记录。" :api="api" :columns="columns" :filters="filters"><template #row-actions="{ row }"><el-button link type="primary" @click="showDetail(row)">详情</el-button></template></ResourcePage><el-dialog v-model="dialog.open" title="日志详情" width="min(720px, calc(100vw - 28px))"><el-descriptions :column="1" border><el-descriptions-item v-for="([key, value]) in Object.entries(dialog.data)" :key="key" :label="key">{{ value }}</el-descriptions-item></el-descriptions></el-dialog></template>
 <script setup>
-import { pageApi } from './api'
-
-const props = { title: '敏感数据日志', columns: [{ prop: 'title', label: '标题' }, { prop: 'createBy', label: '操作人' }, { prop: 'requestUri', label: '请求地址' }, { prop: 'createTime', label: '创建时间' }], queryFields: [{ prop: 'title', label: '标题' }, { prop: 'createBy', label: '操作人' }] }
-const loading = ref(false)
-const rows = ref([])
-const total = ref(0)
-const query = reactive({ title: '', createBy: '' })
-const page = reactive({ current: 1, size: 10 })
-const detail = reactive({ open: false, items: [] })
-const display = value => value === null || value === undefined || value === '' ? '-' : value
-
-async function load() {
-  loading.value = true
-  try {
-    const result = (await pageApi.sensitiveLogs({ ...query, current: page.current, size: page.size })).data
-    rows.value = result.records || []
-    total.value = Number(result.total || 0)
-  } catch (_) {
-    rows.value = []
-    total.value = 0
-  } finally {
-    loading.value = false
-  }
+import { reactive } from 'vue'
+import ResourcePage from '@/components/ResourcePage.vue'
+import * as api from './api'
+const columns = [{ prop: 'sensitiveInfo', label: '敏感信息', width: 230 }, { prop: 'createName', label: '操作人' }, { prop: 'userType', label: '用户类型' }, { prop: 'createTime', label: '时间', width: 180 }]
+const filters = [{ prop: 'createName', label: '操作人' }, { prop: 'createBy', label: '操作人 ID' }]
+const dialog = reactive({ open: false, data: {} })
+async function showDetail(row) {
+  try { dialog.data = await api.detail(row.id) || row; dialog.open = true }
+  catch { /* HTTP 层显示错误 */ }
 }
-function search() { page.current = 1; return load() }
-async function openDetail(row) {
-  if (row.id === undefined || row.id === null) return
-  const result = await pageApi.sensitiveLog(row.id)
-  detail.items = Object.entries(result.data || row).map(([label, value]) => ({ label, value }))
-  detail.open = true
-}
-onMounted(load)
 </script>

@@ -1,15 +1,11 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <transition name="page"><component :is="Component" /></transition>
+  </router-view>
 </template>
-
-<script setup>
-import useSettingsStore from '@/store/modules/settings'
-import { handleThemeStyle } from '@/utils/theme'
-
-onMounted(() => {
-  nextTick(() => {
-    // 初始化主题样式
-    handleThemeStyle(useSettingsStore().theme)
-  })
-})
-</script>
+<style>
+.page-enter-active, .page-leave-active { transition: opacity .18s ease, transform .18s ease; }
+.page-enter-from { opacity: 0; transform: translateY(6px); }
+.page-leave-to { opacity: 0; transform: translateY(-4px); }
+@media (prefers-reduced-motion: reduce) { .page-enter-active, .page-leave-active { transition: none; } }
+</style>
