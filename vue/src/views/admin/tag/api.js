@@ -1,42 +1,9 @@
-import request from '@/utils/request'
-
-export const pageApi = {
-  tags: params => request({
-    url: '/upms/tag/page',
-    method: 'get',
-    params
-  }),
-  saveTag: data => request({
-    url: '/upms/tag',
-    method: 'post',
-    data
-  }),
-  updateTag: data => request({
-    url: '/upms/tag',
-    method: 'put',
-    data
-  }),
-  deleteTag: id => request({
-    url: `/upms/tag/${id}`,
-    method: 'delete'
-  }),
-  tagItems: params => request({
-    url: '/upms/tagItem/page',
-    method: 'get',
-    params
-  }),
-  saveTagItem: data => request({
-    url: '/upms/tagItem',
-    method: 'post',
-    data
-  }),
-  updateTagItem: data => request({
-    url: '/upms/tagItem',
-    method: 'put',
-    data
-  }),
-  deleteTagItem: id => request({
-    url: `/upms/tagItem/${id}`,
-    method: 'delete'
-  })
-}
+import { http } from '@/core/http'
+export const list = params => http.get('/upms/tag/page', { params })
+export const create = data => http.post('/upms/tag', data)
+export const update = data => http.put('/upms/tag', data)
+export const remove = id => http.delete(`/upms/tag/${id}`)
+export const listItems = params => http.get('/upms/tagItem/page', { params })
+export const createItem = data => http.post('/upms/tagItem', data)
+export const updateItem = data => http.put('/upms/tagItem', data)
+export const removeItem = id => http.delete(`/upms/tagItem/${id}`)

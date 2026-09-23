@@ -1,13 +1,4 @@
-import request from '@/utils/request'
-
-export const pageApi = {
-  logs: params => request({
-    url: '/upms/log/page',
-    method: 'get',
-    params
-  }),
-  deleteLog: id => request({
-    url: `/upms/log/${id}`,
-    method: 'delete'
-  })
-}
+import { http } from '@/core/http'
+export const list = params => http.get('/upms/log/page', { params })
+export const remove = id => http.delete(`/upms/log/${id}`)
+export const dictionaryItems = () => http.get('/upms/dict/item/page', { params: { type: 'log_type', current: 1, size: 1000 }, silent: true }).then(data => data.records || [])
