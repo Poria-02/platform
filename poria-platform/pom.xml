@@ -6,7 +6,7 @@
 
 	<version>2026-SNAPSHOT</version>
 	<groupId>cn.poria</groupId>
-	<artifactId>poria</artifactId>
+	<artifactId>poria-platform</artifactId>
 	<name>${project.artifactId}</name>
 	<packaging>pom</packaging>
 
