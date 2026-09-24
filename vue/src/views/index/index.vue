@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="dashboard-heading"><div><div class="page-eyebrow">PORIA / DASHBOARD</div><h1>{{ greeting }}，{{ session.displayName }}</h1><p>欢迎回到工作台。</p></div><span class="today-label">{{ today }}</span></div>
-    <section class="hero"><div class="hero-copy"><span class="hero-tag">统一管理平台</span><h2>从这里开始，<br>掌握你的工作空间。</h2><p>人员、权限与平台配置集中在一个清晰的界面中，进入所需模块即可开始处理。</p><a href="#modules" class="hero-button">浏览功能模块 <span>↗</span></a></div><div class="hero-art" aria-hidden="true"><div class="hero-orbit hero-orbit--one" /><div class="hero-orbit hero-orbit--two" /><span class="hero-letter">P</span></div></section>
+    <section class="hero"><div class="hero-copy"><span class="hero-tag">统一管理平台</span><h2>从这里开始，<br>掌握你的工作空间。</h2><p>人员、权限与平台配置集中在一个清晰的界面中，进入所需模块即可开始处理。</p><a href="#modules" class="hero-button">浏览功能模块 <span>↗</span></a></div><div class="hero-art" aria-hidden="true" /></section>
     <section class="stats-grid"><div v-for="(metric, index) in metrics" :key="metric.label" class="stat-card"><div class="stat-icon" :class="`stat-icon--${index}`">{{ metric.symbol }}</div><div><span>{{ metric.label }}</span><strong>{{ metric.value ?? '—' }}</strong></div><small>{{ metric.note }}</small></div></section>
     <section id="modules" class="dashboard-section"><div class="section-heading"><div><span class="page-eyebrow">YOUR WORKSPACE</span><h2>功能模块</h2></div><span>{{ modules.length }} 个可用分组</span></div><div v-if="modules.length" class="module-grid"><router-link v-for="(module, index) in modules" :key="module.id || module.path" :to="destination(module)" class="module-card"><div class="module-icon" :class="`module-icon--${index % 4}`">{{ module.symbol }}</div><div class="module-card__text"><h3>{{ module.title }}</h3><p>{{ module.children.length ? `${module.children.length} 个子菜单` : module.path }}</p></div><span class="module-arrow">↗</span></router-link></div><div v-else-if="session.menuError" class="empty-modules">菜单暂时无法加载。<el-button :loading="retrying" type="primary" text @click="retryMenus">重试</el-button></div><div v-else class="empty-modules">当前账号暂无可用菜单。请在 UPMS 中分配角色与菜单权限。</div></section>
     <section v-if="quickLinks.length" class="dashboard-section"><div class="section-heading"><div><span class="page-eyebrow">QUICK ACCESS</span><h2>快捷入口</h2></div></div><div class="quick-list"><router-link v-for="item in quickLinks" :key="item.path" :to="item.path"><span class="quick-dot" />{{ item.title }}<span>→</span></router-link></div></section>
@@ -48,11 +48,52 @@ onMounted(async () => { counts.value = await fetchOverview() })
 </script>
 
 <style scoped>
-.dashboard-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 26px; }.dashboard-heading h1 { margin: 7px 0 5px; font-size: 29px; letter-spacing: -.04em; }.dashboard-heading p { margin: 0; color: #8299a5; font-size: 13px; }.today-label { color: #8ea2ac; font-size: 12px; }
-.hero { position: relative; min-height: 266px; overflow: hidden; display: flex; align-items: center; border-radius: 20px; padding: 36px 42px; background: radial-gradient(circle at 75% 0%, #296d75 0, transparent 34%), linear-gradient(110deg, #0b2a3e 0%, #174c56 100%); color: #fff; box-shadow: 0 20px 45px #153f5020; }.hero-copy { z-index: 1; max-width: 560px; }.hero-tag { display: inline-block; padding: 7px 12px; border: 1px solid #a2e1c655; border-radius: 99px; color: #b8f1d2; font-size: 11px; font-weight: 750; letter-spacing: .08em; }.hero h2 { margin: 17px 0 10px; font-size: clamp(25px, 3vw, 38px); line-height: 1.25; letter-spacing: -.04em; }.hero p { max-width: 480px; margin: 0; color: #bed7d9; line-height: 1.7; font-size: 13px; }.hero-button { display: inline-flex; align-items: center; gap: 25px; margin-top: 23px; padding: 10px 16px; border-radius: 8px; background: #a9e6c5; color: #103a34; font-size: 12px; font-weight: 800; }.hero-button span { font-size: 18px; }.hero-art { position: absolute; right: 0; top: 0; bottom: 0; width: 38%; display: grid; place-items: center; }.hero-letter { z-index: 1; font-size: 145px; font-weight: 850; color: #d1f4dc; text-shadow: 16px 20px 0 #ffffff10; transform: rotate(-9deg); }.hero-orbit { position: absolute; width: 270px; height: 270px; border: 1px solid #d7f2dc35; border-radius: 50%; }.hero-orbit--two { width: 390px; height: 390px; }
-.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0 38px; }.stat-card { position: relative; min-height: 125px; display: flex; align-items: flex-start; gap: 14px; padding: 21px; border: 1px solid #e5edef; border-radius: 15px; background: #fff; box-shadow: 0 8px 28px #1c48540a; }.stat-icon { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 11px; background: #dff4ec; color: #1a866f; font-size: 20px; }.stat-icon--1 { background: #e8eafa; color: #6d72c8; }.stat-icon--2 { background: #fff2df; color: #c78a34; }.stat-icon--3 { background: #e4f1fb; color: #4d91bf; }.stat-card span { display: block; color: #8497a2; font-size: 12px; }.stat-card strong { display: block; margin-top: 7px; color: #1d3949; font-size: 26px; line-height: 1; }.stat-card small { position: absolute; left: 21px; bottom: 17px; color: #a0b0b7; font-size: 10px; }
-.dashboard-section { margin-top: 34px; }.section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 17px; }.section-heading h2 { margin: 6px 0 0; font-size: 21px; letter-spacing: -.025em; }.section-heading > span { color: #90a2ab; font-size: 12px; }.module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }.module-card { min-height: 105px; display: flex; align-items: center; gap: 15px; padding: 21px; border: 1px solid #e2ebed; border-radius: 14px; background: #fff; transition: transform .2s, box-shadow .2s; }.module-card:hover { transform: translateY(-3px); box-shadow: 0 16px 35px #123e4a14; }.module-icon { width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center; border-radius: 12px; background: #e2f4ec; color: #1c8d70; font-size: 24px; }.module-icon--1 { background: #e9edfb; color: #7375cb; }.module-icon--2 { background: #fff1df; color: #ca9238; }.module-icon--3 { background: #e4f1f9; color: #4c91b6; }.module-card__text { min-width: 0; }.module-card h3 { margin: 0 0 5px; font-size: 15px; }.module-card p { margin: 0; color: #95a6af; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.module-arrow { margin-left: auto; color: #a4b5bc; font-size: 20px; }.empty-modules { padding: 32px; border: 1px dashed #cbdbdf; border-radius: 14px; color: #869ba7; background: #fff; text-align: center; }.quick-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }.quick-list a { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 14px 18px; border: 1px solid #e4edef; border-radius: 10px; background: #fff; font-size: 12px; font-weight: 720; }.quick-list a:hover { border-color: #9cd5c1; }.quick-list a > span:last-child { color: #2c8c76; }.quick-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #46b596; }
-.quick-list a > span:last-child { margin-left: auto; }
-@media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); }.module-grid { grid-template-columns: repeat(2, 1fr); } }.dashboard-heading h1 { color: #183545; }
-@media (max-width: 700px) { .today-label { display: none; }.hero { padding: 30px 25px; }.hero-art { opacity: .18; right: -90px; width: 60%; }.stats-grid, .module-grid, .quick-list { grid-template-columns: 1fr; }.stat-card { min-height: 118px; } }
+.dashboard-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 19px; }
+.dashboard-heading h1 { margin: 7px 0 5px; color: #23344b; font-size: 29px; letter-spacing: -.04em; }
+.dashboard-heading p { margin: 0; color: #8392a5; font-size: 13px; }
+.today-label { color: #8c9bad; font-size: 12px; }
+.hero { position: relative; min-height: 257px; display: flex; align-items: center; overflow: hidden; padding: 32px 42px; border: 1px solid #e4f1ec; border-radius: 18px; background: linear-gradient(110deg, #fff 34%, #f1fbf7 100%); box-shadow: 0 7px 25px #52718b0a; }
+.hero::before { content: ""; position: absolute; top: -18px; left: -18px; width: 56px; height: 64px; border-right: 1px solid #b6e9d7; border-bottom: 1px solid #b6e9d7; border-radius: 0 0 100% 0; box-shadow: 7px 7px 0 -6px #f48a67; }
+.hero-copy { position: relative; z-index: 1; max-width: 570px; }
+.hero-tag { display: inline-block; padding: 6px 11px; border-radius: 7px; background: #e6f7f0; color: #298d70; font-size: 11px; font-weight: 750; }
+.hero h2 { margin: 15px 0 11px; color: #26384e; font-size: clamp(25px, 3vw, 37px); line-height: 1.3; letter-spacing: -.04em; }
+.hero p { max-width: 480px; margin: 0; color: #7c8da0; line-height: 1.7; font-size: 13px; }
+.hero-button { display: inline-flex; align-items: center; gap: 23px; margin-top: 21px; padding: 10px 16px; border-radius: 9px; background: #45b995; color: #fff; font-size: 12px; font-weight: 750; transition: background .18s ease, transform .18s ease; }
+.hero-button:hover { background: #278d72; transform: translateY(-2px); }
+.hero-button span { font-size: 18px; }
+.hero-art { position: absolute; top: -105px; right: 10%; width: 310px; height: 310px; border: 1px solid #9fdfca; border-radius: 50%; box-shadow: 0 0 0 16px #f3fbf8, 0 0 0 17px #b0e5d3, 0 0 0 33px #f3fbf8, 0 0 0 34px #c0eada, 0 0 0 50px #f3fbf8, 0 0 0 51px #d0eee3; }
+.hero-art::after { content: ""; position: absolute; left: -35px; bottom: 45px; width: 9px; height: 9px; border-radius: 50%; background: #f47d52; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin: 17px 0 34px; }
+.stat-card { position: relative; min-height: 117px; display: flex; align-items: flex-start; gap: 13px; padding: 19px; border: 1px solid #e9eff3; border-radius: 14px; background: #fff; box-shadow: 0 5px 19px #52718b07; }
+.stat-icon { display: grid; place-items: center; width: 37px; height: 37px; flex: 0 0 37px; border-radius: 10px; background: #e6f7f0; color: #329c7d; font-size: 19px; }
+.stat-icon--1 { background: #f0efff; color: #8480bf; }
+.stat-icon--2 { background: #fff0e9; color: #e3815a; }
+.stat-icon--3 { background: #eaf4fb; color: #6b9bc2; }
+.stat-card span { display: block; color: #8392a5; font-size: 12px; }
+.stat-card strong { display: block; margin-top: 7px; color: #26384e; font-size: 25px; line-height: 1; }
+.stat-card small { position: absolute; left: 19px; bottom: 14px; color: #a4b1bd; font-size: 10px; }
+.dashboard-section { margin-top: 32px; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 16px; }
+.section-heading h2 { margin: 6px 0 0; color: #26384e; font-size: 21px; letter-spacing: -.025em; }
+.section-heading > span { color: #95a3b1; font-size: 12px; }
+.module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.module-card { min-height: 101px; display: flex; align-items: center; gap: 14px; padding: 19px; border: 1px solid #e9eff3; border-radius: 14px; background: #fff; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.module-card:hover { transform: translateY(-2px); border-color: #cbe9dc; box-shadow: 0 12px 28px #52718b14; }
+.module-icon { display: grid; place-items: center; width: 43px; height: 43px; flex: 0 0 43px; border-radius: 10px; background: #e6f7f0; color: #329c7d; font-size: 23px; }
+.module-icon--1 { background: #f0efff; color: #8480bf; }
+.module-icon--2 { background: #fff0e9; color: #e3815a; }
+.module-icon--3 { background: #eaf4fb; color: #6b9bc2; }
+.module-card__text { min-width: 0; }
+.module-card h3 { margin: 0 0 5px; color: #2b3e54; font-size: 14px; }
+.module-card p { margin: 0; overflow: hidden; color: #98a6b4; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.module-arrow { margin-left: auto; color: #a8b7c3; font-size: 19px; }
+.empty-modules { padding: 31px; border: 1px dashed #d5e2e9; border-radius: 14px; background: #fff; color: #8392a5; text-align: center; }
+.quick-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.quick-list a { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 14px 17px; border: 1px solid #e9eff3; border-radius: 10px; background: #fff; font-size: 12px; font-weight: 700; }
+.quick-list a:hover { border-color: #bce4d4; }
+.quick-list a > span:last-child { margin-left: auto; color: #319a7a; }
+.quick-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #45b995; }
+@media (max-width: 1200px) { .stats-grid, .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .today-label { display: none; } .hero { padding: 29px 24px; } .hero-art { opacity: .35; right: -180px; } .stats-grid, .module-grid, .quick-list { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .hero-button, .module-card { transition: none; } }
 </style>

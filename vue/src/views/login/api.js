@@ -38,5 +38,5 @@ export async function captcha(randomStr) {
 }
 
 export function logout() {
-  return http.delete('/auth/token/logout', { silent: true })
+  return http.delete('/auth/token/logout')
 }

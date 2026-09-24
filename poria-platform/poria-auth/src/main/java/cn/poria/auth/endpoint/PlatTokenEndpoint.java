@@ -196,7 +196,6 @@ public class PlatTokenEndpoint {
      * 查询token
      *
      * @param params 分页参数
-     * @return
      */
     @Inner
     @PostMapping("/page")

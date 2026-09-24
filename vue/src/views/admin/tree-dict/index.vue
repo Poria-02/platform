@@ -20,8 +20,8 @@ function selectDict(row) { selected.value = row; itemParents.value = [] }
 const columns = [{ prop: 'code', label: '编码' }, { prop: 'name', label: '名称' }, { prop: 'remark', label: '备注', width: 220 }, { prop: 'createTime', label: '创建时间', width: 180 }]
 const filters = [{ prop: 'code', label: '编码' }, { prop: 'name', label: '名称' }]
 const fields = [{ prop: 'code', label: '编码', required: true, createOnly: true }, { prop: 'name', label: '名称', required: true }, { prop: 'isTree', label: '树形结构', type: 'select', createOnly: true, default: true, options: [{ label: '是', value: true }, { label: '否', value: false }] }, { prop: 'remark', label: '备注', type: 'textarea' }]
-const itemColumns = [{ prop: 'name', label: '名称' }, { prop: 'value', label: '值' }, { prop: 'pid', label: '上级节点 ID' }, { prop: 'remark', label: '备注' }]
-const itemFields = computed(() => [{ prop: 'name', label: '名称', required: true }, { prop: 'value', label: '值', required: true }, { prop: 'pid', label: '上级节点 ID', default: parentId.value }, { prop: 'simpleName', label: '简称' }, { prop: 'remark', label: '备注' }])
+const itemColumns = [{ prop: 'name', label: '名称' }, { prop: 'value', label: '值' }, { prop: 'pid', label: '上级节点 ID' }, { prop: 'sort', label: '排序' }, { prop: 'remark', label: '备注' }]
+const itemFields = computed(() => [{ prop: 'name', label: '名称', required: true }, { prop: 'value', label: '值', required: true }, { prop: 'pid', label: '上级节点 ID', default: parentId.value, immutable: true }, { prop: 'sort', label: '排序', type: 'number', default: 0 }, { prop: 'simpleName', label: '简称' }, { prop: 'remark', label: '备注' }])
 const itemApi = computed(() => ({
   list: () => api.listItems(selected.value.code, parentId.value),
   create: data => api.createItem({ ...data, pid: data.pid || parentId.value, dictId: selected.value.id }),

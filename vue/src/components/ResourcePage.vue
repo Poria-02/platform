@@ -1,11 +1,12 @@
 <template>
   <div class="resource-page">
     <header class="page-heading">
-      <div><div class="page-eyebrow">PORIA / {{ section }}</div><h1>{{ title }}</h1><p>{{ description }}</p></div>
-      <div class="page-heading__actions"><slot name="actions" :reload="load" /><el-button @click="load">刷新</el-button><el-button v-if="canCreate" type="primary" @click="openCreate">新增{{ singular || title }}</el-button></div>
+      <div class="page-heading__motif" aria-hidden="true"><span /><span /><span /><i /><i /></div>
+      <div class="page-heading__copy"><div class="page-eyebrow">PORIA / {{ section }}</div><h1>{{ title }}</h1><p>{{ description }}</p></div>
+      <div class="page-heading__ornament" aria-hidden="true" />
     </header>
 
-    <section class="surface-card">
+    <div class="resource-toolbar">
       <div v-if="filters.length" class="filter-bar">
         <template v-for="field in filters" :key="field.prop">
           <el-select v-if="field.type === 'select'" v-model="query[field.prop]" :placeholder="field.placeholder || `选择${field.label}`" clearable><el-option v-for="option in optionsFor(field)" :key="option.value" :label="option.label" :value="option.value" /></el-select>
@@ -14,6 +15,9 @@
         <el-button type="primary" plain @click="search">查询</el-button>
         <el-button text @click="resetSearch">重置</el-button>
       </div>
+      <div class="page-heading__actions"><slot name="actions" :reload="load" /><el-button @click="load">刷新</el-button><el-button v-if="canCreate" type="primary" @click="openCreate">新增{{ singular || title }}</el-button></div>
+    </div>
+    <section class="surface-card">
       <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
       <el-table v-loading="loading" :data="visibleRows" :row-key="idKey" :tree-props="{ children: 'children' }" :default-expand-all="false" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column v-for="(column, index) in columns" :key="column.prop" :prop="column.prop" :label="column.label" :min-width="column.width || 130" :show-overflow-tooltip="column.overflow !== false">
@@ -43,7 +47,8 @@
     <el-dialog v-model="editor.open" :title="editor.editing ? `编辑${singular || title}` : `新增${singular || title}`" width="min(640px, calc(100vw - 28px))" append-to-body>
       <el-form ref="formRef" :model="editor.form" :rules="fieldRules" label-position="top" class="editor-form">
         <el-form-item v-for="field in fields.filter(item => !editor.editing || !item.createOnly)" :key="field.prop" :label="field.label" :prop="field.prop">
-          <el-input-number v-if="field.type === 'number'" v-model="editor.form[field.prop]" :min="field.min ?? 0" controls-position="right" style="width:100%" />
+          <slot v-if="$slots[`field-${field.prop}`]" :name="`field-${field.prop}`" :field="field" :form="editor.form" />
+          <el-input-number v-else-if="field.type === 'number'" v-model="editor.form[field.prop]" :min="field.min ?? 0" controls-position="right" style="width:100%" />
           <el-select v-else-if="field.type === 'select'" v-model="editor.form[field.prop]" :multiple="field.multiple" style="width:100%" :placeholder="`请选择${field.label}`"><el-option v-for="option in optionsFor(field)" :key="option.value" :label="option.label" :value="option.value" /></el-select>
           <el-input v-else v-model="editor.form[field.prop]" :type="field.type === 'textarea' ? 'textarea' : field.type === 'password' ? 'password' : 'text'" :rows="field.type === 'textarea' ? 3 : undefined" :disabled="editor.editing && field.immutable" :show-password="field.type === 'password'" :placeholder="field.placeholder || `请输入${field.label}`" />
         </el-form-item>
@@ -72,6 +77,7 @@ const props = defineProps({
   pagination: { type: Boolean, default: true },
   treeMode: { type: Boolean, default: false }
 })
+const emit = defineEmits(['saved', 'removed'])
 
 const canCreate = computed(() => Boolean(props.api.create && props.fields.length))
 const canEdit = computed(() => Boolean(props.api.update && props.fields.length))
@@ -165,8 +171,8 @@ function openEdit(row) {
   editor.editing = true
   const form = props.prepareEdit(row)
   for (const field of props.fields) {
-    if (field.multiple && field.joinWith && typeof form[field.prop] === 'string') {
-      form[field.prop] = form[field.prop].split(field.joinWith).map(value => value.trim()).filter(Boolean)
+    if (field.multiple && field.joinWith && !Array.isArray(form[field.prop])) {
+      form[field.prop] = String(form[field.prop] ?? '').split(field.joinWith).map(value => value.trim()).filter(Boolean)
     }
   }
   editor.form = form
@@ -180,10 +186,12 @@ async function save() {
     for (const field of props.fields) {
       if (field.multiple && field.joinWith && Array.isArray(form[field.prop])) form[field.prop] = form[field.prop].join(field.joinWith)
     }
-    await (editor.editing ? props.api.update(form) : props.api.create(form))
+    const result = await (editor.editing ? props.api.update(form) : props.api.create(form))
+    if (result === false) { ElMessage.error('保存未完成'); return }
     ElMessage.success('保存成功')
     editor.open = false
     await load()
+    emit('saved')
   } catch {
     // HTTP 层显示保存错误，保留编辑内容。
   } finally { editor.saving = false }
@@ -191,9 +199,11 @@ async function save() {
 async function remove(row) {
   try { await ElMessageBox.confirm(`确认删除这条${props.singular || '记录'}吗？`, '确认删除', { type: 'warning' }) } catch { return }
   try {
-    await props.api.remove(row[props.idKey])
+    const result = await props.api.remove(row[props.idKey])
+    if (result === false) { ElMessage.error('删除未完成'); return }
     ElMessage.success('删除成功')
     await load()
+    emit('removed')
   } catch {
     // HTTP 层显示删除错误。
   }

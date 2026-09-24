@@ -14,8 +14,9 @@ const selected = ref(null)
 const columns = [{ prop: 'tagKey', label: '标签键' }, { prop: 'name', label: '名称' }, { prop: 'createTime', label: '创建时间' }]
 const filters = [{ prop: 'tagKey', label: '标签键' }, { prop: 'name', label: '名称' }]
 const fields = [{ prop: 'tagKey', label: '标签键', required: true }, { prop: 'name', label: '名称', required: true }]
-const itemColumns = [{ prop: 'name', label: '名称' }, { prop: 'value', label: '值' }, { prop: 'status', label: '状态' }, { prop: 'remark', label: '备注' }]
-const itemFields = [{ prop: 'name', label: '名称', required: true }, { prop: 'value', label: '值', required: true }, { prop: 'status', label: '状态', type: 'number' }, { prop: 'remark', label: '备注' }]
+const statusOptions = [{ label: '启用', value: 1 }, { label: '停用', value: 2 }]
+const itemColumns = [{ prop: 'name', label: '名称' }, { prop: 'value', label: '值' }, { prop: 'status', label: '状态', format: value => statusOptions.find(option => option.value === Number(value))?.label || value || '—' }, { prop: 'remark', label: '备注' }]
+const itemFields = [{ prop: 'name', label: '名称', required: true }, { prop: 'value', label: '值', required: true }, { prop: 'status', label: '状态', type: 'select', options: statusOptions, default: 1 }, { prop: 'remark', label: '备注' }]
 const itemApi = computed(() => ({
   list: params => api.listItems({ ...params, tagId: selected.value.id }),
   create: data => api.createItem({ ...data, tagId: selected.value.id }),

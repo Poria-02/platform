@@ -36,10 +36,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 运营端用户登陆
- *
- * @author zhangchunlei
- * @date 2021/6/7 5:15 下午
+ * 管理后台
  */
 @Service(PlatUserLoginService.SERVICE_ID + PlatLoginType.ADMIN_PASSWORD)
 @Slf4j

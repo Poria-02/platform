@@ -26,7 +26,9 @@ export const useSession = defineStore('session', {
       this.current = {
         accessToken,
         username: credentials.username.trim(),
-        expiresAt: expires > 0 ? Date.now() + expires * 1000 : null
+        expiresAt: expires > 0 ? Date.now() + expires * 1000 : null,
+        idleId: crypto.randomUUID(),
+        lastActivityAt: Date.now()
       }
       saveSession(this.current)
       this.menusReady = false
@@ -47,13 +49,17 @@ export const useSession = defineStore('session', {
       }
       return this.menusLoading
     },
-    async signOut() {
-      try { await logout() } catch { /* 本地会话仍要清除 */ }
+    clearLocal() {
       clearSession()
       this.current = null
       this.menus = []
       this.menusReady = false
       this.menuError = ''
+      this.menusLoading = null
+    },
+    async signOut() {
+      await logout()
+      this.clearLocal()
     }
   }
 })
