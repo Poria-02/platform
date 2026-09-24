@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Poria">
+  <g transform="rotate(-8 32 32)">
+    <rect x="8" y="8" width="22" height="22" rx="4" fill="#89d4b9"/>
+    <rect x="34" y="8" width="22" height="22" rx="4" fill="#cceee2"/>
+    <rect x="8" y="34" width="22" height="22" rx="4" fill="#b3e3d0"/>
+    <rect x="34" y="34" width="22" height="22" rx="4" fill="#f5a07f"/>
+  </g>
+</svg>

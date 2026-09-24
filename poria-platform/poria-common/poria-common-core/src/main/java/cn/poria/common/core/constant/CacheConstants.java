@@ -112,10 +112,5 @@ public interface CacheConstants {
 	 */
 	String PAY_CHANNEL = "pay_channel";
 
-	/**
-	 * 药店缓存
-	 */
-	String DRUGSTORE_CONFIG_DETAILS = "drugstore_config_details";
 
-	String DRUGSTORE_DETAILS = "drugstore_details";
 }

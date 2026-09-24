@@ -1,4 +1,5 @@
 const storageKey = 'poria.console.session'
+export const activityKey = id => `poria.console.activity.${id}`
 
 export function readSession() {
   try {
@@ -15,5 +16,8 @@ export function saveSession(session) {
 }
 
 export function clearSession() {
+  let idleId
+  try { idleId = JSON.parse(sessionStorage.getItem(storageKey) || 'null')?.idleId } catch { /* 无效会话直接清除。 */ }
   sessionStorage.removeItem(storageKey)
+  if (idleId) localStorage.removeItem(activityKey(idleId))
 }
