@@ -67,7 +67,7 @@ public class SysDictController {
    @SysLog("添加字典")
    @Operation(summary = "添加字典", description = "添加字典（sys_dict_add）")
    @PostMapping
-   // @PreAuthorize("@pms.hasPermission('sys_dict_add')")
+   @PreAuthorize("@pms.hasPermission('sys_dict_add')")
    public R save(@RequestBody @Valid SysDict sysDict) {
       return R.ok(this.sysDictService.save(sysDict));
    }
@@ -75,7 +75,7 @@ public class SysDictController {
    @SysLog("删除字典")
    @DeleteMapping({"/{id}"})
    @Operation(summary = "删除字典", description = "删除字典（sys_dict_del）")
-   // @PreAuthorize("@pms.hasPermission('sys_dict_del')")
+   @PreAuthorize("@pms.hasPermission('sys_dict_del')")
    public R removeById(@PathVariable String id) {
       return this.sysDictService.removeDict(id);
    }
@@ -83,7 +83,7 @@ public class SysDictController {
    @PutMapping
    @SysLog("修改字典")
    @Operation(summary = "修改字典", description = "修改字典（sys_dict_edit）")
-   // @PreAuthorize("@pms.hasPermission('sys_dict_edit')")
+   @PreAuthorize("@pms.hasPermission('sys_dict_edit')")
    public R updateById(@RequestBody @Valid SysDict sysDict) {
       return this.sysDictService.updateDict(sysDict);
    }

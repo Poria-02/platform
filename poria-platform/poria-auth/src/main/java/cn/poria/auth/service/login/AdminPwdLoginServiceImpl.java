@@ -1,5 +1,6 @@
 package cn.poria.auth.service.login;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.Mode;
@@ -15,13 +16,16 @@ import cn.poria.common.security.constant.PlatLoginType;
 import cn.poria.common.security.service.PlatAuthenticationToken;
 import cn.poria.common.security.service.PlatUser;
 import cn.poria.common.security.service.PlatUserLoginService;
+import cn.poria.common.security.util.AuthConstant;
 import cn.poria.upms.api.dto.UserInfo;
 import cn.poria.upms.api.entity.SysUser;
 import cn.poria.upms.api.feign.RemoteUserService;
+import cn.poria.upms.api.util.ParamResolver;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -30,10 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 管理后台
@@ -96,16 +97,16 @@ public class AdminPwdLoginServiceImpl implements PlatUserLoginService {
 
 
         //前置校验是否锁定账号
-//		pwdLockUtil.preProcessing(AuthConstant.ADMIN_PWD_LIMIT_KEY + info.getSysUser().getUserId());
+		pwdLockUtil.preProcessing(AuthConstant.ADMIN_PWD_LIMIT_KEY + info.getSysUser().getUserId());
 
         //后置校验用户密码输入次数
-//		pwdLockUtil.postProcessing(token.getLoginModel().getPassword(),info.getSysUser().getPassword(), AuthConstant.ADMIN_PWD_LIMIT_KEY + info.getSysUser().getUserId());
+		pwdLockUtil.postProcessing(token.getLoginModel().getPassword(),info.getSysUser().getPassword(), AuthConstant.ADMIN_PWD_LIMIT_KEY + info.getSysUser().getUserId());
 
 
-//		//3个月修改密码
-//		if(DateUtil.offsetDay(info.getSysUser().getLastPwdUpdateTime(),Integer.parseInt(ParamResolver.getStr("PWD_EXPIRE_DAY"))).before(new Date())){
-//			throw new CredentialsExpiredException("账号密码已过期，请修改");
-//		}
+		//期限修改密码
+		if(DateUtil.offsetDay(info.getSysUser().getLastPwdUpdateTime(),Integer.parseInt(ParamResolver.getStr("PWD_EXPIRE_DAY"))).before(new Date())){
+			throw new CredentialsExpiredException("账号密码已过期，请修改");
+		}
 
         Set<String> dbAuthsSet = new HashSet<>();
         Set<String> roleIds = new HashSet<>();

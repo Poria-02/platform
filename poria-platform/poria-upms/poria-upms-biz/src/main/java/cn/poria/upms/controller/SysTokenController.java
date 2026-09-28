@@ -22,14 +22,14 @@ public class SysTokenController {
 
    @GetMapping({"/page"})
    @Operation(summary = "分页token信息", description = "分页token信息(sys_token_get)")
-   // @PreAuthorize("@pms.hasPermission('sys_token_get')")
+   @PreAuthorize("@pms.hasPermission('sys_token_get')")
    public R getTokenPage(@RequestParam Map<String, Object> params) {
       return this.remoteTokenService.getTokenPage(params, "Y");
    }
 
    @SysLog("删除用户token")
    @DeleteMapping({"/{token}"})
-   // @PreAuthorize("@pms.hasPermission('sys_token_del')")
+   @PreAuthorize("@pms.hasPermission('sys_token_del')")
    @Operation(summary = "删除用户token", description = "删除用户token(sys_token_del)")
    public R removeById(@PathVariable String token) {
       return this.remoteTokenService.removeTokenById(token, "Y");

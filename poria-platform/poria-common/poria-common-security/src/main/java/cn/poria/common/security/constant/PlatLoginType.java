@@ -9,14 +9,9 @@ public interface PlatLoginType {
 
 	String ADMIN_PASSWORD = "ADMIN_PWD";
 
-	String USER_PASSWORD = "USER_PWD";
-
-	/**
-	 * 管理后台手机号验证码登录
-	 */
-	String ADMIN_VERIFY_CODE = "ADMIN_VERIFY_CODE";
-
 	String PLAT_INNER_DEFAULT = "PLAT_INNER_DEFAULT";
+
+	String USER_PASSWORD = "USER_PWD";
 
 	/**
 	 * 小程序登陆

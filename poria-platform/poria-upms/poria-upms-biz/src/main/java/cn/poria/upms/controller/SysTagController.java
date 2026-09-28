@@ -32,21 +32,21 @@ public class SysTagController {
 
    @Operation(summary = "分页查询", description = "分页查询(admin_tag_page)")
    @GetMapping({"/page"})
-   // @PreAuthorize("@pms.hasPermission('admin_tag_page')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_page')")
    public R selectAll(Page<SysTag> page, SysTag sysTag) {
       return R.ok((Page)this.sysTagService.page(page, new QueryWrapper(sysTag)));
    }
 
    @Operation(summary = "列表查询", description = "列表查询(admin_tag_list)")
    @GetMapping({"/list"})
-   // @PreAuthorize("@pms.hasPermission('admin_tag_list')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_list')")
    public R<List<SysTag>> list() {
       return R.ok(this.sysTagService.list());
    }
 
    @Operation(summary = "通过id查询", description = "通过id查询(admin_tag_get)")
    @GetMapping({"/{id}"})
-   // @PreAuthorize("@pms.hasPermission('admin_tag_get')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_get')")
    public R<SysTag> selectOne(@PathVariable String id) {
       SecurityUtils.getUser();
       return R.ok((SysTag)this.sysTagService.getById(id));
@@ -55,7 +55,7 @@ public class SysTagController {
    @PostMapping
    @SysLog("新增标签分类")
    @Operation(summary = "新增标签分类", description = "新增标签分类，权限标识 admin_tag_add")
-   // @PreAuthorize("@pms.hasPermission('admin_tag_add')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_add')")
    public R<SysTag> insert(@RequestBody @Validated SysTag sysTag) {
       return R.ok(this.sysTagService.saveTag(sysTag));
    }
@@ -64,7 +64,7 @@ public class SysTagController {
    @SysLog("修改标签分类")
    @Operation(summary = "修改标签分类", description = "修改标签分类，权限标识 admin_tag_edit")
    @CacheEvict(value = {"tag_items"}, allEntries = true)
-   // @PreAuthorize("@pms.hasPermission('admin_tag_edit')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_edit')")
    public R update(@RequestBody @Validated SysTag sysTag) {
       this.sysTagService.updateById(sysTag);
       return R.ok();
@@ -74,7 +74,7 @@ public class SysTagController {
    @SysLog("通过id删除标签分类")
    @CacheEvict(value = {"tag_items"}, allEntries = true)
    @Operation(summary = "通过ID删除标签分类", description = "通过ID删除标签分类,权限标识admin_tag_del ")
-   // @PreAuthorize("@pms.hasPermission('admin_tag_del')")
+   @PreAuthorize("@pms.hasPermission('admin_tag_del')")
    public R delete(@PathVariable String id) {
       this.sysTagService.removeById(id);
       return R.ok();

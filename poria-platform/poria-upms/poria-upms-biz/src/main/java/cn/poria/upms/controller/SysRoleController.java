@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class SysRoleController {
     private final SysRoleMenuService sysRoleMenuService;
 
     @GetMapping({"/{id}"})
-    // @PreAuthorize("@pms.hasPermission('sys_role_get')")
+    @PreAuthorize("@pms.hasPermission('sys_role_get')")
     @Operation(summary = "通过ID查询角色信息", description = "通过ID查询角色信息 (sys_role_get)")
     public R getById(@PathVariable Integer id) {
         return R.ok( this.sysRoleService.getById(id));
@@ -36,12 +37,12 @@ public class SysRoleController {
     @Inner
     @GetMapping({"/code/{code}"})
     public R getById(@PathVariable String code) {
-        return R.ok((SysRole) this.sysRoleService.getOne( (new LambdaQueryWrapper<SysRole>()).eq(SysRole::getRoleCode, code)));
+        return R.ok(this.sysRoleService.getOne( (new LambdaQueryWrapper<SysRole>()).eq(SysRole::getRoleCode, code)));
     }
 
     @SysLog("添加角色")
     @PostMapping
-    // @PreAuthorize("@pms.hasPermission('sys_role_add')")
+    @PreAuthorize("@pms.hasPermission('sys_role_add')")
     @Operation(summary = "添加角色", description = "添加角色 (sys_role_add)")
     public R save(@RequestBody @Valid SysRole sysRole) {
         if (this.sysRoleService.existSysRole(sysRole)) {
@@ -53,7 +54,7 @@ public class SysRoleController {
 
     @SysLog("修改角色")
     @PutMapping
-    // @PreAuthorize("@pms.hasPermission('sys_role_edit')")
+    @PreAuthorize("@pms.hasPermission('sys_role_edit')")
     @Operation(summary = "修改角色", description = "修改角色 (sys_role_edit)")
     public R update(@RequestBody @Valid SysRole sysRole) {
         if (this.sysRoleService.existSysRole(sysRole)) {
@@ -65,32 +66,32 @@ public class SysRoleController {
 
     @SysLog("删除角色")
     @DeleteMapping({"/{id}"})
-    // @PreAuthorize("@pms.hasPermission('sys_role_del')")
+    @PreAuthorize("@pms.hasPermission('sys_role_del')")
     @Operation(summary = "删除角色", description = "删除角色 (sys_role_del)")
     public R removeById(@PathVariable Integer id) {
         return R.ok(this.sysRoleService.removeRoleById(id));
     }
 
     @GetMapping({"/list"})
-    // @PreAuthorize("@pms.hasPermission('sys_role_list')")
+    @PreAuthorize("@pms.hasPermission('sys_role_list')")
     @Operation(summary = "获取角色列表", description = "获取角色列表 (sys_role_list)")
     public R listRoles() {
         return R.ok(this.sysRoleService.list(Wrappers.emptyWrapper()));
     }
 
     @GetMapping({"/page"})
-    // @PreAuthorize("@pms.hasPermission('sys_role_page')")
+    @PreAuthorize("@pms.hasPermission('sys_role_page')")
     @Operation(summary = "分页查询角色信息", description = "分页查询角色信息 (sys_role_page)")
     public R getRolePage(Page page) {
-        return R.ok((Page) this.sysRoleService.page(page, Wrappers.emptyWrapper()));
+        return R.ok(this.sysRoleService.page(page, Wrappers.emptyWrapper()));
     }
 
     @SysLog("更新角色菜单")
     @PutMapping({"/menu"})
-    // @PreAuthorize("@pms.hasPermission('sys_role_perm')")
+    @PreAuthorize("@pms.hasPermission('sys_role_perm')")
     @Operation(summary = "更新角色菜单", description = "更新角色菜单 (sys_role_perm)")
     public R saveRoleMenus(@RequestBody RoleVO roleVo) {
-        SysRole sysRole = (SysRole) this.sysRoleService.getById(roleVo.getRoleId());
+        SysRole sysRole = this.sysRoleService.getById(roleVo.getRoleId());
         return R.ok(this.sysRoleMenuService.saveRoleMenus(sysRole.getRoleCode(), roleVo.getRoleId(), roleVo.getMenuIds()));
     }
 

@@ -45,12 +45,12 @@
 
     <slot name="below" :reload="load" />
     <el-dialog v-model="editor.open" :title="editor.editing ? `编辑${singular || title}` : `新增${singular || title}`" width="min(640px, calc(100vw - 28px))" append-to-body>
-      <el-form ref="formRef" :model="editor.form" :rules="fieldRules" label-position="top" class="editor-form">
+      <el-form ref="formRef" :model="editor.form" :rules="fieldRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
         <el-form-item v-for="field in fields.filter(item => !editor.editing || !item.createOnly)" :key="field.prop" :label="field.label" :prop="field.prop">
           <slot v-if="$slots[`field-${field.prop}`]" :name="`field-${field.prop}`" :field="field" :form="editor.form" />
-          <el-input-number v-else-if="field.type === 'number'" v-model="editor.form[field.prop]" :min="field.min ?? 0" controls-position="right" style="width:100%" />
-          <el-select v-else-if="field.type === 'select'" v-model="editor.form[field.prop]" :multiple="field.multiple" style="width:100%" :placeholder="`请选择${field.label}`"><el-option v-for="option in optionsFor(field)" :key="option.value" :label="option.label" :value="option.value" /></el-select>
-          <el-input v-else v-model="editor.form[field.prop]" :type="field.type === 'textarea' ? 'textarea' : field.type === 'password' ? 'password' : 'text'" :rows="field.type === 'textarea' ? 3 : undefined" :disabled="editor.editing && field.immutable" :show-password="field.type === 'password'" :placeholder="field.placeholder || `请输入${field.label}`" />
+          <el-input-number v-else-if="field.type === 'number'" v-model="editor.form[field.prop]" :min="field.min ?? 0" controls-position="right" style="width:100%" @update:model-value="clearFieldError(field.prop)" />
+          <el-select v-else-if="field.type === 'select'" v-model="editor.form[field.prop]" :multiple="field.multiple" style="width:100%" :placeholder="`请选择${field.label}`" @update:model-value="clearFieldError(field.prop)"><el-option v-for="option in optionsFor(field)" :key="option.value" :label="option.label" :value="option.value" /></el-select>
+          <el-input v-else v-model="editor.form[field.prop]" :type="field.type === 'textarea' ? 'textarea' : field.type === 'password' ? 'password' : 'text'" :rows="field.type === 'textarea' ? 3 : undefined" :disabled="editor.editing && field.immutable" :show-password="field.type === 'password'" :placeholder="field.placeholder || `请输入${field.label}`" @update:model-value="clearFieldError(field.prop)" />
         </el-form-item>
         <slot name="form-hint" :form="editor.form" />
       </el-form>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const props = defineProps({
@@ -82,7 +82,7 @@ const emit = defineEmits(['saved', 'removed'])
 const canCreate = computed(() => Boolean(props.api.create && props.fields.length))
 const canEdit = computed(() => Boolean(props.api.update && props.fields.length))
 const canRemove = computed(() => Boolean(props.api.remove))
-const fieldRules = computed(() => Object.fromEntries(props.fields.filter(field => (!editor.editing || !field.createOnly) && (field.required || (!editor.editing && field.requiredOnCreate))).map(field => [field.prop, [{ required: true, message: `请填写${field.label}`, trigger: 'blur' }]])))
+const fieldRules = computed(() => Object.fromEntries(props.fields.filter(field => (!editor.editing || !field.createOnly) && (field.required || (!editor.editing && field.requiredOnCreate))).map(field => [field.prop, [{ required: true, message: `请填写${field.label}`, trigger: 'submit' }]])))
 const loading = ref(false)
 const loadError = ref('')
 const rows = ref([])
@@ -162,21 +162,24 @@ async function load() {
 
 function search() { page.current = 1; return load() }
 function resetSearch() { for (const field of props.filters) query[field.prop] = ''; return search() }
-function openCreate() {
-  editor.editing = false
-  editor.form = Object.fromEntries(props.fields.map(field => [field.prop, field.default ?? (field.multiple ? [] : field.type === 'number' ? 0 : '')]))
+function showEditor(form, editing) {
+  editor.editing = editing
+  editor.form = form
   editor.open = true
+  nextTick(() => formRef.value?.clearValidate())
+}
+function clearFieldError(prop) { formRef.value?.clearValidate(prop) }
+function openCreate() {
+  showEditor(Object.fromEntries(props.fields.map(field => [field.prop, field.default ?? (field.multiple ? [] : field.type === 'number' ? 0 : '')])), false)
 }
 function openEdit(row) {
-  editor.editing = true
   const form = props.prepareEdit(row)
   for (const field of props.fields) {
     if (field.multiple && field.joinWith && !Array.isArray(form[field.prop])) {
       form[field.prop] = String(form[field.prop] ?? '').split(field.joinWith).map(value => value.trim()).filter(Boolean)
     }
   }
-  editor.form = form
-  editor.open = true
+  showEditor(form, true)
 }
 async function save() {
   if (!(await formRef.value.validate().catch(() => false))) return
