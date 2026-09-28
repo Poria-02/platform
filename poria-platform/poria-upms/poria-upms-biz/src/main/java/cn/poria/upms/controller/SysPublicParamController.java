@@ -35,13 +35,13 @@ public class SysPublicParamController {
    @Operation(summary = "分页查询", description = "分页查询")
    @GetMapping({"/page"})
    public R getSysPublicParamPage(Page page, SysPublicParam sysPublicParam) {
-      return R.ok((Page)this.sysPublicParamService.page(page, Wrappers.query(sysPublicParam)));
+      return R.ok(this.sysPublicParamService.page(page, Wrappers.query(sysPublicParam)));
    }
 
    @Operation(summary = "通过id查询公共参数", description = "通过id查询公共参数")
    @GetMapping({"/{publicId}"})
    public R getById(@PathVariable("publicId") Long publicId) {
-      return R.ok((SysPublicParam)this.sysPublicParamService.getById(publicId));
+      return R.ok(this.sysPublicParamService.getById(publicId));
    }
 
    @Operation(summary = "新增公共参数", description = "新增公共参数(admin_syspublicparam_add)")

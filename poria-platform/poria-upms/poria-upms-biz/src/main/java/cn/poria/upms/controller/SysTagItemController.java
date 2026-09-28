@@ -35,7 +35,7 @@ public class SysTagItemController {
    @GetMapping({"/page"})
    @PreAuthorize("@pms.hasPermission('admin_tagItem_page')")
    public R selectAll(Page<SysTagItem> page, SysTagItem sysTagItem) {
-      return R.ok((Page)this.sysTagItemService.page(page, new QueryWrapper(sysTagItem)));
+      return R.ok(this.sysTagItemService.page(page, new QueryWrapper(sysTagItem)));
    }
 
    @Operation(summary = "查询", description = "查询(admin_tagItem_key)")
@@ -57,7 +57,7 @@ public class SysTagItemController {
    @GetMapping({"/{id}"})
    @PreAuthorize("@pms.hasPermission('admin_tagItem_get')")
    public R selectOne(@PathVariable String id) {
-      return R.ok((SysTagItem)this.sysTagItemService.getById(id));
+      return R.ok(this.sysTagItemService.getById(id));
    }
 
    @PostMapping
