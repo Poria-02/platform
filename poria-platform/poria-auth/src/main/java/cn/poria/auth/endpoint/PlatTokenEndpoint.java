@@ -64,6 +64,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -208,7 +209,7 @@ public class PlatTokenEndpoint {
         List<String> pages = keys.stream().skip((current - 1) * size).limit(size).collect(Collectors.toList());
         Page result = new Page(current, size);
 
-        List<TokenVo> tokenVoList = redisTemplate.opsForValue().multiGet(pages).stream().map(obj -> {
+        List<TokenVo> tokenVoList = Objects.requireNonNull(redisTemplate.opsForValue().multiGet(pages)).stream().map(obj -> {
             OAuth2Authorization authorization = (OAuth2Authorization) obj;
             TokenVo tokenVo = new TokenVo();
             tokenVo.setClientId(authorization.getRegisteredClientId());
