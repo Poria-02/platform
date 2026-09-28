@@ -32,13 +32,13 @@ public class SysRouteConfController {
 
    @Operation(summary = "路由设置列表", description = "路由设置列表(sys_route_get)")
    @GetMapping({"list"})
-   // @PreAuthorize("@pms.hasPermission('sys_route_get')")
+   @PreAuthorize("@pms.hasPermission('sys_route_get')")
    public R<List<RouteVo>> queryList() {
       return R.ok(this.sysRouteConfService.queryList());
    }
 
    @Operation(summary = "路由设置详情", description = "路由设置详情(sys_route_detail)")
-   // @PreAuthorize("@pms.hasPermission('sys_route_detail')")
+   @PreAuthorize("@pms.hasPermission('sys_route_detail')")
    @GetMapping({"/detail/{id}"})
    public R<RouteVo> getDetail(@PathVariable("id") Integer id) {
       SysRouteConf sysRouteConf = (SysRouteConf)this.sysRouteConfService.getById(id);
@@ -51,7 +51,7 @@ public class SysRouteConfController {
    }
 
    @Operation(summary = "应用路由设置", description = "应用路由设置(sys_route_edit)")
-   // @PreAuthorize("@pms.hasPermission('sys_route_edit')")
+   @PreAuthorize("@pms.hasPermission('sys_route_edit')")
    @PutMapping({"refresh"})
    public R refresh() {
       return R.ok(this.sysRouteConfService.refresh());
@@ -59,7 +59,7 @@ public class SysRouteConfController {
 
    @SysLog("保存或修改路由设置")
    @Operation(summary = "保存或修改路由设置", description = "保存或修改路由设置(sys_route_insert)")
-   // @PreAuthorize("@pms.hasPermission('sys_route_insert')")
+   @PreAuthorize("@pms.hasPermission('sys_route_insert')")
    @PostMapping({"/addOrUpdate"})
    public R<Boolean> addOrUpdate(@RequestBody RouteDto routeDto) {
       log.info("修改路由信息：{}", JSONUtil.toJsonStr(routeDto));
@@ -70,7 +70,7 @@ public class SysRouteConfController {
 
    @SysLog("删除路由信息")
    @Operation(summary = "删除路由信息", description = "删除路由信息(sys_route_del)")
-   // @PreAuthorize("@pms.hasPermission('sys_route_del')")
+   @PreAuthorize("@pms.hasPermission('sys_route_del')")
    @DeleteMapping({"delete/{id}"})
    public R<Boolean> remove(@PathVariable("id") Integer id) {
       return R.ok(this.sysRouteConfService.removeById(id));

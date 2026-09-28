@@ -27,14 +27,14 @@ public class SysLogController {
    private final SysLogService sysLogService;
 
    @GetMapping({"/page"})
-   // @PreAuthorize("@pms.hasPermission('sys_log_get')")
+   @PreAuthorize("@pms.hasPermission('sys_log_get')")
    @Operation(summary = "分页查询", description = "分页查询 (sys_log_get)")
    public R getLogPage(Page page, SysLog sysLog) {
       return R.ok((Page)this.sysLogService.page(page, Wrappers.query(sysLog)));
    }
 
    @DeleteMapping({"/{id}"})
-   // @PreAuthorize("@pms.hasPermission('sys_log_del')")
+   @PreAuthorize("@pms.hasPermission('sys_log_del')")
    @Operation(summary = "删除日志", description = "删除日志 (sys_log_del)")
    public R removeById(@PathVariable Long id) {
       return R.ok(this.sysLogService.removeById(id));
@@ -47,7 +47,7 @@ public class SysLogController {
    }
 
    @PostMapping({"/logs"})
-   // @PreAuthorize("@pms.hasPermission('sys_log_insert')")
+   @PreAuthorize("@pms.hasPermission('sys_log_insert')")
    @Operation(summary = "批量插入前端异常日志", description = "批量插入前端异常日志 (sys_log_insert)")
    public R saveBatchLogs(@RequestBody List<PreLogVO> preLogVoList) {
       return R.ok(this.sysLogService.saveBatchLogs(preLogVoList));

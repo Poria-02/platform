@@ -28,14 +28,14 @@ public class SysSensitiveLogController {
 
    @Operation(summary = "分页查询", description = "分页查询(sys_sensitive_page)")
    @GetMapping({"/page"})
-   // @PreAuthorize("@pms.hasPermission('sys_sensitive_page')")
+   @PreAuthorize("@pms.hasPermission('sys_sensitive_page')")
    public R selectAll(Page<SysSensitiveLog> page, SysSensitiveLog sysSensitiveLog) {
       return R.ok((Page)this.sysSensitiveLogService.page(page, new QueryWrapper(sysSensitiveLog)));
    }
 
    @Operation(summary = "通过id查询", description = "通过id查询(sys_sensitive_get)")
    @GetMapping({"/{id}"})
-   // @PreAuthorize("@pms.hasPermission('sys_sensitive_get')")
+   @PreAuthorize("@pms.hasPermission('sys_sensitive_get')")
    public R selectOne(@PathVariable String id) {
       return R.ok((SysSensitiveLog)this.sysSensitiveLogService.getById(id));
    }

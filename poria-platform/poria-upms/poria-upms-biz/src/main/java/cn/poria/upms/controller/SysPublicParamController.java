@@ -47,7 +47,7 @@ public class SysPublicParamController {
    @Operation(summary = "新增公共参数", description = "新增公共参数(admin_syspublicparam_add)")
    @SysLog("新增公共参数")
    @PostMapping
-   // @PreAuthorize("@pms.hasPermission('admin_syspublicparam_add')")
+   @PreAuthorize("@pms.hasPermission('admin_syspublicparam_add')")
    public R save(@RequestBody SysPublicParam sysPublicParam) {
       return R.ok(this.sysPublicParamService.saveParam(sysPublicParam));
    }
@@ -55,7 +55,7 @@ public class SysPublicParamController {
    @Operation(summary = "修改公共参数", description = "修改公共参数(admin_syspublicparam_edit)")
    @SysLog("修改公共参数")
    @PutMapping
-   // @PreAuthorize("@pms.hasPermission('admin_syspublicparam_edit')")
+   @PreAuthorize("@pms.hasPermission('admin_syspublicparam_edit')")
    public R updateById(@RequestBody SysPublicParam sysPublicParam) {
       return this.sysPublicParamService.updateParam(sysPublicParam);
    }
@@ -63,7 +63,7 @@ public class SysPublicParamController {
    @Operation(summary = "删除公共参数", description = "删除公共参数(admin_syspublicparam_del)")
    @SysLog("删除公共参数")
    @DeleteMapping({"/{publicId}"})
-   // @PreAuthorize("@pms.hasPermission('admin_syspublicparam_del')")
+   @PreAuthorize("@pms.hasPermission('admin_syspublicparam_del')")
    public R removeById(@PathVariable Long publicId) {
       return this.sysPublicParamService.removeParam(publicId);
    }

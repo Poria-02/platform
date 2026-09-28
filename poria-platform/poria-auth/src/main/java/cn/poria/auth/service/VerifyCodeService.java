@@ -50,22 +50,6 @@ public class VerifyCodeService {
 		redisTemplate.delete(key);
 	}
 
-	public void CheckStaffSmsVerifyCode(String mobile,String type ,String code){
-		String redisKey = CacheConstants.DEFAULT_CODE_KEY + LoginTypeEnum.SMS.getType() + StringPool.AT + type + StringPool.PIPE + mobile;
-		//DEFAULT_CODE_KEY:SMS@1005|17710026695
-		Object cacheCode = redisTemplate.opsForValue().get(redisKey);
-		log.info("登录验证码 key: {}  value:  {}", redisKey, null == cacheCode?null:cacheCode.toString());
-		if(cacheCode == null ){
-			throw new BadCredentialsException("请先获取验证码");
-		}
-		if(!StrUtil.equals(code,cacheCode.toString())){
-			throw new BadCredentialsException("验证码错误");
-		}
-
-		redisTemplate.delete(redisKey);
-	}
-
-
 	public void checkAdminSmsVerifyCode(String mobile, String type ,String code){
 		String redisKey = CacheConstants.DEFAULT_CODE_KEY + LoginTypeEnum.SMS.getType() + StringPool.AT + type + StringPool.PIPE + mobile;
 		//DEFAULT_CODE_KEY:SMS@admin|17710026695

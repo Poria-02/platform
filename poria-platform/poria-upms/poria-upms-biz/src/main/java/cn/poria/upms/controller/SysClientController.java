@@ -29,14 +29,14 @@ public class SysClientController {
    private final SysOauthClientDetailsService clientDetailsService;
 
    @GetMapping({"/{clientId}"})
-   // @PreAuthorize("@pms.hasPermission('sys_client_get')")
+   @PreAuthorize("@pms.hasPermission('sys_client_get')")
    @Operation(summary = "通过ID查询", description = "通过ID查询 (sys_client_get)")
    public R getByClientId(@PathVariable String clientId) {
       return R.ok(this.clientDetailsService.list((Wrapper)Wrappers.<SysOauthClientDetails>lambdaQuery().eq(SysOauthClientDetails::getClientId, clientId)));
    }
 
    @GetMapping({"/page"})
-   // @PreAuthorize("@pms.hasPermission('sys_client_page')")
+   @PreAuthorize("@pms.hasPermission('sys_client_page')")
    @Operation(summary = "分页查询", description = "分页查询 (sys_client_page)")
    public R getOauthClientDetailsPage(Page page, SysOauthClientDetails sysOauthClientDetails) {
       return R.ok((Page)this.clientDetailsService.page(page, Wrappers.query(sysOauthClientDetails)));
@@ -44,7 +44,7 @@ public class SysClientController {
 
    @SysLog("添加终端")
    @PostMapping
-   // @PreAuthorize("@pms.hasPermission('sys_client_add')")
+   @PreAuthorize("@pms.hasPermission('sys_client_add')")
    @Operation(summary = "添加终端", description = "添加终端（sys_client_add）")
    public R add(@RequestBody @Valid SysOauthClientDetails sysOauthClientDetails) {
       return R.ok(this.clientDetailsService.save(sysOauthClientDetails));
@@ -52,7 +52,7 @@ public class SysClientController {
 
    @SysLog("删除终端")
    @DeleteMapping({"/{clientId}"})
-   // @PreAuthorize("@pms.hasPermission('sys_client_delete')")
+   @PreAuthorize("@pms.hasPermission('sys_client_delete')")
    @Operation(summary = "删除终端", description = "删除终端（sys_client_delete）")
    public R removeById(@PathVariable String clientId) {
       return R.ok(this.clientDetailsService.removeByClientId(clientId));
@@ -60,7 +60,7 @@ public class SysClientController {
 
    @SysLog("编辑终端")
    @PutMapping
-   // @PreAuthorize("@pms.hasPermission('sys_client_edit')")
+   @PreAuthorize("@pms.hasPermission('sys_client_edit')")
    @Operation(summary = "编辑终端", description = "编辑终端（sys_client_edit）")
    public R update(@RequestBody @Valid SysOauthClientDetails sysOauthClientDetails) {
       return R.ok(this.clientDetailsService.updateClientById(sysOauthClientDetails));
@@ -68,7 +68,7 @@ public class SysClientController {
 
    @SysLog("清除终端缓存")
    @DeleteMapping({"/cache"})
-   // @PreAuthorize("@pms.hasPermission('sys_client_del')")
+   @PreAuthorize("@pms.hasPermission('sys_client_del')")
    @Operation(summary = "清除终端缓存", description = "清除终端缓存（sys_client_del）")
    public R clearClientCache() {
       this.clientDetailsService.clearClientCache();

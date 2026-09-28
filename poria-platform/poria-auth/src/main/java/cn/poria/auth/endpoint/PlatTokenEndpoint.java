@@ -175,12 +175,12 @@ public class PlatTokenEndpoint {
     public R<Boolean> removeToken(@PathVariable("token") String token) {
         OAuth2Authorization authorization = authorizationService.findByToken(token, OAuth2TokenType.ACCESS_TOKEN);
         if (authorization == null) {
-            return R.ok();
+            return R.ok(false);
         }
 
         OAuth2Authorization.Token<OAuth2AccessToken> accessToken = authorization.getAccessToken();
         if (accessToken == null || StrUtil.isBlank(accessToken.getToken().getTokenValue())) {
-            return R.ok();
+            return R.ok(false);
         }
         // 清空用户信息
         cacheManager.getCache(CacheConstants.USER_DETAILS).evict(authorization.getPrincipalName());
@@ -189,7 +189,7 @@ public class PlatTokenEndpoint {
         // 处理自定义退出事件，保存相关日志
         SpringContextHolder.publishEvent(new LogoutSuccessEvent(new PreAuthenticatedAuthenticationToken(
                 authorization.getPrincipalName(), authorization.getRegisteredClientId())));
-        return R.ok();
+        return R.ok(true);
     }
 
     /**

@@ -41,7 +41,7 @@ public class SysDeptController {
    }
 
    @GetMapping({"/tree"})
-   // @PreAuthorize("@pms.hasPermission('sys_dept_tree')")
+   @PreAuthorize("@pms.hasPermission('sys_dept_tree')")
    @Operation(summary = "返回树形菜单集合", description = "返回树形菜单集合 (sys_dept_tree)")
    public R getTree() {
       SecurityUtils.getUser();
@@ -62,7 +62,7 @@ public class SysDeptController {
 
    @SysLog("添加部门")
    @PostMapping
-   // @PreAuthorize("@pms.hasPermission('sys_dept_add')")
+   @PreAuthorize("@pms.hasPermission('sys_dept_add')")
    @Operation(summary = "添加部门", description = "添加部门（sys_dept_add）")
    public R save(@RequestBody @Valid SysDept sysDept) {
       return R.ok(this.sysDeptService.saveDept(sysDept));
@@ -77,7 +77,7 @@ public class SysDeptController {
 
    @SysLog("删除部门")
    @DeleteMapping({"/{id}"})
-   // @PreAuthorize("@pms.hasPermission('sys_dept_del')")
+   @PreAuthorize("@pms.hasPermission('sys_dept_del')")
    @Operation(summary = "删除部门", description = "删除部门（sys_dept_del）")
    public R removeById(@PathVariable Long id) {
       return R.ok(this.sysDeptService.removeDeptById(id));
@@ -93,7 +93,7 @@ public class SysDeptController {
    @SysLog("编辑部门")
    @PutMapping
    @Operation(summary = "编辑部门", description = "编辑部门（sys_dept_edit）")
-   // @PreAuthorize("@pms.hasPermission('sys_dept_edit')")
+   @PreAuthorize("@pms.hasPermission('sys_dept_edit')")
    public R update(@RequestBody @Valid SysDept sysDept) {
       sysDept.setUpdateTime(LocalDateTime.now());
       return R.ok(this.sysDeptService.updateDeptById(sysDept));
