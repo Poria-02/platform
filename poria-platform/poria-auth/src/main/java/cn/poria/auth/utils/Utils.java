@@ -21,7 +21,7 @@ public class Utils {
 	public final static String D = "doctor";
 	public final static String N = "nurse";
 	public final static String U = "user";
-	public final static String WX= "wx";//互联网医院大健康微信用户
+	public final static String WX= "wx";//微信用户
 	public final static String APPLE= "apple";//IOS用户
 
 	public static final String DOCTOR_TYPE = "1005";

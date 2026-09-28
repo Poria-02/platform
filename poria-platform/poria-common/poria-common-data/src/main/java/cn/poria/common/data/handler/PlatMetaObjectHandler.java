@@ -48,9 +48,6 @@ public class PlatMetaObjectHandler implements MetaObjectHandler {
     private String getCreateBy(){
     	try{
 			if(SecurityUtils.getUser() != null){
-				if(StrUtil.isNotBlank(SecurityUtils.getStaffId())){
-					return SecurityUtils.getStaffId();
-				}
 				return SecurityUtils.getSId();
 			}
 		}catch (Exception e){
