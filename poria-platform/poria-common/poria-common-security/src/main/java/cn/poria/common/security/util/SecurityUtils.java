@@ -70,10 +70,6 @@ public class SecurityUtils {
 		return getUser(authentication);
 	}
 
-	public String getStaffId(){
-		return getUser().getStaffId();
-	}
-
 	/**
 	 * 获取用户角色信息
 	 * @return 角色集合

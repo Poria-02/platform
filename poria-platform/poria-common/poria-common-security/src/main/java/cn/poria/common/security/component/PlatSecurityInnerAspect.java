@@ -55,11 +55,11 @@ public class PlatSecurityInnerAspect implements Ordered {
 			inner = AnnotationUtils.findAnnotation(clazz, Inner.class);
 		}
 
-		if (inner.value() && !StrUtil.equals(SecurityConstants.FROM_IN, header)) {
-			log.warn("访问接口 {} 没有权限", point.getSignature().getName());
-			throw new ServiceException("无权限访问");
-		}
-	}
+        if (inner != null && inner.value() && !StrUtil.equals(SecurityConstants.FROM_IN, header)) {
+            log.warn("访问接口 {} 没有权限", point.getSignature().getName());
+            throw new ServiceException("无权限访问");
+        }
+    }
 
 	@Override
 	public int getOrder() {
