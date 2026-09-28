@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>互联网医院微服务统一认证</title>
+        <title>微服务统一认证</title>
         <link href="/css/bootstrap.min.css" rel="stylesheet">
         <link href="/css/signin.css" rel="stylesheet">
     </head>
