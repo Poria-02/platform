@@ -21,20 +21,11 @@ public interface SecurityConstants {
 	 */
 	String ROLE = "ROLE_";
 
-	/**
-	 * 前缀
-	 */
-	String IHX_PREFIX = "ih_";
 
 	/**
 	 * oauth 相关前缀
 	 */
 	String OAUTH_PREFIX = "oauth:";
-
-	/**
-	 * 项目的license
-	 */
-	String IH_LICENSE = "made by ih";
 
 	/**
 	 * 内部
@@ -55,11 +46,6 @@ public interface SecurityConstants {
 	 * OAUTH URL
 	 */
 	String OAUTH_TOKEN_URL = "/oauth/token";
-
-	String IH_LOGIN_URL = "/ih/login";
-
-	String REGISTER_STAFF 	 = "/app/account/register";
-	String REGISTER_CUSTOMER = "/app/account/register";
 
 	/**
 	 * 手机号登录URL
@@ -222,6 +208,7 @@ public interface SecurityConstants {
 	/**
 	 * 项目的license
 	 */
+	//TODO 修改域名
 	String PROJECT_LICENSE = "https://shanxi-ncd.cn";
 
 	/**
