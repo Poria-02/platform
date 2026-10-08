@@ -14,6 +14,7 @@ import java.util.List;
 @Schema(description = "多个对象存储访问请求")
 @Data
 public class AccessListRequest {
+
     @Schema(description = "对象名称，可以为全路径")
     private List<String> objNames;
 }

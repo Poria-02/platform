@@ -2,9 +2,7 @@ package cn.poria.common.log.aspect;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import cn.poria.commom.kafka.KafkaUtil;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.log.constant.SysLogConstant;
 import cn.poria.common.log.util.SysLogUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +13,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Objects;
 
 
 /**
@@ -63,7 +63,7 @@ public class SysLogAspect {
 		String params = JSONUtil.toJsonStr(point.getArgs());
 
 		if(StrUtil.isBlank(params)){
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 			params = JSONUtil.toJsonStr(request.getParameterMap());
 		}
 		logVo.setParams(params);

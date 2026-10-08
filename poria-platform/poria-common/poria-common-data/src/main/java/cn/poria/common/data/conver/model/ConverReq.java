@@ -2,7 +2,6 @@ package cn.poria.common.data.conver.model;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 @Data

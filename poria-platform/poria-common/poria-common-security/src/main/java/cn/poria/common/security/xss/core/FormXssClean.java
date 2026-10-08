@@ -1,11 +1,11 @@
 package cn.poria.common.security.xss.core;
 
+import cn.hutool.core.util.StrUtil;
 import cn.poria.common.security.xss.config.MicaXssProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -23,14 +23,10 @@ import java.util.SortedSet;
  */
 @AutoIgnore
 @ControllerAdvice
-@ConditionalOnProperty(
-	prefix = MicaXssProperties.PREFIX,
-	name = "enabled",
-	havingValue = "true",
-	matchIfMissing = true
-)
+@ConditionalOnProperty(prefix = MicaXssProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class FormXssClean {
+
 	private final MicaXssProperties properties;
 	private final XssCleaner xssCleaner;
 
@@ -49,6 +45,7 @@ public class FormXssClean {
 
 	@Slf4j
 	public static class StringPropertiesEditor extends PropertyEditorSupport {
+
 		public StringPropertiesEditor(XssCleaner xssCleaner, MicaXssProperties properties) {
 			this.xssCleaner = xssCleaner;
 			this.properties = properties;
@@ -70,9 +67,9 @@ public class FormXssClean {
 				MicaXssProperties.FormConfig form = properties.getForm();
 				String charsToDelete = form.getCharsToDelete();
 				if (!charsToDelete.isEmpty()) {
-					value = StringUtils.deleteAny(value, charsToDelete);
+					value = StrUtil.removeAll(value, charsToDelete.toCharArray());
 				}
-				boolean isTrimText = properties.isTrimText() || form.isTrimText();
+				boolean isTrimText = form.isTrimText();
 				if (isTrimText) {
 					value = value.trim();
 				}

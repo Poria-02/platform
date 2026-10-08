@@ -4,6 +4,7 @@ import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import cn.poria.base.oss.service.OssTemplate;
 import cn.poria.base.constant.FileTypeConstant;
 import cn.poria.base.entity.BaseFile;
@@ -126,11 +127,11 @@ public class UploadInnerController {
                                          @RequestParam(value = "name", required = false) String name,
                                          @RequestParam(value = "type", required = false) String type) {
 
-        URL url = new URL(fileUrl);
+        URL url = URLUtil.toUrlForHttp(fileUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         InputStream inputStream = connection.getInputStream();
 
-        String fileName = null;
+        String fileName;
         //name -- 问卷后缀名  不指定文件后缀名传null
         if (StrUtil.isNotBlank(name)) {
             fileName = path + "/" + IdUtil.fastSimpleUUID() + "." + name;
@@ -167,7 +168,7 @@ public class UploadInnerController {
     @Operation(summary = "删除公有文件")
     @GetMapping("/remove/public")
     public R removePublic(@RequestParam("url") String url) {
-        URL urls = new URL(url);
+        URL urls = URLUtil.toUrlForHttp(url);
         String path = urls.getPath();
         if (path.startsWith("/")) {
             path = path.substring(1);

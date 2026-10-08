@@ -16,7 +16,6 @@ import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author shanxincd
@@ -28,7 +27,7 @@ import java.util.Map;
 @Slf4j
 public class RouteCacheHolder {
 
-	private Cache<String, RouteDefinitionVo> cache = CacheUtil.newLFUCache(200);
+	private final Cache<String, RouteDefinitionVo> cache = CacheUtil.newLFUCache(200);
 
 	/**
 	 * 获取缓存的全部对象
@@ -36,7 +35,7 @@ public class RouteCacheHolder {
 	 */
 	public List<RouteDefinitionVo> getRouteList() {
 		List<RouteDefinitionVo> routeList = new ArrayList<>();
-		cache.forEach(route -> routeList.add(route));
+		cache.forEach(routeList::add);
 		return routeList;
 	}
 

@@ -19,6 +19,7 @@
     </div>
     <section class="surface-card">
       <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="dictionaryError" class="resource-error" role="alert"><span>{{ dictionaryError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
       <el-table v-loading="loading" :data="visibleRows" :row-key="idKey" :tree-props="{ children: 'children' }" :default-expand-all="false" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column v-for="(column, index) in columns" :key="column.prop" :prop="column.prop" :label="column.label" :min-width="column.width || 130" :show-overflow-tooltip="column.overflow !== false">
           <template #default="scope">
@@ -62,6 +63,8 @@
 <script setup>
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { http } from '@/core/http'
+import { displayResourceValue, normalizeSelectValue, optionsForField } from '@/core/resourceValues'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -85,16 +88,10 @@ const canRemove = computed(() => Boolean(props.api.remove))
 const fieldRules = computed(() => Object.fromEntries(props.fields.filter(field => (!editor.editing || !field.createOnly) && (field.required || (!editor.editing && field.requiredOnCreate))).map(field => [field.prop, [{ required: true, message: `请填写${field.label}`, trigger: 'submit' }]])))
 const loading = ref(false)
 const loadError = ref('')
+const dictionaryError = ref('')
 const rows = ref([])
 const dictionaryItems = ref([])
-const dictionaryLabels = computed(() => {
-  const labels = new Map()
-  for (const item of dictionaryItems.value) {
-    if (!labels.has(item.type)) labels.set(item.type, new Map())
-    labels.get(item.type).set(String(item.value), item.label)
-  }
-  return labels
-})
+const dictionaryTypes = computed(() => [...new Set([...props.columns, ...props.filters, ...props.fields].map(field => field.dictionary).filter(Boolean))])
 const expandedIds = ref(new Set())
 const visibleRows = computed(() => {
   if (!props.treeMode) return rows.value
@@ -117,19 +114,22 @@ const editor = reactive({ open: false, editing: false, saving: false, form: {} }
 const formRef = ref()
 
 function display(value, column, row) {
-  if (column?.format) return column.format(value, row)
-  if (value === null || value === undefined || value === '') return '—'
-  if (column?.dictionary) {
-    const labels = dictionaryLabels.value.get(column.dictionary)
-    const values = column.separator ? String(value).split(column.separator).map(item => item.trim()).filter(Boolean) : [String(value)]
-    return values.map(item => labels?.get(item) || item).join('、')
-  }
-  return typeof value === 'object' ? JSON.stringify(value) : String(value)
+  return displayResourceValue(value, column, optionsFor(column), row)
 }
 function optionsFor(field) {
-  if (!field.dictionary) return field.options || []
-  const items = dictionaryItems.value.filter(item => item.type === field.dictionary)
-  return items.sort((a, b) => Number(a.sort) - Number(b.sort) || String(a.id).localeCompare(String(b.id), 'zh-CN', { numeric: true })).map(item => ({ label: item.label, value: String(item.value) }))
+  return optionsForField(field, dictionaryItems.value)
+}
+async function loadDictionaries() {
+  const types = dictionaryTypes.value
+  const results = await Promise.allSettled(types.map(async type => {
+    const items = await http.get(`/upms/dict/type/${encodeURIComponent(type)}`, { silent: true })
+    if (!Array.isArray(items)) throw new Error('字典数据格式错误')
+    return items.map(item => ({ ...item, type }))
+  }))
+  dictionaryItems.value = results.flatMap((result, index) => result.status === 'fulfilled'
+    ? result.value
+    : dictionaryItems.value.filter(item => item.type === types[index]))
+  dictionaryError.value = results.some(result => result.status === 'rejected') ? '部分选项加载失败，请重试' : ''
 }
 
 function isExpanded(row) { return expandedIds.value.has(row[props.idKey]) }
@@ -144,12 +144,11 @@ async function load() {
   loading.value = true
   try {
     const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)), ...(props.pagination ? { current: page.current, size: page.size } : {}) }
-    const [listData, items] = await Promise.all([
+    const [listData] = await Promise.all([
       props.api.list(params),
-      props.api.dictionaryItems ? props.api.dictionaryItems().catch(() => []) : Promise.resolve([])
+      loadDictionaries()
     ])
     const data = listData || {}
-    dictionaryItems.value = Array.isArray(items) ? items : items?.records || []
     rows.value = Array.isArray(data) ? data : data.records || data.rows || data.list || []
     total.value = Number(Array.isArray(data) ? data.length : data.total ?? data.totalCount ?? rows.value.length)
     loadError.value = ''
@@ -163,6 +162,9 @@ async function load() {
 function search() { page.current = 1; return load() }
 function resetSearch() { for (const field of props.filters) query[field.prop] = ''; return search() }
 function showEditor(form, editing) {
+  for (const field of props.fields) {
+    if (field.type === 'select') form[field.prop] = normalizeSelectValue(form[field.prop], field, optionsFor(field))
+  }
   editor.editing = editing
   editor.form = form
   editor.open = true
@@ -173,13 +175,7 @@ function openCreate() {
   showEditor(Object.fromEntries(props.fields.map(field => [field.prop, field.default ?? (field.multiple ? [] : field.type === 'number' ? 0 : '')])), false)
 }
 function openEdit(row) {
-  const form = props.prepareEdit(row)
-  for (const field of props.fields) {
-    if (field.multiple && field.joinWith && !Array.isArray(form[field.prop])) {
-      form[field.prop] = String(form[field.prop] ?? '').split(field.joinWith).map(value => value.trim()).filter(Boolean)
-    }
-  }
-  showEditor(form, true)
+  showEditor(props.prepareEdit(row), true)
 }
 async function save() {
   if (!(await formRef.value.validate().catch(() => false))) return

@@ -12,6 +12,7 @@ import lombok.Data;
 @Schema(description = "对象存储访问请求")
 @Data
 public class AccessRequest {
+
     @Schema(description = "对象名称，可以为全路径")
     private String objName;
 }

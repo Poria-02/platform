@@ -1,7 +1,7 @@
 package cn.poria.common.data.conver.model;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,8 +15,10 @@ import java.util.List;
  */
 @Data
 public class TreeDictItemVo implements Serializable {
+
     private String id;
-    @NotNull
+    @Schema(description = "名称")
+    @NotBlank(message = "名称不能为空")
     private String name;
     private String simpleName="";
     private String remark="";
@@ -26,6 +28,7 @@ public class TreeDictItemVo implements Serializable {
 	private Integer sort;
     private List<TreeDictItemVo> childs;
 
-    @NotEmpty
+    @Schema(description = "字典ID")
+    @NotBlank(message = "字典ID不能为空")
     private String dictId;
 }

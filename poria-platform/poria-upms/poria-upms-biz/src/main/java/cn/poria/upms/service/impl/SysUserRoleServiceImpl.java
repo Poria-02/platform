@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements SysUserRoleService {
-   public Boolean deleteByUserId(Long userId) {
-      return ((SysUserRoleMapper)this.baseMapper).deleteByUserId(userId);
-   }
+
+    public Boolean deleteByUserId(Long userId) {
+        return this.baseMapper.deleteByUserId(userId);
+    }
 }

@@ -16,7 +16,6 @@
 
 package cn.poria.common.security.component;
 
-import cn.hutool.core.util.ArrayUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * @author shanxincd
@@ -53,11 +53,11 @@ public class PlatResourceServerConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		AntPathRequestMatcher[] requestMatchers = permitAllUrl.getUrls()
+		PathPatternRequestMatcher.Builder paths = PathPatternRequestMatcher.withDefaults();
+		RequestMatcher[] requestMatchers = permitAllUrl.getUrls()
 				.stream()
-				.map(AntPathRequestMatcher::new)
-				.toList()
-				.toArray(new AntPathRequestMatcher[] {});
+				.map(paths::matcher)
+				.toArray(RequestMatcher[]::new);
 
 		http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(requestMatchers)
 						.permitAll()

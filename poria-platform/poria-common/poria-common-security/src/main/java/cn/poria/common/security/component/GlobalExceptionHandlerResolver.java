@@ -1,13 +1,8 @@
 package cn.poria.common.security.component;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import cn.poria.commom.kafka.KafkaUtil;
 import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.R;
-import cn.poria.common.security.constant.PlatAuthConstant;
-import cn.poria.common.security.util.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +10,6 @@ import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 import org.slf4j.MDC;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StreamUtils;
@@ -29,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,7 +30,7 @@ import java.util.List;
  */
 @Slf4j
 @RestControllerAdvice
-@Order(Integer.MAX_VALUE)
+@Order()
 public class GlobalExceptionHandlerResolver {
 	/**
 	 * 自定义服务器内部异常
@@ -86,8 +79,8 @@ public class GlobalExceptionHandlerResolver {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public R handleBodyValidException(MethodArgumentNotValidException exception) {
 		List<ObjectError> allErrors = exception.getBindingResult().getAllErrors();
-		log.warn("参数绑定异常,ex = {}", allErrors.get(0).getDefaultMessage());
-		return R.failed(allErrors.get(0).getDefaultMessage());
+		log.warn("参数绑定异常,ex = {}", allErrors.getFirst().getDefaultMessage());
+		return R.failed(allErrors.getFirst().getDefaultMessage());
 	}
 
 	/**
@@ -97,8 +90,8 @@ public class GlobalExceptionHandlerResolver {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public R bindExceptionHandler(BindException exception) {
 		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-		log.warn("参数绑定异常,ex = {}", fieldErrors.get(0).getDefaultMessage());
-		return R.failed(fieldErrors.get(0).getDefaultMessage());
+		log.warn("参数绑定异常,ex = {}", fieldErrors.getFirst().getDefaultMessage());
+		return R.failed(fieldErrors.getFirst().getDefaultMessage());
 	}
 
 

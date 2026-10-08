@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SysTreeDictService extends IService<SysTreeDict> {
+
    Optional<SysTreeDict> findById(String id);
 
    Optional<SysTreeDict> findUserDictById(String id);

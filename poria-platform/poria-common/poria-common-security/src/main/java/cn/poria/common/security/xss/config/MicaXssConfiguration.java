@@ -24,14 +24,10 @@ import java.util.List;
 @AutoConfiguration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(MicaXssProperties.class)
-@ConditionalOnProperty(
-	prefix = MicaXssProperties.PREFIX,
-	name = "enabled",
-	havingValue = "true",
-	matchIfMissing = true
-)
+@ConditionalOnProperty(prefix = MicaXssProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class MicaXssConfiguration implements WebMvcConfigurer {
+
 	private final MicaXssProperties xssProperties;
 
 	@Bean

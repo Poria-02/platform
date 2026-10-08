@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.poria.base.dao.BaseFileDao;
 import cn.poria.base.entity.BaseFile;
 import cn.poria.base.service.BaseFileService;
-import cn.poria.base.vo.request.FileUploadModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

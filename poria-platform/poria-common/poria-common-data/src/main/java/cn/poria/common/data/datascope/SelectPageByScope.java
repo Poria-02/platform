@@ -18,7 +18,7 @@ public class SelectPageByScope extends AbstractMethod {
 
 	@Override
 	public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
-		SqlMethod sqlMethod = SqlMethod.SELECT_PAGE;
+		SqlMethod sqlMethod = SqlMethod.SELECT_LIST;
 		String sql = String.format(sqlMethod.getSql(), this.sqlFirst(), this.sqlSelectColumns(tableInfo, true),
 				tableInfo.getTableName(), this.sqlWhereEntityWrapper(true, tableInfo), this.sqlOrderBy(tableInfo),
 				this.sqlComment());

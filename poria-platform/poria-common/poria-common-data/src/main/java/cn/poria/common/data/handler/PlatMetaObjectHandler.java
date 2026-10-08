@@ -1,6 +1,5 @@
 package cn.poria.common.data.handler;
 
-import cn.hutool.core.util.StrUtil;
 import cn.poria.common.security.util.SecurityUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;

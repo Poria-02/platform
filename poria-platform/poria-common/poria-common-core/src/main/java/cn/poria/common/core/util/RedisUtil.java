@@ -1,7 +1,6 @@
 package cn.poria.common.core.util;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @Aspect
 @Component
 public class TagAspect {
+
 	private final ExpressionParser parser = new SpelExpressionParser();
 
 	@Autowired
@@ -83,19 +84,20 @@ public class TagAspect {
 		Map map = null;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add(SecurityConstants.FROM, SecurityConstants.FROM_IN);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, requestHeaders);
 
 			ResponseEntity<R<List<TagItem>>> response =
 					restTemplate.exchange(URL + tagKey, HttpMethod.GET, requestEntity,
-							new ParameterizedTypeReference<R<List<TagItem>>>() {});
-			if (response.getBody().isSuccess()) {
-				R<List<TagItem>> r = response.getBody();
-				if (CollectionUtil.isNotEmpty(r.getData())) {
-					map = r.getData().stream().collect(Collectors.toMap(TagItem::getValue, TagItem->TagItem));
-				}
-			}
+                            new ParameterizedTypeReference<>() {
+                            });
+        if (response.getBody() != null && response.getBody().isSuccess()) {
+            R<List<TagItem>> r = response.getBody();
+            if (CollectionUtil.isNotEmpty(r.getData())) {
+                map = r.getData().stream().collect(Collectors.toMap(TagItem::getValue, TagItem -> TagItem));
+            }
+        }
 
-		convertValues(map, object, tag);
+        convertValues(map, object, tag);
 	}
 
 	private void convertValues(Map<String, TagItem> map, Object object, Tag tag) {

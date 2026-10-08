@@ -1,5 +1,6 @@
 package cn.poria.common.core.util;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
@@ -15,16 +16,15 @@ import org.springframework.stereotype.Service;
 @Service
 @Lazy(false)
 public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
-	private static ApplicationContext applicationContext = null;
 
-	/**
-	 * 取得存储在静态变量中的ApplicationContext.
-	 */
-	public static ApplicationContext getApplicationContext() {
-		return applicationContext;
-	}
+    /**
+     * -- GETTER --
+     *  取得存储在静态变量中的ApplicationContext.
+     */
+    @Getter
+    private static ApplicationContext applicationContext = null;
 
-	/**
+    /**
 	 * 实现ApplicationContextAware接口, 注入Context到静态变量中.
 	 */
 	@Override

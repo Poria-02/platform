@@ -4,40 +4,58 @@ import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
 import cn.poria.common.security.annotation.Inner;
+import cn.poria.common.security.service.PlatUser;
+import cn.poria.common.security.util.SecurityUtils;
+import cn.poria.common.data.datascope.DataScopeRoleProvider;
 import cn.poria.upms.api.entity.SysRole;
 import cn.poria.upms.api.vo.RoleVO;
 import cn.poria.upms.service.SysRoleMenuService;
 import cn.poria.upms.service.SysRoleService;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping({"/role"})
 @Tag(name = "role", description = "角色管理模块")
 public class SysRoleController {
+
     private final SysRoleService sysRoleService;
+
     private final SysRoleMenuService sysRoleMenuService;
+
+    private final DataScopeRoleProvider dataScopeRoleProvider;
+
+    /** 仅返回已认证用户自己的角色范围；不接受客户端指定角色 ID。 */
+    @GetMapping("/data-scope")
+    public R<List<cn.poria.common.data.datascope.SysRole>> dataScope() {
+        PlatUser user = SecurityUtils.getUser();
+        if (user == null) {
+            throw new ServiceException("请先登录");
+        }
+        return R.ok(dataScopeRoleProvider.getRoles(user.getRoles()));
+    }
 
     @GetMapping({"/{id}"})
     @PreAuthorize("@pms.hasPermission('sys_role_get')")
     @Operation(summary = "通过ID查询角色信息", description = "通过ID查询角色信息 (sys_role_get)")
     public R getById(@PathVariable Integer id) {
-        return R.ok( this.sysRoleService.getById(id));
+        return R.ok(this.sysRoleService.getById(id));
     }
 
     @Inner
     @GetMapping({"/code/{code}"})
     public R getById(@PathVariable String code) {
-        return R.ok(this.sysRoleService.getOne( (new LambdaQueryWrapper<SysRole>()).eq(SysRole::getRoleCode, code)));
+        return R.ok(this.sysRoleService.getOne(new LambdaQueryWrapper<SysRole>().eq(SysRole::getRoleCode, code)));
     }
 
     @SysLog("添加角色")
@@ -101,10 +119,4 @@ public class SysRoleController {
     public R getRoleList(@RequestBody List<String> roleIdList) {
         return R.ok(this.sysRoleService.listByIds(roleIdList));
     }
-
-    public SysRoleController(final SysRoleService sysRoleService, final SysRoleMenuService sysRoleMenuService) {
-        this.sysRoleService = sysRoleService;
-        this.sysRoleMenuService = sysRoleMenuService;
-    }
-
 }

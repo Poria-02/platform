@@ -6,7 +6,6 @@ import cn.poria.base.vo.response.FileSignatureVo;
 import cn.poria.base.vo.response.SignUploadVo;
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.security.annotation.Inner;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

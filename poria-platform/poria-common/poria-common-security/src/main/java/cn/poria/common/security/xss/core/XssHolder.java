@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 @UtilityClass
 public class XssHolder {
+
 	private static final ThreadLocal<XssIgnoreVo> TL = new ThreadLocal<>();
 
 	/**

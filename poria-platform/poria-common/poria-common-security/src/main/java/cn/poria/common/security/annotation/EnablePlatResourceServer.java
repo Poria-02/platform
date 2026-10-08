@@ -20,13 +20,11 @@ import cn.poria.common.security.component.PlatResourceServerAutoConfiguration;
 import cn.poria.common.security.component.PlatResourceServerConfiguration;
 import cn.poria.common.security.feign.PlatFeignClientConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.lang.annotation.*;
 
 /**
- * @author shanxincd
  * @date 2022-06-04
  * <p>
  * 资源服务注解
@@ -34,11 +32,9 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @EnableMethodSecurity
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@Import({ PlatResourceServerAutoConfiguration.class, PlatResourceServerConfiguration.class,
-		PlatFeignClientConfiguration.class })
+@Import({PlatResourceServerAutoConfiguration.class, PlatResourceServerConfiguration.class, PlatFeignClientConfiguration.class})
 public @interface EnablePlatResourceServer {
 
 }

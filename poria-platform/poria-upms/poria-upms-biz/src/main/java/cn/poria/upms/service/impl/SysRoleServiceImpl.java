@@ -5,36 +5,31 @@ import cn.poria.upms.api.entity.SysRoleMenu;
 import cn.poria.upms.mapper.SysRoleMapper;
 import cn.poria.upms.mapper.SysRoleMenuMapper;
 import cn.poria.upms.service.SysRoleService;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import java.lang.invoke.SerializedLambda;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @Service
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements SysRoleService {
-   private final SysRoleMenuMapper sysRoleMenuMapper;
 
-   public List<SysRole> findRolesByUserId(Long userId) {
-      return ((SysRoleMapper)this.baseMapper).listRolesByUserId(userId);
-   }
+    private final SysRoleMenuMapper sysRoleMenuMapper;
 
-   @Transactional(
-      rollbackFor = {Exception.class}
-   )
-   public Boolean removeRoleById(Integer id) {
-      this.sysRoleMenuMapper.delete((Wrapper)Wrappers.<SysRoleMenu>lambdaUpdate().eq(SysRoleMenu::getRoleId, id));
-      return this.removeById(id);
-   }
+    public List<SysRole> findRolesByUserId(Long userId) {
+        return this.baseMapper.listRolesByUserId(userId);
+    }
 
-   public Boolean existSysRole(SysRole sysRole) {
-      return ((SysRoleMapper)this.getBaseMapper()).existSysRole(sysRole) > 0;
-   }
+    @Transactional(rollbackFor = {Exception.class})
+    public Boolean removeRoleById(Integer id) {
+        this.sysRoleMenuMapper.delete(Wrappers.<SysRoleMenu>lambdaUpdate().eq(SysRoleMenu::getRoleId, id));
+        return this.removeById(id);
+    }
 
-   public SysRoleServiceImpl(final SysRoleMenuMapper sysRoleMenuMapper) {
-      this.sysRoleMenuMapper = sysRoleMenuMapper;
-   }
-
+    public Boolean existSysRole(SysRole sysRole) {
+        return this.getBaseMapper().existSysRole(sysRole) > 0;
+    }
 }

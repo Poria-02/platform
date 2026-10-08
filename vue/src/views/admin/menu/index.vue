@@ -15,7 +15,7 @@ import * as api from './api'
 const IconPicker = defineAsyncComponent(() => import('@/ui/IconPicker.vue'))
 const session = useSession()
 const menuTypes = [{ label: '菜单', value: '0' }, { label: '按钮', value: '1' }]
-const columns = [{ prop: 'name', label: '名称', width: 190 }, { prop: 'icon', label: '图标', width: 125 }, { prop: 'path', label: '路由 path', width: 220 }, { prop: 'permission', label: '权限标识', width: 180 }, { prop: 'type', label: '类型', format: value => menuTypes.find(option => option.value === String(value))?.label || value || '—' }, { prop: 'platform', label: '平台' }, { prop: 'sort', label: '排序' }]
+const columns = [{ prop: 'name', label: '名称', width: 190 }, { prop: 'icon', label: '图标', width: 125 }, { prop: 'path', label: '路由 path', width: 220 }, { prop: 'permission', label: '权限标识', width: 180 }, { prop: 'type', label: '类型', options: menuTypes }, { prop: 'platform', label: '平台' }, { prop: 'sort', label: '排序' }]
 const filters = [{ prop: 'name', label: '菜单名称' }, { prop: 'platform', label: '平台' }]
 const fields = [{ prop: 'name', label: '菜单名称', required: true }, { prop: 'path', label: '路由 path' }, { prop: 'permission', label: '权限标识' }, { prop: 'parentId', label: '上级菜单 ID', type: 'number', min: -1, default: -1 }, { prop: 'icon', label: '图标' }, { prop: 'type', label: '菜单类型', type: 'select', required: true, default: '0', options: menuTypes }, { prop: 'platform', label: '所属平台' }, { prop: 'sort', label: '排序', type: 'number', default: 0 }]
 const prepareEdit = row => ({ menuId: row.id, ...Object.fromEntries(fields.map(field => [field.prop, row[field.prop] ?? field.default ?? ''])) })

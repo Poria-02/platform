@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface SysDictService extends IService<SysDict> {
+
    R removeDict(String id);
 
    R updateDict(SysDict sysDict);

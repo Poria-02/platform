@@ -4,12 +4,9 @@ package cn.poria.base.controller.api;
 
 
 import cn.poria.base.service.BaseActivityService;
-import cn.poria.base.vo.request.banner.BannerQueryModel;
 import cn.poria.base.vo.request.banner.BaseActivityModel;
-import cn.poria.base.vo.response.banner.BannerVo;
 import cn.poria.base.vo.response.banner.BaseActivityVo;
 import cn.poria.common.core.util.R;
-import cn.poria.common.security.annotation.Inner;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -35,7 +35,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * Miscellaneous utilities for web applications.
@@ -124,7 +124,7 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
 	 * @return {HttpServletResponse}
 	 */
 	public HttpServletResponse getResponse() {
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+		return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
 	}
 
 	/**

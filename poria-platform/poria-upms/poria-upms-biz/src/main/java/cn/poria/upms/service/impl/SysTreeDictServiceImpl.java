@@ -14,91 +14,92 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import java.lang.invoke.SerializedLambda;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SysTreeDictServiceImpl extends ServiceImpl<SysTreeDictMapper, SysTreeDict> implements SysTreeDictService {
-   @Autowired
-   private SysTreeDictMapper treeDictMapper;
-   @Autowired
-   private SysTreeDictItemMapper treeDictItemMapper;
 
-   public Optional<SysTreeDict> findById(String id) {
-      return Optional.ofNullable((SysTreeDict)this.treeDictMapper.selectById(id));
-   }
+    @Autowired
+    private SysTreeDictMapper treeDictMapper;
 
-   public Optional<SysTreeDict> findUserDictById(String id) {
-      return Optional.ofNullable(this.treeDictMapper.findById(id, new DataScope()));
-   }
+    @Autowired
+    private SysTreeDictItemMapper treeDictItemMapper;
 
-   public Optional<SysTreeDict> findByCode(String code) {
-      LambdaQueryWrapper<SysTreeDict> where = Wrappers.lambdaQuery();
-      where.eq(SysTreeDict::getCode, code);
-      where.last("limit 1");
-      return Optional.ofNullable((SysTreeDict)this.treeDictMapper.selectOne(where));
-   }
+    public Optional<SysTreeDict> findById(String id) {
+        return Optional.ofNullable(this.treeDictMapper.selectById(id));
+    }
 
-   public IPage<SysTreeDict> page(DictQueryModel queryModel) {
-      LambdaQueryWrapper<SysTreeDict> where = Wrappers.lambdaQuery();
-      where.like(StrUtil.isNotBlank(queryModel.getCode()), SysTreeDict::getCode, queryModel.getCode());
-      where.like(StrUtil.isNotBlank(queryModel.getName()), SysTreeDict::getName, queryModel.getName());
-      where.eq(StrUtil.isNotBlank(queryModel.getType()), SysTreeDict::getType, queryModel.getType());
-      IPage<SysTreeDict> page = new Page((long)queryModel.getCurrent(), (long)queryModel.getSize());
-      return this.page(page, where);
-   }
+    public Optional<SysTreeDict> findUserDictById(String id) {
+        return Optional.ofNullable(this.treeDictMapper.findById(id, new DataScope()));
+    }
 
-   @Transactional(rollbackFor = {Exception.class})
-   @CacheEvict(value = {"tree_dict_details_list", "tree_dict_details_tree", "tree_dict_details_city"}, allEntries = true)
-   public boolean removeDictById(String id) {
-      this.treeDictItemMapper.delete(Wrappers.<SysTreeDictItem>lambdaQuery().eq(SysTreeDictItem::getDictId, id));
-      return this.removeById(id);
-   }
+    public Optional<SysTreeDict> findByCode(String code) {
+        LambdaQueryWrapper<SysTreeDict> where = Wrappers.lambdaQuery();
+        where.eq(SysTreeDict::getCode, code);
+        where.last("limit 1");
+        return Optional.ofNullable(this.treeDictMapper.selectOne(where));
+    }
 
-   public List<DictionaryType> getAllType() {
-      return DictionaryType.ALL;
-   }
+    public IPage<SysTreeDict> page(DictQueryModel queryModel) {
+        LambdaQueryWrapper<SysTreeDict> where = Wrappers.lambdaQuery();
+        where.like(StrUtil.isNotBlank(queryModel.getCode()), SysTreeDict::getCode, queryModel.getCode());
+        where.like(StrUtil.isNotBlank(queryModel.getName()), SysTreeDict::getName, queryModel.getName());
+        where.eq(StrUtil.isNotBlank(queryModel.getType()), SysTreeDict::getType, queryModel.getType());
+        IPage<SysTreeDict> page = new Page((long)queryModel.getCurrent(), (long)queryModel.getSize());
+        return this.page(page, where);
+    }
 
-   public List<SysTreeDictItem> findItems(String dictId, String name) {
-      LambdaQueryWrapper<SysTreeDictItem> where = Wrappers.lambdaQuery();
-      (where.eq(SysTreeDictItem::getDictId, dictId)).orderByAsc(SysTreeDictItem::getSort);
-      if (!StrUtil.isEmpty(name)) {
-         where.likeRight(SysTreeDictItem::getName, name);
-      }
+    @Transactional(rollbackFor = {Exception.class})
+    @CacheEvict(value = {"tree_dict_details_list", "tree_dict_details_tree", "tree_dict_details_city"}, allEntries = true)
+    public boolean removeDictById(String id) {
+        this.treeDictItemMapper.delete(Wrappers.<SysTreeDictItem>lambdaQuery().eq(SysTreeDictItem::getDictId, id));
+        return this.removeById(id);
+    }
 
-      return this.treeDictItemMapper.selectList(where);
-   }
+    public List<DictionaryType> getAllType() {
+        return DictionaryType.ALL;
+    }
 
-   public List<SysTreeDictItem> findItemsByPid(String dictId, String pid) {
-      LambdaQueryWrapper<SysTreeDictItem> where = Wrappers.lambdaQuery();
-      where.eq(SysTreeDictItem::getDictId, dictId);
-      where.eq(SysTreeDictItem::getPid, pid);
-      where.orderByAsc(SysTreeDictItem::getSort);
-      return this.treeDictItemMapper.selectList(where);
-   }
+    public List<SysTreeDictItem> findItems(String dictId, String name) {
+        LambdaQueryWrapper<SysTreeDictItem> where = Wrappers.lambdaQuery();
+        where.eq(SysTreeDictItem::getDictId, dictId).orderByAsc(SysTreeDictItem::getSort);
+        if (!StrUtil.isEmpty(name)) {
+            where.likeRight(SysTreeDictItem::getName, name);
+        }
 
-   public Optional<SysTreeDictItem> findItem(String id) {
-      return Optional.ofNullable((SysTreeDictItem)this.treeDictItemMapper.selectById(id));
-   }
+        return this.treeDictItemMapper.selectList(where);
+    }
 
-   public SysTreeDictItem saveItem(SysTreeDictItem item) {
-      item.setIsDelete(0);
-      item.setCreateTime(new Date());
-      item.setUpdateTime(item.getCreateTime());
-      this.treeDictItemMapper.insert(item);
-      return item;
-   }
+    public List<SysTreeDictItem> findItemsByPid(String dictId, String pid) {
+        LambdaQueryWrapper<SysTreeDictItem> where = Wrappers.lambdaQuery();
+        where.eq(SysTreeDictItem::getDictId, dictId);
+        where.eq(SysTreeDictItem::getPid, pid);
+        where.orderByAsc(SysTreeDictItem::getSort);
+        return this.treeDictItemMapper.selectList(where);
+    }
 
-   public SysTreeDictItem updateItem(SysTreeDictItem item) {
-      item.setUpdateTime(new Date());
-      this.treeDictItemMapper.updateById(item);
-      return item;
-   }
+    public Optional<SysTreeDictItem> findItem(String id) {
+        return Optional.ofNullable(this.treeDictItemMapper.selectById(id));
+    }
 
+    public SysTreeDictItem saveItem(SysTreeDictItem item) {
+        item.setIsDelete(0);
+        item.setCreateTime(new Date());
+        item.setUpdateTime(item.getCreateTime());
+        this.treeDictItemMapper.insert(item);
+        return item;
+    }
+
+    public SysTreeDictItem updateItem(SysTreeDictItem item) {
+        item.setUpdateTime(new Date());
+        this.treeDictItemMapper.updateById(item);
+        return item;
+    }
 }

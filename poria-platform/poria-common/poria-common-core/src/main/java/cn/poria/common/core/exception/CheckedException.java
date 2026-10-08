@@ -2,8 +2,12 @@ package cn.poria.common.core.exception;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+
 @NoArgsConstructor
 public class CheckedException extends RuntimeException {
+
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public CheckedException(String message) {

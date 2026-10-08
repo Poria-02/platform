@@ -23,11 +23,6 @@ public enum DataScopeTypeEnum {
      */
     CUSTOM(1, "自定义"),
 
-    /**
-     * 医联体
-     */
-    MC_LEVEL(2,"医联体"),
-
 	/**
 	 * 本级
 	 */
