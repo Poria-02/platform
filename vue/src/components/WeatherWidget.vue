@@ -76,7 +76,7 @@ const searchResults = ref([])
 const searching = ref(false)
 const searchError = ref(false)
 const weather = ref(null)
-const weatherLoading = ref(false)
+const weatherLoading = ref(true)
 const weatherError = ref('')
 const districts = ref([])
 const districtLoading = ref(false)
@@ -104,11 +104,10 @@ const condition = computed(() => {
   return { icon: '🌡️', label: '实时天气' }
 })
 
-onMounted(async () => {
+onMounted(() => {
   restoreLocations()
   document.addEventListener('pointerdown', handleOutside)
   document.addEventListener('keydown', handleKeydown)
-  await loadAreaData()
   refreshWeather()
 })
 onActivated(() => {
@@ -192,7 +191,10 @@ function setDefault(location) {
 }
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
-  if (menuOpen.value) nextTick(() => root.value?.querySelector('.weather-search')?.focus())
+  if (menuOpen.value) {
+    if (!districts.value.length && !districtLoading.value) loadAreaData()
+    nextTick(() => root.value?.querySelector('.weather-search')?.focus())
+  }
   else closeMenu()
 }
 function closeMenu() {
