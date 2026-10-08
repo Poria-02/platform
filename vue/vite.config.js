@@ -19,6 +19,7 @@ function displayCurrentAddress() {
         const info = logger.info
         let displayed = false
         logger.info = (message, options) => {
+          if (displayed && String(message).includes('Network')) return
           info.call(logger, message, options)
           if (!displayed && String(message).includes('Local') && ip && address && typeof address !== 'string') {
             const colored = String(message).includes('\x1b[')
@@ -41,7 +42,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [vue(), displayCurrentAddress()],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-    server: { port: 8000, proxy: { [prefix]: {
+    server: { host: '0.0.0.0', port: 8000, proxy: { [prefix]: {
       target: env.VITE_GATEWAY_TARGET || 'http://localhost:9999',
       changeOrigin: true,
       rewrite: path => path.slice(prefix.length) || '/'
