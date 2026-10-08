@@ -5,6 +5,7 @@ import cn.poria.upms.api.entity.SysDeptRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface SysDeptRelationService extends IService<SysDeptRelation> {
+
    void insertDeptRelation(SysDept sysDept);
 
    void deleteAllDeptRealtion(Long id);

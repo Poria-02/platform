@@ -20,11 +20,6 @@ public enum DataScopeTypeEnum {
 	CUSTOM(1, "自定义"),
 
 	/**
-	 * 本级及子级
-	 */
-	OWN_CHILD_LEVEL(2, "本级及子级"),
-
-	/**
 	 * 本级
 	 */
 	OWN_LEVEL(3, "本级");

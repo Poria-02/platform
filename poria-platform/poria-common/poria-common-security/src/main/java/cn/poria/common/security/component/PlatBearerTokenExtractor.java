@@ -16,6 +16,7 @@
 
 package cn.poria.common.security.component;
 
+import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,10 +24,11 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
 import org.springframework.security.oauth2.server.resource.BearerTokenErrors;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
-import org.springframework.util.StringUtils;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,13 +41,13 @@ public class PlatBearerTokenExtractor implements BearerTokenResolver {
 	private static final Pattern authorizationPattern = Pattern.compile("^Bearer (?<token>[a-zA-Z0-9-:._~+/]+=*)$",
 			Pattern.CASE_INSENSITIVE);
 
-	private boolean allowFormEncodedBodyParameter = false;
+	private final boolean allowFormEncodedBodyParameter = false;
 
-	private boolean allowUriQueryParameter = true;
+	private final boolean allowUriQueryParameter = true;
 
-	private String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
+	private final String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
 
-	private final PathMatcher pathMatcher = new AntPathMatcher();
+	private final ConcurrentMap<String, RequestMatcher> requestMatchers = new ConcurrentHashMap<>();
 
 	private final PermitAllUrlProperties urlProperties;
 
@@ -56,7 +58,8 @@ public class PlatBearerTokenExtractor implements BearerTokenResolver {
 	@Override
 	public String resolve(HttpServletRequest request) {
 		boolean match = urlProperties.getUrls().stream()
-				.anyMatch(url -> pathMatcher.match(url, request.getRequestURI()));
+				.anyMatch(url -> requestMatchers.computeIfAbsent(url,
+						path -> PathPatternRequestMatcher.withDefaults().matcher(path)).matches(request));
 
 		if (match) {
 			return null;
@@ -81,7 +84,7 @@ public class PlatBearerTokenExtractor implements BearerTokenResolver {
 
 	private String resolveFromAuthorizationHeader(HttpServletRequest request) {
 		String authorization = request.getHeader(this.bearerTokenHeaderName);
-		if (!StringUtils.startsWithIgnoreCase(authorization, "bearer")) {
+		if (!StrUtil.startWithIgnoreCase(authorization, "bearer")) {
 			return null;
 		}
 		Matcher matcher = authorizationPattern.matcher(authorization);

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 public interface SysDeptService extends IService<SysDept> {
+
    List<DeptTree> selectTree();
 
    List<DeptTree> selectTree(Long departId);

@@ -23,6 +23,7 @@ import java.util.Set;
  */
 @Service(PlatUserLoginService.SERVICE_ID + PlatLoginType.PLAT_INNER_DEFAULT)
 public class PlatInnerDefaultLoginService implements PlatUserLoginService{
+
     @Override
     public UserDetails loadUser(PlatAuthenticationToken token, boolean checkVerifyCode) {
 

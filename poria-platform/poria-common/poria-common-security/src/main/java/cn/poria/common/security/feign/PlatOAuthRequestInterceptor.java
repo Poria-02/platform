@@ -1,7 +1,6 @@
 package cn.poria.common.security.feign;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.WebUtils;
 import feign.RequestInterceptor;

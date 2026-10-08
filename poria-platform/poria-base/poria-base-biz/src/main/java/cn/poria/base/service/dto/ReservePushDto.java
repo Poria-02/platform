@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class ReservePushDto {
+
     @ExcelProperty("org_id")
     private String orgId;
 

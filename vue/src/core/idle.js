@@ -1,10 +1,9 @@
 import { watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useSession } from './session'
-import { activityKey, saveSession } from './token'
+import { activityKey, idleTimeout, saveSession } from './token'
 import router, { clearMenuRoutes } from './router'
 
-const idleTimeout = 30 * 60 * 1000
 const activityEvents = ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'scroll']
 export function startIdleMonitor() {
   const session = useSession()

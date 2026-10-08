@@ -23,7 +23,6 @@ import cn.poria.upms.api.feign.RemoteUserService;
 import cn.poria.upms.api.util.ParamResolver;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;

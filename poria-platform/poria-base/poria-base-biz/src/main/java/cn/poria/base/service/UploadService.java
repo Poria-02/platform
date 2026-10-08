@@ -1,57 +1,37 @@
 package cn.poria.base.service;
 
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import cn.poria.base.oss.service.OssTemplate;
 import cn.poria.base.config.AudioConverter;
 import cn.poria.base.constant.FileTypeConstant;
 import cn.poria.base.entity.BaseFile;
-import cn.poria.base.service.dto.ReservePushDto;
 import cn.poria.base.util.AssetFileTypeUtil;
 import cn.poria.base.vo.request.FileSignatureModel;
 import cn.poria.base.vo.response.FileSignatureVo;
 import cn.poria.base.vo.response.SignUploadVo;
 import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.Assert;
-import cn.poria.common.data.util.EncryptTypeUtil;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.read.listener.ReadListener;
-import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.metadata.WriteSheet;
-import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.amazonaws.HttpMethod;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +82,7 @@ public class UploadService {
         String simpleUUID = IdUtil.fastSimpleUUID();
 
         String fileName = path + "/" + simpleUUID + "." + extension;
-        if (AssetFileTypeUtil.fileType(extension)) {
+        if (extension != null && AssetFileTypeUtil.fileType(extension)) {
             throw new ServiceException("上传失败,不支持该文件类型上传");
         }
 
@@ -113,7 +93,7 @@ public class UploadService {
                 throw new ServiceException("音频转换失败");
             }
             fileName = path + "/" + simpleUUID + ".mp3";
-            ;
+
 
             FileInputStream fileInputStream = new FileInputStream(targetfile);
             if (targetfile.exists()) {
@@ -150,7 +130,7 @@ public class UploadService {
         String simpleUUID = IdUtil.fastSimpleUUID();
 
         String fileName = path + "/" + simpleUUID + "." + extension;
-        if (AssetFileTypeUtil.fileType(extension)) {
+        if (extension != null && AssetFileTypeUtil.fileType(extension)) {
             throw new ServiceException("上传失败,不支持该文件类型上传");
         }
         template.createBucket(privateBucket);
@@ -189,9 +169,8 @@ public class UploadService {
 
         BaseFile baseFile = baseFileService.getById(fileId);
         Assert.notNull(baseFile, "文件不存在");
-        String url = template.getObjectURL(privateBucket, baseFile.getFileName(), 1);
 
-        return url;
+        return template.getObjectURL(privateBucket, baseFile.getFileName(), 1);
     }
 
     /**
@@ -201,7 +180,7 @@ public class UploadService {
      * @description 批量获取私有文件访问地址
      */
     public Map<String, String> getPresignedListUrl(List<String> fileId) {
-        List<BaseFile> baseFileList = baseFileService.getBaseMapper().selectBatchIds(fileId);
+        List<BaseFile> baseFileList = baseFileService.getBaseMapper().selectByIds(fileId);
         if (baseFileList.isEmpty()) return null;
 
         HashMap<String, String> map = new HashMap<>();
@@ -232,7 +211,7 @@ public class UploadService {
     @SneakyThrows
     public FileSignatureVo getSignature(FileSignatureModel model) {
 
-        OSSClient client = new OSSClient(endpoint, accessKey, secretKey);
+        OSS client = new OSSClientBuilder().build(endpoint, accessKey, secretKey);
 
         String host = "https://" + ("public".equals(model.getType()) ? publicBucket : privateBucket) + "." + endpoint.replace("https://", "");
 
@@ -242,10 +221,15 @@ public class UploadService {
         PolicyConditions policyConds = new PolicyConditions();
         policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
         policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, model.getPath());
-        String postPolicy = client.generatePostPolicy(expiration, policyConds);
-        byte[] binaryData = postPolicy.getBytes("utf-8");
-        String encodedPolicy = BinaryUtil.toBase64String(binaryData);
-        String postSignature = client.calculatePostSignature(postPolicy);
+        String postPolicy;
+        String postSignature;
+        try {
+            postPolicy = client.generatePostPolicy(expiration, policyConds);
+            postSignature = client.calculatePostSignature(postPolicy);
+        } finally {
+            client.shutdown();
+        }
+        String encodedPolicy = Base64.encode(postPolicy.getBytes(StandardCharsets.UTF_8));
 
         JSONObject respMap = new JSONObject();
         respMap.set("accessid", accessKey);

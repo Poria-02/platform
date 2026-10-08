@@ -1,11 +1,8 @@
 package cn.poria.base.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.poria.base.vo.request.banner.BaseActivityModel;
 import cn.poria.base.vo.response.banner.BaseActivityVo;
 import cn.poria.common.core.exception.ServiceException;
-import cn.poria.common.core.util.R;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -49,7 +46,7 @@ public class BaseActivityServiceImpl extends ServiceImpl<BaseActivityDao, BaseAc
         List<BaseActivity> baseActivity = this.list(new LambdaQueryWrapper<BaseActivity>()
                 .eq(BaseActivity::getName, baseActivityModel.getName())
         );
-        if(baseActivity.size() > 0 ){
+        if(!baseActivity.isEmpty()){
             throw new ServiceException("名称已存在");
         }else{
             BaseActivity baseActivity1 = new BaseActivity();
@@ -68,7 +65,7 @@ public class BaseActivityServiceImpl extends ServiceImpl<BaseActivityDao, BaseAc
                 .eq(BaseActivity::getName, baseActivityModel.getName())
                 .ne(BaseActivity::getId, baseActivityModel.getId())
         );
-        if(baseActivity.size() > 0 ){
+        if(!baseActivity.isEmpty()){
             throw new ServiceException("名称已存在");
         }else{
             BaseActivity baseActivity1 = new BaseActivity();

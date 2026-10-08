@@ -17,6 +17,7 @@ import java.util.Set;
  * 扩展用户信息
  */
 public class PlatUser extends User implements OAuth2AuthenticatedPrincipal {
+
     @Serial
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 

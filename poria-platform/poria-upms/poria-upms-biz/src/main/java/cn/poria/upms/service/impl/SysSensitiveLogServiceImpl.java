@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogDao, SysSensitiveLog> implements SysSensitiveLogService {
-   public void saveSensitiveLog(SensitiveInfo sensitiveInfo) {
-      SysSensitiveLog sysSensitiveLog = new SysSensitiveLog();
-      sysSensitiveLog.setCreateName(SecurityUtils.getUser().getUsername());
-      sysSensitiveLog.setCreateBy(SecurityUtils.getSId());
-      sysSensitiveLog.setUserType(sensitiveInfo.getUserType());
-      sysSensitiveLog.setSensitiveInfo(JSONUtil.toJsonStr(sensitiveInfo));
-      this.save(sysSensitiveLog);
-   }
+
+    public void saveSensitiveLog(SensitiveInfo sensitiveInfo) {
+        SysSensitiveLog sysSensitiveLog = new SysSensitiveLog();
+        sysSensitiveLog.setCreateName(SecurityUtils.getUser().getUsername());
+        sysSensitiveLog.setCreateBy(SecurityUtils.getSId());
+        sysSensitiveLog.setUserType(sensitiveInfo.getUserType());
+        sysSensitiveLog.setSensitiveInfo(JSONUtil.toJsonStr(sensitiveInfo));
+        this.save(sysSensitiveLog);
+    }
 }

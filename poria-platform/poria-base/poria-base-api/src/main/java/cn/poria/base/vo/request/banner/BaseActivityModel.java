@@ -5,7 +5,6 @@ import cn.poria.base.vo.request.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
 
 @Data
 public class BaseActivityModel  extends Page {

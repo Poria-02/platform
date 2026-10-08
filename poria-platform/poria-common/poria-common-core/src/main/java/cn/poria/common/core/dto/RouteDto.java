@@ -1,8 +1,10 @@
 package cn.poria.common.core.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,6 +15,7 @@ import java.util.Date;
 @Data
 public class RouteDto implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 
@@ -23,6 +26,7 @@ public class RouteDto implements Serializable {
 	 * 路由ID
 	 */
 	@Schema(description =  "路由id")
+	@NotBlank(message = "路由id不能为空")
 	private String routeId;
 
 	/**
@@ -47,6 +51,7 @@ public class RouteDto implements Serializable {
 	 * uri
 	 */
 	@Schema(description =  "请求uri")
+	@NotBlank(message = "请求uri不能为空")
 	private String uri;
 
 	/**

@@ -1,9 +1,9 @@
 package cn.poria.common.security.xss.core;
 
+import cn.hutool.core.util.StrUtil;
 import cn.poria.common.core.util.SpringContextHolder;
 import cn.poria.common.security.xss.config.MicaXssProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
@@ -28,9 +28,9 @@ public class XssCleanDeserializer extends XssCleanDeserializerBase {
 		MicaXssProperties.JacksonConfig jackson = properties.getJackson();
 		String charsToDelete = jackson.getCharsToDelete();
 		if (!charsToDelete.isEmpty()) {
-			value = StringUtils.deleteAny(value, charsToDelete);
+			value = StrUtil.removeAll(value, charsToDelete.toCharArray());
 		}
-		boolean isTrimText = properties.isTrimText() || jackson.isTrimText();
+		boolean isTrimText = jackson.isTrimText();
 		if (isTrimText) {
 			value = value.trim();
 		}

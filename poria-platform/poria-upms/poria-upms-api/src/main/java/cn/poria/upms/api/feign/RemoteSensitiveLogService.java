@@ -7,11 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(
-   name = "remoteSensitiveLogService",
-   url = "${PORIA_UPMS:http://poria-upms:4000}"
-)
+@FeignClient(name = "remoteSensitiveLogService", url = "${PORIA_UPMS:http://poria-upms:4000}")
 public interface RemoteSensitiveLogService {
-   @PostMapping({"/sensitive/log"})
-   R saveSensitiveLog(@RequestBody @Validated SensitiveInfo sensitiveInfo);
+    @PostMapping({"/sensitive/log"})
+    R saveSensitiveLog(@RequestBody @Validated SensitiveInfo sensitiveInfo);
 }

@@ -2,7 +2,6 @@ package cn.poria.base.service;
 
 import cn.poria.base.vo.request.banner.BaseActivityModel;
 import cn.poria.base.vo.response.banner.BaseActivityVo;
-import cn.poria.common.core.util.R;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.poria.base.entity.BaseActivity;

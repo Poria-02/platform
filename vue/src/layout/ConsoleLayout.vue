@@ -7,13 +7,14 @@
         <router-link class="menu-link" to="/index" @click="mobileOpen = false"><span class="menu-symbol"><MenuIcon name="house" /></span><span>工作台</span></router-link>
         <MenuItem v-for="item in menuRoots" :key="item.id || item.path" :item="item" />
       </nav>
+      <div class="sidebar-weather"><WeatherWidget /></div>
       <div class="sidebar-bottom"><span class="sidebar-status-dot" />Poria Platform</div>
     </aside>
     <div class="console-main">
       <header class="console-header">
         <button class="nav-toggle" type="button" aria-label="切换菜单" @click="toggleSidebar">☰</button>
         <div class="header-location"><span>工作空间</span><span class="breadcrumb-sep">/</span><strong>{{ currentTitle }}</strong></div>
-        <div class="header-actions"><time class="header-date">{{ clockText }}</time><span class="header-divider" /><el-dropdown trigger="click" @command="handleCommand"><button type="button" class="account-button"><span class="account-avatar">{{ initial }}</span><span class="account-name">{{ session.displayName }}</span><span>⌄</span></button><template #dropdown><el-dropdown-menu><el-dropdown-item command="logout">退出登录</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div>
+        <div class="header-actions"><el-dropdown trigger="click" @command="handleCommand"><button type="button" class="account-button"><span class="account-avatar">{{ initial }}</span><span class="account-name">{{ session.displayName }}</span><span>⌄</span></button><template #dropdown><el-dropdown-menu><el-dropdown-item command="logout">退出登录</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div>
       </header>
       <div class="workspace-tabs" role="tablist" aria-label="已打开页面">
         <div v-for="tab in tabs" :key="tab.path" class="workspace-tab" :class="{ 'workspace-tab--active': route.path === tab.path }" role="tab" tabindex="0" :aria-selected="route.path === tab.path" @click="openTab(tab.path)" @contextmenu.prevent="openContextMenu($event, tab.path)" @keydown.enter="openTab(tab.path)" @keydown.space.prevent="openTab(tab.path)">
@@ -36,8 +37,9 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSession } from '@/core/session'
-import { now, startClock } from '@/core/clock'
+import { startClock } from '@/core/clock'
 import { clearMenuRoutes } from '@/core/router'
+import WeatherWidget from '@/components/WeatherWidget.vue'
 import MenuItem from './MenuItem.vue'
 import MenuIcon from '@/ui/MenuIcon.vue'
 
@@ -52,7 +54,6 @@ const contextMenuRef = ref(null)
 const menuRoots = computed(() => session.menus.filter(item => item.path !== '/index' && String(item.type) !== '1'))
 const currentTitle = computed(() => route.meta.title || '工作台')
 const initial = computed(() => session.displayName.slice(0, 1).toUpperCase())
-const clockText = computed(() => new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now.value))
 let stopClock
 
 onMounted(() => {

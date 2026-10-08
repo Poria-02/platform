@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @Aspect
 @Component
 public class DictAspect {
+
 	private final ExpressionParser parser = new SpelExpressionParser();
 
 	@Autowired
@@ -86,30 +87,30 @@ public class DictAspect {
 		Map map = null;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.add(SecurityConstants.FROM, SecurityConstants.FROM_IN);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, requestHeaders);
 
 		if (DictType.ITEM.equals(dict.dictType())) {
 			ResponseEntity<R<List<DictItem>>> response =
 					restTemplate.exchange(ServiceNameConstants.UPMS_SERVICE + URL + dictCode, HttpMethod.GET, requestEntity,
-							new ParameterizedTypeReference<R<List<DictItem>>>() {});
-			if (response.getBody().isSuccess()) {
-				R<List<DictItem>> r = response.getBody();
-				if (CollectionUtil.isNotEmpty(r.getData())) {
-					map = r.getData().stream().collect(Collectors.toMap(DictItem::getValue, DictItem::getLabel, (k1, k2) -> k1));
-				}
-			}
+                            new ParameterizedTypeReference<>() {});
+            if (response.getBody() != null && response.getBody().isSuccess()) {
+                R<List<DictItem>> r = response.getBody();
+                if (CollectionUtil.isNotEmpty(r.getData())) {
+                    map = r.getData().stream().collect(Collectors.toMap(DictItem::getValue, DictItem::getLabel, (k1, k2) -> k1));
+                }
+            }
 
-		} else if (DictType.TREE.equals(dict.dictType())) {
+        } else if (DictType.TREE.equals(dict.dictType())) {
 			ResponseEntity<R<List<TreeDictItemVo>>> response =
 					restTemplate.exchange(ServiceNameConstants.UPMS_SERVICE +  TREE_URL + dictCode, HttpMethod.GET, requestEntity,
-							new ParameterizedTypeReference<R<List<TreeDictItemVo>>>() {});
-			if (response.getBody().isSuccess()) {
-				R<List<TreeDictItemVo>> r = response.getBody();
-				if (CollectionUtil.isNotEmpty(r.getData())) {
-					map = r.getData().stream().collect(Collectors.toMap(TreeDictItemVo::getValue, TreeDictItemVo::getName, (k1, k2) -> k1));
-				}
-			}
-		}
+                            new ParameterizedTypeReference<>() {});
+            if (response.getBody() != null && response.getBody().isSuccess()) {
+                R<List<TreeDictItemVo>> r = response.getBody();
+                if (CollectionUtil.isNotEmpty(r.getData())) {
+                    map = r.getData().stream().collect(Collectors.toMap(TreeDictItemVo::getValue, TreeDictItemVo::getName, (k1, k2) -> k1));
+                }
+            }
+        }
 
 		convertValues(map, object, dict);
 	}

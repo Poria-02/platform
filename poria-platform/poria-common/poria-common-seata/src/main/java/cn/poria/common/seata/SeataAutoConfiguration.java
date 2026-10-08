@@ -2,7 +2,7 @@ package cn.poria.common.seata;
 
 
 import cn.poria.common.core.factory.YamlPropertySourceFactory;
-import io.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
+import org.apache.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 

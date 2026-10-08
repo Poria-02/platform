@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 @EnablePlatFeignClients
 @EnablePlatResourceServer
 public class BaseApplication {
+
     public static void main(String[] args) throws UnknownHostException {
         SpringApplication app = new SpringApplication(BaseApplication.class);
         Environment env = app.run(args).getEnvironment();

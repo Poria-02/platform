@@ -12,15 +12,7 @@ import java.util.Set;
 @Mapper
 public interface ConverDao extends BaseMapper {
 
-	@Select({"<script>",
-			" select ${keyField} as `key` , ${valueField} as `value` from ${table} where ${keyField} in ",
-			" <foreach collection='keys' item='key' separator=',' open='(' close=')'> ",
-			" #{key} ",
-			" </foreach>",
-			" <if test='condition != null and condition != \"\"'>",
-			" and ${condition} ",
-			" </if>",
-			"</script>"})
+	@Select({"<script>", " select ${keyField} as `key` , ${valueField} as `value` from ${table} where ${keyField} in ", " <foreach collection='keys' item='key' separator=',' open='(' close=')'> ", " #{key} ", " </foreach>", " <if test='condition != null and condition != \"\"'>", " and ${condition} ", " </if>", "</script>"})
 	List<ConverResult> convertData(@Param("keys") Set<String> keys,
                                  @Param("table") String table,
                                  @Param("keyField") String keyField,

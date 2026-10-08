@@ -39,6 +39,7 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public class PlatRemoteRegisteredClientRepository implements RegisteredClientRepository {
+
     public static final String ALLOWED_LOGIN_TYPES_SETTING = "allowed_login_types";
 
     /**
@@ -81,9 +82,7 @@ public class PlatRemoteRegisteredClientRepository implements RegisteredClientRep
      * {@code null} if not found.
      * @param clientId the client identifier
      * @return the {@link RegisteredClient} if found, otherwise {@code null}
-     */
-
-    /**
+     *
      * 重写原生方法支持redis缓存
      *
      * @param clientId

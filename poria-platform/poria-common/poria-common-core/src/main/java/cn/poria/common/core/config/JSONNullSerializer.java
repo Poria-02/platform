@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 
 public class JSONNullSerializer extends JsonSerializer<JSONNull> {
+
     @Override
     public void serialize(JSONNull value, JsonGenerator gen, SerializerProvider serializers)
             throws IOException {

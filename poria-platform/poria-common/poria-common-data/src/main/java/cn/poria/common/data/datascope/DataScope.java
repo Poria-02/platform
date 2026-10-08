@@ -30,6 +30,12 @@ public class DataScope extends HashMap {
 	 */
 	private List<Long> deptList = new ArrayList<>();
 
+	/** 处理器计算出的有效范围，与调用方的查询条件分开保存。 */
+	private List<Long> resolvedDeptList = new ArrayList<>();
+
+	/** 是否具有全部部门权限，由处理器重新计算。 */
+	private boolean allDepartments;
+
 	/**
 	 * 具体查询的用户数据权限范围
 	 */

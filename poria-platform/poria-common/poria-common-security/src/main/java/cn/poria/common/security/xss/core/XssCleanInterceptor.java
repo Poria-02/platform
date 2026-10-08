@@ -19,6 +19,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public class XssCleanInterceptor implements AsyncHandlerInterceptor {
+
 	private final PathMatcher matcher = new AntPathMatcher();
 	private final MicaXssProperties xssProperties;
 

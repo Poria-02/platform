@@ -17,6 +17,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>cn.poria</groupId>
 			<artifactId>poria-common-core</artifactId>
 		</dependency>
@@ -49,4 +59,13 @@
 			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
 		</dependency>
     </dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.3</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -9,7 +9,7 @@ const payload = async data => ({
   deptId: data.deptId,
   lockFlag: data.lockFlag,
   role: data.role || [],
-  ...(data.password ? { password: await encryptForAuth(data.password, import.meta.env.VITE_AUTH_ENCODE_KEY || 'shanxincdJinkang') } : {})
+  ...(data.password ? { password: await encryptForAuth(data.password, import.meta.env.VITE_AUTH_ENCODE_KEY || 'Poriabanxiaqiu02') } : {})
 })
 export const create = async data => http.post('/upms/user', await payload(data))
 export const update = async data => http.put('/upms/user', await payload(data))

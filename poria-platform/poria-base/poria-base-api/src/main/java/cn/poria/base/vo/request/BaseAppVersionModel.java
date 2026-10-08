@@ -4,7 +4,6 @@ import cn.poria.common.core.validate.Create;
 import cn.poria.common.core.validate.Update;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data

@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 public class DefaultXssCleaner implements XssCleaner {
+
 	private final MicaXssProperties properties;
 
 	public DefaultXssCleaner(MicaXssProperties properties) {

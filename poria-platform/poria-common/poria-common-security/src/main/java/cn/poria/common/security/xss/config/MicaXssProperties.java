@@ -19,19 +19,13 @@ import java.util.List;
 @RefreshScope
 @ConfigurationProperties(MicaXssProperties.PREFIX)
 public class MicaXssProperties {
+
 	public static final String PREFIX = "mica.xss";
 
 	/**
 	 * 开启xss
 	 */
 	private boolean enabled = true;
-	/**
-	 * 全局：对文件进行首尾 trim
-	 * @deprecated 3.4.3，form 使用 {@link FormConfig#trimText} 代替.
-	 * jackson 使用 {@link JacksonConfig#trimText} 代替.
-	 */
-	@Deprecated(since = "3.4.3", forRemoval = true)
-	private boolean trimText = true;
 	/**
 	 * 全局：{@link XssType#FORM}配置
 	 */

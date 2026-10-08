@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class SourceContextHolder {
+
 	private final ThreadLocal<String> THREAD_LOCAL_SOURCE = new TransmittableThreadLocal<>();
 
 	public void clear() {

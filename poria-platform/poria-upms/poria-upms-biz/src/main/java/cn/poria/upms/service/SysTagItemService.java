@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 public interface SysTagItemService extends IService<SysTagItem> {
+
    SysTagItem saveTagItem(SysTagItem sysTagItem);
 
    void updateTagItem(SysTagItem sysTagItem);

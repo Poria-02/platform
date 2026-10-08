@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface SysMenuService extends IService<SysMenu> {
+
    List<MenuVO> findMenuByRoleId(Long roleId, String platform);
 
    R removeMenuById(Long id);

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface SysUserService extends IService<SysUser> {
+
    UserInfo findUserInfo(SysUser sysUser, String userType);
 
    IPage getUsersWithRolePage(Page page, UserDTO userDTO);

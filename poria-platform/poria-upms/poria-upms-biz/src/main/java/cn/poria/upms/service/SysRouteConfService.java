@@ -7,6 +7,7 @@ import java.util.List;
 import reactor.core.publisher.Mono;
 
 public interface SysRouteConfService extends IService<SysRouteConf> {
+
    Mono<Void> refresh();
 
    List<RouteVo> queryList();

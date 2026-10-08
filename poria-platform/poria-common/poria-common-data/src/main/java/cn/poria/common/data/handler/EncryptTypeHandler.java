@@ -1,8 +1,5 @@
 package cn.poria.common.data.handler;
 
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.symmetric.AES;
-import cn.hutool.json.JSONUtil;
 import cn.poria.common.data.util.EncryptTypeUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -23,6 +20,7 @@ import java.sql.SQLException;
  * @throws IOException
  */
 public class EncryptTypeHandler implements TypeHandler {
+
     @Override
     public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
         ps.setString(i, EncryptTypeUtil.setResultEncrypt(parameter));
