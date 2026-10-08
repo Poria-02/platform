@@ -3,9 +3,10 @@ import { encryptForAuth } from './crypto'
 
 export async function login(credentials) {
   const clientId = import.meta.env.VITE_AUTH_CLIENT_ID
-  const clientSecret = import.meta.env.VITE_AUTH_CLIENT_SECRET || clientId
-  const encodeKey = import.meta.env.VITE_AUTH_ENCODE_KEY || 'shanxincdJinkang'
-  if (!clientId) throw new Error('缺少认证客户端配置 VITE_AUTH_CLIENT_ID')
+  const clientSecret = import.meta.env.VITE_AUTH_CLIENT_SECRET
+  //TODO 密钥修改
+  const encodeKey = import.meta.env.VITE_AUTH_ENCODE_KEY || 'Poriabanxiaqiu02'
+  if (!clientId || !clientSecret) throw new Error('缺少认证客户端配置 VITE_AUTH_CLIENT_ID 或 VITE_AUTH_CLIENT_SECRET')
 
   const [username, password] = await Promise.all([
     encryptForAuth(credentials.username.trim(), encodeKey),
