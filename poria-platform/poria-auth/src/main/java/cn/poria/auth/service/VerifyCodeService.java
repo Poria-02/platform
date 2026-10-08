@@ -19,49 +19,49 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class VerifyCodeService {
 
-	@Autowired
-	private StringRedisTemplate redisTemplate;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
 
-	public void  checkVerifyCode(String randomStr,String code){
+    public void checkVerifyCode(String randomStr, String code) {
 
-		//校验验证码是否正确
-		String key = CacheConstants.DEFAULT_CODE_KEY + randomStr;
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
+        //校验验证码是否正确
+        String key = CacheConstants.DEFAULT_CODE_KEY + randomStr;
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
 
-		if (!redisTemplate.hasKey(key)) {
-			throw new BadCredentialsException("验证码不合法");
-		}
-		Object codeObj = redisTemplate.opsForValue().get(key);
-		if (codeObj == null) {
-			throw new BadCredentialsException("验证码不合法");
-		}
-		String saveCode = codeObj.toString();
-		if (StrUtil.isBlank(saveCode)) {
-			redisTemplate.delete(key);
-			throw new BadCredentialsException("验证码不合法");
-		}
+        if (!redisTemplate.hasKey(key)) {
+            throw new BadCredentialsException("验证码不合法");
+        }
+        Object codeObj = redisTemplate.opsForValue().get(key);
+        if (codeObj == null) {
+            throw new BadCredentialsException("验证码不合法");
+        }
+        String saveCode = codeObj.toString();
+        if (StrUtil.isBlank(saveCode)) {
+            redisTemplate.delete(key);
+            throw new BadCredentialsException("验证码不合法");
+        }
 
-		//验证码输入错误
-		if (!StrUtil.equals(saveCode, code)) {
-			throw new BadCredentialsException("验证码不合法");
-		}
+        //验证码输入错误
+        if (!StrUtil.equals(saveCode, code)) {
+            throw new BadCredentialsException("验证码不合法");
+        }
 
-		redisTemplate.delete(key);
-	}
+        redisTemplate.delete(key);
+    }
 
-	public void checkAdminSmsVerifyCode(String mobile, String type ,String code){
-		String redisKey = CacheConstants.DEFAULT_CODE_KEY + LoginTypeEnum.SMS.getType() + StringPool.AT + type + StringPool.PIPE + mobile;
-		//DEFAULT_CODE_KEY:SMS@admin|17710026695
-		Object cacheCode = redisTemplate.opsForValue().get(redisKey);
-		log.info("登录验证码 key: {}  value:  {}", redisKey, null == cacheCode?null:cacheCode.toString());
-		if(cacheCode == null ){
-			throw new BadCredentialsException("请先获取验证码");
-		}
-		if(!StrUtil.equals(code,cacheCode.toString())){
-			throw new BadCredentialsException("验证码错误");
-		}
+    public void checkAdminSmsVerifyCode(String mobile, String type, String code) {
+        String redisKey = CacheConstants.DEFAULT_CODE_KEY + LoginTypeEnum.SMS.getType() + StringPool.AT + type + StringPool.PIPE + mobile;
+        //DEFAULT_CODE_KEY:SMS@admin|17710026695
+        Object cacheCode = redisTemplate.opsForValue().get(redisKey);
+        log.info("登录验证码 key: {}  value:  {}", redisKey, null == cacheCode ? null : cacheCode.toString());
+        if (cacheCode == null) {
+            throw new BadCredentialsException("请先获取验证码");
+        }
+        if (!StrUtil.equals(code, cacheCode.toString())) {
+            throw new BadCredentialsException("验证码错误");
+        }
 
-		redisTemplate.delete(redisKey);
-	}
+        redisTemplate.delete(redisKey);
+    }
 }

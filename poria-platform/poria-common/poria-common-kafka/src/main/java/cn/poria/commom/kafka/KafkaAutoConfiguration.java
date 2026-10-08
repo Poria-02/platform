@@ -39,7 +39,7 @@ public class KafkaAutoConfiguration {
 
     @Bean
     public ProducerFactory<String, String> poriaProducerFactory() {
-        Map<String,Object> configProps = new HashMap<>();
+        Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);

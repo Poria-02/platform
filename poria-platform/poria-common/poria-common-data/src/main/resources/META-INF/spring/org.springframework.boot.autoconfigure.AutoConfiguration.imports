@@ -10,5 +10,4 @@ cn.poria.common.data.conver.DictAspect
 cn.poria.common.data.conver.TagAspect
 cn.poria.common.data.conver.ConvertController
 cn.poria.common.data.handler.SourceContextHolderFilter
-cn.poria.common.data.conver.ReviewAspect
-cn.poria.common.data.conver.ReviewController
+

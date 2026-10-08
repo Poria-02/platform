@@ -19,16 +19,16 @@ import org.springframework.web.filter.GenericFilterBean;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SourceContextHolderFilter extends GenericFilterBean {
 
-	@Override
-	@SneakyThrows
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
-		HttpServletRequest request   = (HttpServletRequest) servletRequest;
-		HttpServletResponse response = (HttpServletResponse) servletResponse;
+    @Override
+    @SneakyThrows
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-		String source = request.getHeader(CommonConstants.SOURCE);
-		//source不关心空不空
-		SourceContextHolder.setSource(source);
-		filterChain.doFilter(request, response);
-		SourceContextHolder.clear();
-	}
+        String source = request.getHeader(CommonConstants.SOURCE);
+        //source不关心空不空
+        SourceContextHolder.setSource(source);
+        filterChain.doFilter(request, response);
+        SourceContextHolder.clear();
+    }
 }
