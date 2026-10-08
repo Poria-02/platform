@@ -107,10 +107,4 @@ public interface CacheConstants {
 
 	String HIS_CONFIG_DETAILS = "hisConfig_details";
 
-	/**
-	 * 支付渠道
-	 */
-	String PAY_CHANNEL = "pay_channel";
-
-
 }

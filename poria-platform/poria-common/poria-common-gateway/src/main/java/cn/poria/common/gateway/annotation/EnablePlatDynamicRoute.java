@@ -13,4 +13,5 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Import(DynamicRouteAutoConfiguration.class)
-public @interface EnablePlatDynamicRoute {}
+public @interface EnablePlatDynamicRoute {
+}

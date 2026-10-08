@@ -13,8 +13,8 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class RouteDefinitionVo extends RouteDefinition implements Serializable {
 
-	/**
-	 * 路由名称
-	 */
-	private String routeName;
+    /**
+     * 路由名称
+     */
+    private String routeName;
 }

@@ -44,21 +44,6 @@ public interface CommonConstants {
 	String UTF8 = "UTF-8";
 
 	/**
-	 * 前端工程名
-	 */
-	String FRONT_END_PROJECT = "ih-ui";
-
-	/**
-	 * 后端工程名
-	 */
-	String BACK_END_PROJECT = "ih";
-
-	/**
-	 * 公共参数
-	 */
-	String PIG_PUBLIC_PARAM_KEY = "IH_PUBLIC_PARAM_KEY";
-
-	/**
 	 * 成功标记
 	 */
 	Integer SUCCESS = 0;
