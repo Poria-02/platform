@@ -5,6 +5,8 @@ import cn.poria.common.data.handler.EncryptTypeHandler;
 import cn.poria.common.data.handler.PlatMetaObjectHandler;
 import cn.poria.common.data.resolver.SqlFilterArgumentResolver;
 import cn.poria.common.security.service.PlatUser;
+import cn.poria.upms.api.feign.RemoteDataScopeService;
+import cn.poria.upms.api.feign.RemoteDeptService;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -15,8 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -81,12 +81,10 @@ public class MybatisPlusConfiguration implements WebMvcConfigurer {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass(PlatUser.class)
-    public DataScopeInterceptor dataScopeInterceptor(RestTemplate restTemplate, ObjectProvider<DataScopeRoleProvider> providers, @Value("${PORIA_UPMS:http://poria-upms:4000}") String upmsUrl) {
+    public DataScopeInterceptor dataScopeInterceptor(@Lazy RemoteDataScopeService dataScopeService,
+                                                   @Lazy RemoteDeptService deptService) {
         DataScopeInnerInterceptor dataScopeInnerInterceptor = new DataScopeInnerInterceptor();
-        DataScopeRoleProvider remote = new RestDataScopeRoleProvider(restTemplate, upmsUrl);
-        // 查询时再获取本地 provider，避免它的 Mapper 与 SqlSessionFactory 形成初始化循环。
-        dataScopeInnerInterceptor.setDataScopeHandle(new PlatDefaultDatascopeHandle(
-                roleIds -> providers.getIfAvailable(() -> remote).getRoles(roleIds)));
+        dataScopeInnerInterceptor.setDataScopeHandle(new PlatDefaultDatascopeHandle(dataScopeService, deptService));
         return dataScopeInnerInterceptor;
     }
 

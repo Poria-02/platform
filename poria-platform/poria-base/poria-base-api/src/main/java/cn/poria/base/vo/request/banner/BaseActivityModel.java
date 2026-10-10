@@ -4,9 +4,11 @@ package cn.poria.base.vo.request.banner;
 import cn.poria.base.vo.request.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class BaseActivityModel  extends Page {
 
 

@@ -1,5 +1,6 @@
 package cn.poria.upms.api.feign;
 
+import cn.poria.common.core.constant.ServiceNameConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.entity.SysDeptRelation;
 import cn.poria.upms.api.entity.SysRole;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "remoteDataScopeService", url = "${PORIA_UPMS:http://poria-upms:4000}")
+@FeignClient(name = "remoteDataScopeService", url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteDataScopeService {
     @PostMapping({"/role/getRoleList"})
     R<List<SysRole>> getRoleList(@RequestBody List<String> roleIdList);
