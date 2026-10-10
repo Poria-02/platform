@@ -18,4 +18,7 @@ public interface SysDeptService extends IService<SysDept> {
    Boolean updateDeptById(SysDept sysDept);
 
    SysDept getOrgByDeptId(Long deptId);
+
+   /** 查询本部门及所有有效下级部门ID，不经过 DataScope。 */
+   List<Long> getDeptIdsWithChildren(Long deptId);
 }

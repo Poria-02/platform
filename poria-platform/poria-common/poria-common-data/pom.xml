@@ -38,6 +38,10 @@
 			<groupId>cn.poria</groupId>
 			<artifactId>poria-common-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>cn.poria</groupId>
+			<artifactId>poria-upms-api</artifactId>
+		</dependency>
 		<!--mybatis plus-->
 		<dependency>
 			<groupId>com.baomidou</groupId>

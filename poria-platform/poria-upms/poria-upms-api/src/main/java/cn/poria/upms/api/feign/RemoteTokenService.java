@@ -1,5 +1,6 @@
 package cn.poria.upms.api.feign;
 
+import cn.poria.common.core.constant.ServiceNameConstants;
 import cn.poria.common.core.util.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name = "remoteTokenService", url = "${PORIA_auth:http://poria-auth:3000}")
+@FeignClient(name = "remoteTokenService", url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteTokenService {
     @PostMapping({"/token/page"})
     R<Page> getTokenPage(@RequestBody Map<String, Object> params, @RequestHeader("from") String from);

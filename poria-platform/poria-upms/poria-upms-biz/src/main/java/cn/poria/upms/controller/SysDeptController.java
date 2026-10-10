@@ -57,6 +57,13 @@ public class SysDeptController {
         return R.ok(this.sysDeptService.getOrgByDeptId(deptId));
     }
 
+    @Inner
+    @GetMapping("/inner/descendants/{deptId}")
+    @Operation(summary = "内部查询本部门及所有下级部门ID")
+    public R<List<Long>> getDeptIdsWithChildrenInner(@PathVariable("deptId") Long deptId) {
+        return R.ok(this.sysDeptService.getDeptIdsWithChildren(deptId));
+    }
+
     @SysLog("添加部门")
     @PostMapping
     @PreAuthorize("@pms.hasPermission('sys_dept_add')")

@@ -1,5 +1,6 @@
 package cn.poria.upms.api.feign;
 
+import cn.poria.common.core.constant.ServiceNameConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.dto.UserInfo;
 import cn.poria.upms.api.entity.SysUser;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "remoteUserService", url = "${PORIA_UPMS:http://poria-upms:4000}")
+@FeignClient(name = "remoteUserService", url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteUserService {
     @GetMapping({"/user/info/{username}"})
     R<UserInfo> info(@PathVariable("username") String username, @RequestHeader("from") String from);

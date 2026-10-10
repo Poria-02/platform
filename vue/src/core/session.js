@@ -17,9 +17,13 @@ export const useSession = defineStore('session', {
   }),
   getters: {
     authenticated: state => Boolean(state.current?.accessToken),
-    displayName: state => state.current?.username || '管理员'
+    displayName: state => state.current?.username || '管理员',
+    permissions: state => state.current?.permissions || []
   },
   actions: {
+    hasPermission(permission) {
+      return !permission || this.permissions.includes(permission)
+    },
     async signIn(credentials) {
       const data = await login(credentials)
       this.current = {

@@ -15,7 +15,7 @@
         <el-button type="primary" plain @click="search">查询</el-button>
         <el-button text @click="resetSearch">重置</el-button>
       </div>
-      <div class="page-heading__actions"><slot name="actions" :reload="load" /><el-button @click="load">刷新</el-button><el-button v-if="canCreate" type="primary" @click="openCreate">新增{{ singular || title }}</el-button></div>
+      <div class="page-heading__actions"><slot name="actions" :reload="load" /><el-button @click="load">刷新</el-button><el-button v-if="canCreate" type="primary" @click="openCreate()">新增{{ singular || title }}</el-button></div>
     </div>
     <section class="surface-card">
       <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
@@ -65,6 +65,7 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { http } from '@/core/http'
 import { displayResourceValue, normalizeSelectValue, optionsForField } from '@/core/resourceValues'
+import { useSession } from '@/core/session'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -78,13 +79,16 @@ const props = defineProps({
   fields: { type: Array, default: () => [] },
   prepareEdit: { type: Function, default: row => ({ ...row }) },
   pagination: { type: Boolean, default: true },
-  treeMode: { type: Boolean, default: false }
+  treeMode: { type: Boolean, default: false },
+  permissions: { type: Object, default: () => ({}) },
+  removeMessage: { type: Function, default: null }
 })
 const emit = defineEmits(['saved', 'removed'])
+const session = useSession()
 
-const canCreate = computed(() => Boolean(props.api.create && props.fields.length))
-const canEdit = computed(() => Boolean(props.api.update && props.fields.length))
-const canRemove = computed(() => Boolean(props.api.remove))
+const canCreate = computed(() => Boolean(props.api.create && props.fields.length && session.hasPermission(props.permissions.create)))
+const canEdit = computed(() => Boolean(props.api.update && props.fields.length && session.hasPermission(props.permissions.update)))
+const canRemove = computed(() => Boolean(props.api.remove && session.hasPermission(props.permissions.remove)))
 const fieldRules = computed(() => Object.fromEntries(props.fields.filter(field => (!editor.editing || !field.createOnly) && (field.required || (!editor.editing && field.requiredOnCreate))).map(field => [field.prop, [{ required: true, message: `请填写${field.label}`, trigger: 'submit' }]])))
 const loading = ref(false)
 const loadError = ref('')
@@ -139,6 +143,17 @@ function toggleNode(row) {
   else next.add(row[props.idKey])
   expandedIds.value = next
 }
+function expandAll() {
+  const ids = new Set()
+  function append(items) {
+    for (const item of items) {
+      if (item.children?.length) { ids.add(item[props.idKey]); append(item.children) }
+    }
+  }
+  append(rows.value)
+  expandedIds.value = ids
+}
+function collapseAll() { expandedIds.value = new Set() }
 
 async function load() {
   loading.value = true
@@ -150,6 +165,7 @@ async function load() {
     ])
     const data = listData || {}
     rows.value = Array.isArray(data) ? data : data.records || data.rows || data.list || []
+    if (props.treeMode && Object.values(query).some(value => value !== '' && value !== null && value !== undefined)) expandAll()
     total.value = Number(Array.isArray(data) ? data.length : data.total ?? data.totalCount ?? rows.value.length)
     loadError.value = ''
   } catch (error) {
@@ -171,13 +187,19 @@ function showEditor(form, editing) {
   nextTick(() => formRef.value?.clearValidate())
 }
 function clearFieldError(prop) { formRef.value?.clearValidate(prop) }
-function openCreate() {
-  showEditor(Object.fromEntries(props.fields.map(field => [field.prop, field.default ?? (field.multiple ? [] : field.type === 'number' ? 0 : '')])), false)
+function openCreate(defaults = {}) {
+  if (!canCreate.value) return
+  showEditor({ ...Object.fromEntries(props.fields.map(field => [field.prop, field.default ?? (field.multiple ? [] : field.type === 'number' ? 0 : '')])), ...defaults }, false)
 }
-function openEdit(row) {
-  showEditor(props.prepareEdit(row), true)
+async function openEdit(row) {
+  if (!canEdit.value) return
+  try { showEditor(await props.prepareEdit(row), true) }
+  catch (error) {
+    if (!error?.response && !error?.config) ElMessage.error(error?.message || '编辑信息加载失败')
+  }
 }
 async function save() {
+  if (!(editor.editing ? canEdit.value : canCreate.value)) return
   if (!(await formRef.value.validate().catch(() => false))) return
   editor.saving = true
   try {
@@ -196,7 +218,9 @@ async function save() {
   } finally { editor.saving = false }
 }
 async function remove(row) {
-  try { await ElMessageBox.confirm(`确认删除这条${props.singular || '记录'}吗？`, '确认删除', { type: 'warning' }) } catch { return }
+  if (!canRemove.value) return
+  const message = props.removeMessage?.(row) || `确认删除这条${props.singular || '记录'}吗？`
+  try { await ElMessageBox.confirm(message, '确认删除', { type: 'warning' }) } catch { return }
   try {
     const result = await props.api.remove(row[props.idKey])
     if (result === false) { ElMessage.error('删除未完成'); return }
@@ -209,7 +233,7 @@ async function remove(row) {
 }
 
 onMounted(load)
-defineExpose({ load })
+defineExpose({ load, openCreate, expandAll, collapseAll })
 </script>
 
 <style scoped>

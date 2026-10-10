@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -61,6 +63,22 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     public SysDept getOrgByDeptId(Long deptId) {
         return this.baseMapper.getOrgByDeptId(deptId);
+    }
+
+    @Override
+    public List<Long> getDeptIdsWithChildren(Long deptId) {
+        if (deptId == null || deptId <= 0 || getById(deptId) == null) {
+            return List.of();
+        }
+        Set<Long> ids = new LinkedHashSet<>();
+        ids.add(deptId);
+        sysDeptRelationService.list(Wrappers.<SysDeptRelation>lambdaQuery()
+                        .eq(SysDeptRelation::getAncestor, deptId)).stream()
+                .map(SysDeptRelation::getDescendant)
+                .filter(id -> id != null && id > 0)
+                .forEach(ids::add);
+        // 普通查询会排除已删除部门，参数中不传入 DataScope。
+        return listByIds(ids).stream().map(SysDept::getDeptId).toList();
     }
 
     public List<DeptTree> selectTree() {

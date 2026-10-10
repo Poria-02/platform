@@ -1,5 +1,6 @@
 package cn.poria.upms.api.feign;
 
+import cn.poria.common.core.constant.ServiceNameConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.entity.SysDictItem;
 import cn.poria.upms.api.vo.TreeDictItemVo;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "remoteDictService", url = "${PORIA_UPMS:http://poria-upms:4000}")
+@FeignClient(name = "remoteDictService",url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteDictService {
     @GetMapping({"/treedict/item/parent/{dictCode}/{value}"})
     R<TreeDictItemVo> getParentDictItem(@PathVariable("dictCode") String dictCode, @PathVariable("value") String value, @RequestHeader("from") String from);

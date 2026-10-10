@@ -22,9 +22,14 @@ export function tokenDetails(data, previous = {}, now = Date.now()) {
   const nestedExpiry = tokenTime(access?.expiresAt)
   const expiresAt = Number.isFinite(nestedExpiry) ? nestedExpiry : seconds > 0 ? now + seconds * 1000 : null
   const refreshExpiry = tokenTime(refresh?.expiresAt)
+  const user = data?.user_info ?? data?.additionalParameters?.user_info
+  const authorities = user?.authorities
   return {
     accessToken,
     refreshToken,
+    permissions: Array.isArray(authorities)
+      ? authorities.map(item => typeof item === 'string' ? item : item?.authority).filter(Boolean)
+      : previous.permissions || [],
     expiresAt,
     refreshAt: expiresAt ? expiresAt - Math.min(60000, Math.max(0, (expiresAt - now) / 10)) : null,
     refreshExpiresAt: Number.isFinite(refreshExpiry) ? refreshExpiry
