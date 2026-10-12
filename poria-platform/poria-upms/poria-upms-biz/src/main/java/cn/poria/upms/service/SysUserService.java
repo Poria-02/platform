@@ -6,7 +6,7 @@ import cn.poria.upms.api.dto.UserDTO;
 import cn.poria.upms.api.dto.UserInfo;
 import cn.poria.upms.api.dto.UserPwdUpdateDTO;
 import cn.poria.upms.api.entity.SysUser;
-import cn.poria.upms.api.vo.UserVO;
+import cn.poria.upms.api.vo.response.user.UserVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.request.treeDict;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class TreeDictVO {
+@Schema(description = "新增分级字典请求")
+public class TreeDictSaveModel {
 
     @Schema(description = "字典ID")
     private String id;

@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.response.user;
 
 import cn.poria.common.core.sensitive.Sensitive;
 import cn.poria.common.core.sensitive.SensitiveTypeEnum;

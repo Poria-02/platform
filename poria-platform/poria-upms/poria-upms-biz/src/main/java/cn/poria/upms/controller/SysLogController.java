@@ -1,15 +1,13 @@
 package cn.poria.upms.controller;
 
 import cn.poria.common.core.util.R;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.upms.api.entity.SysLog;
-import cn.poria.upms.api.vo.PreLogVO;
+import cn.poria.upms.api.vo.request.log.PreLogModel;
 import cn.poria.upms.service.SysLogService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,16 +36,10 @@ public class SysLogController {
         return R.ok(this.sysLogService.removeById(id));
     }
 
-    @Inner
-    @PostMapping({"/save"})
-    public R save(@RequestBody @Valid SysLog sysLog) {
-        return R.ok(this.sysLogService.save(sysLog));
-    }
-
     @PostMapping({"/logs"})
     @PreAuthorize("@pms.hasPermission('sys_log_insert')")
     @Operation(summary = "批量插入前端异常日志", description = "批量插入前端异常日志 (sys_log_insert)")
-    public R saveBatchLogs(@RequestBody List<PreLogVO> preLogVoList) {
-        return R.ok(this.sysLogService.saveBatchLogs(preLogVoList));
+    public R saveBatchLogs(@RequestBody List<PreLogModel> preLogModels) {
+        return R.ok(this.sysLogService.saveBatchLogs(preLogModels));
     }
 }

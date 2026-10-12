@@ -2,7 +2,6 @@ package cn.poria.upms.controller;
 
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.upms.api.entity.SysPublicParam;
 import cn.poria.upms.service.SysPublicParamService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -22,21 +21,16 @@ public class SysPublicParamController {
 
     private final SysPublicParamService sysPublicParamService;
 
-    @Inner(false)
-    @Operation(summary = "查询公共参数值", description = "根据key查询公共参数值")
-    @GetMapping({"/publicValue/{publicKey}"})
-    public R publicKey(@PathVariable("publicKey") String publicKey) {
-        return R.ok(this.sysPublicParamService.getSysPublicParamKeyToValue(publicKey));
-    }
-
     @Operation(summary = "分页查询", description = "分页查询")
     @GetMapping({"/page"})
+    @PreAuthorize("@pms.hasPermission('admin_syspublicparam_page')")
     public R getSysPublicParamPage(Page page, SysPublicParam sysPublicParam) {
         return R.ok(this.sysPublicParamService.page(page, Wrappers.query(sysPublicParam)));
     }
 
     @Operation(summary = "通过id查询公共参数", description = "通过id查询公共参数")
     @GetMapping({"/{publicId}"})
+    @PreAuthorize("@pms.hasPermission('admin_syspublicparam_get')")
     public R getById(@PathVariable("publicId") Long publicId) {
         return R.ok(this.sysPublicParamService.getById(publicId));
     }

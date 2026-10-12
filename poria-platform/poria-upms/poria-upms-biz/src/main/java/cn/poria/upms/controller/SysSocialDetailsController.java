@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class SysSocialDetailsController {
 
     @GetMapping("/page")
     @Operation(summary = "分页查询第三方账号")
+    @PreAuthorize("@pms.hasPermission('sys_social_details_page')")
     public R page(Page page, SysSocialDetails details) {
         return R.ok(this.socialDetailsService.page(page, Wrappers.query(details).orderByDesc("create_time")));
     }
@@ -31,6 +33,7 @@ public class SysSocialDetailsController {
     @PostMapping
     @SysLog("新增第三方账号")
     @Operation(summary = "新增第三方账号")
+    @PreAuthorize("@pms.hasPermission('sys_social_details_add')")
     public R save(@Valid @RequestBody SysSocialDetails details) {
         return R.ok(this.socialDetailsService.save(details));
     }
@@ -38,6 +41,7 @@ public class SysSocialDetailsController {
     @PutMapping
     @SysLog("修改第三方账号")
     @Operation(summary = "修改第三方账号")
+    @PreAuthorize("@pms.hasPermission('sys_social_details_edit')")
     public R update(@Valid @RequestBody SysSocialDetails details) {
         return R.ok(this.socialDetailsService.updateById(details));
     }
@@ -45,6 +49,7 @@ public class SysSocialDetailsController {
     @DeleteMapping("/{id}")
     @SysLog("删除第三方账号")
     @Operation(summary = "删除第三方账号")
+    @PreAuthorize("@pms.hasPermission('sys_social_details_del')")
     public R remove(@PathVariable Integer id) {
         return R.ok(this.socialDetailsService.removeById(id));
     }

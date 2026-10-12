@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.request.dict;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

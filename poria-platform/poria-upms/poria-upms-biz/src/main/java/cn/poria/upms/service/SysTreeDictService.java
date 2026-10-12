@@ -2,8 +2,8 @@ package cn.poria.upms.service;
 
 import cn.poria.upms.api.entity.SysTreeDict;
 import cn.poria.upms.api.entity.SysTreeDictItem;
-import cn.poria.upms.api.enums.DictionaryType;
-import cn.poria.upms.api.vo.DictQueryModel;
+import cn.poria.upms.api.constant.DictionaryType;
+import cn.poria.upms.api.vo.request.treeDict.DictQueryModel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;

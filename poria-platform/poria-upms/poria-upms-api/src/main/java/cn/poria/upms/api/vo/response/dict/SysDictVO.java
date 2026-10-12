@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.response.dict;
 
 import cn.poria.upms.api.entity.SysDictItem;
 import com.baomidou.mybatisplus.annotation.IdType;

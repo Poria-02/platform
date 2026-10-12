@@ -1,7 +1,7 @@
 package cn.poria.upms.service.impl;
 
 import cn.poria.upms.api.entity.SysLog;
-import cn.poria.upms.api.vo.PreLogVO;
+import cn.poria.upms.api.vo.request.log.PreLogModel;
 import cn.poria.upms.mapper.SysLogMapper;
 import cn.poria.upms.service.SysLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements SysLogService {
 
-    public Boolean saveBatchLogs(List<PreLogVO> preLogVoList) {
-        List<SysLog> sysLogs = preLogVoList.stream().map((pre) -> {
+    public Boolean saveBatchLogs(List<PreLogModel> preLogModels) {
+        List<SysLog> sysLogs = preLogModels.stream().map((pre) -> {
             SysLog log = new SysLog();
             log.setType("9");
             log.setTitle(pre.getInfo());

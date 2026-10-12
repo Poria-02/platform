@@ -3,15 +3,13 @@ package cn.poria.upms.controller;
 import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.common.security.service.PlatUser;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.common.data.datascope.DataScopeRoleProvider;
 import cn.poria.upms.api.entity.SysRole;
-import cn.poria.upms.api.vo.RoleVO;
+import cn.poria.upms.api.vo.request.role.RoleMenuModel;
 import cn.poria.upms.service.SysRoleMenuService;
 import cn.poria.upms.service.SysRoleService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,12 +48,6 @@ public class SysRoleController {
     @Operation(summary = "通过ID查询角色信息", description = "通过ID查询角色信息 (sys_role_get)")
     public R getById(@PathVariable Integer id) {
         return R.ok(this.sysRoleService.getById(id));
-    }
-
-    @Inner
-    @GetMapping({"/code/{code}"})
-    public R getById(@PathVariable String code) {
-        return R.ok(this.sysRoleService.getOne(new LambdaQueryWrapper<SysRole>().eq(SysRole::getRoleCode, code)));
     }
 
     @SysLog("添加角色")
@@ -108,15 +100,8 @@ public class SysRoleController {
     @PutMapping({"/menu"})
     @PreAuthorize("@pms.hasPermission('sys_role_perm')")
     @Operation(summary = "更新角色菜单", description = "更新角色菜单 (sys_role_perm)")
-    public R saveRoleMenus(@RequestBody RoleVO roleVo) {
-        SysRole sysRole = this.sysRoleService.getById(roleVo.getRoleId());
-        return R.ok(this.sysRoleMenuService.saveRoleMenus(sysRole.getRoleCode(), roleVo.getRoleId(), roleVo.getMenuIds()));
-    }
-
-    @PostMapping({"/getRoleList"})
-    @Operation(summary = "通过角色ID 查询角色列表", description = "通过角色ID 查询角色列表 (sys_role_getList)")
-    @Inner(value = false)
-    public R getRoleList(@RequestBody List<String> roleIdList) {
-        return R.ok(this.sysRoleService.listByIds(roleIdList));
+    public R saveRoleMenus(@RequestBody RoleMenuModel roleMenuModel) {
+        SysRole sysRole = this.sysRoleService.getById(roleMenuModel.getRoleId());
+        return R.ok(this.sysRoleMenuService.saveRoleMenus(sysRole.getRoleCode(), roleMenuModel.getRoleId(), roleMenuModel.getMenuIds()));
     }
 }

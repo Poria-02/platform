@@ -7,8 +7,10 @@ import cn.poria.common.core.util.R;
 import cn.poria.upms.api.dto.MenuTree;
 import cn.poria.upms.api.entity.SysMenu;
 import cn.poria.upms.api.entity.SysRoleMenu;
-import cn.poria.upms.api.vo.MenuVO;
-import cn.poria.upms.api.vo.TreeUtil;
+
+
+import cn.poria.upms.api.util.TreeUtil;
+import cn.poria.upms.api.vo.response.menu.MenuVO;
 import cn.poria.upms.mapper.SysMenuMapper;
 import cn.poria.upms.mapper.SysRoleMenuMapper;
 import cn.poria.upms.service.SysMenuService;

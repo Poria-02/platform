@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.response.treeDict;
 
 import cn.poria.upms.api.entity.SysTreeDictItem;
 import com.baomidou.mybatisplus.annotation.FieldFill;

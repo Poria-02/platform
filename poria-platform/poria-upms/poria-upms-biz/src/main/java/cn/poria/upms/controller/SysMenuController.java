@@ -4,13 +4,14 @@ import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.upms.api.entity.SysMenu;
-import cn.poria.upms.api.vo.MenuVO;
+import cn.poria.upms.api.vo.response.menu.MenuVO;
 import cn.poria.upms.service.SysMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -36,18 +37,21 @@ public class SysMenuController {
 
     @GetMapping({"/tree"})
     @Operation(summary = "返回树形菜单集合", description = "返回树形菜单集合")
+    @PreAuthorize("@pms.hasPermission('sys_menu_tree')")
     public R getTree(boolean lazy, Long parentId, String type) {
         return R.ok(this.sysMenuService.treeMenu(lazy, parentId, type));
     }
 
     @GetMapping({"/tree/{roleId}"})
     @Operation(summary = "返回角色的菜单集合", description = "返回角色的菜单集合")
+    @PreAuthorize("@pms.hasPermission('sys_menu_role_tree')")
     public R getRoleTree(@PathVariable Long roleId) {
         return R.ok(this.sysMenuService.findMenuByRoleId(roleId, null).stream().map(MenuVO::getMenuId).collect(Collectors.toList()));
     }
 
     @GetMapping({"/{id}"})
     @Operation(summary = "通过ID查询菜单的详细信息", description = "通过ID查询菜单的详细信息 (sys_menu_detail)")
+    @PreAuthorize("@pms.hasPermission('sys_menu_detail')")
     public R getById(@PathVariable Integer id) {
         return R.ok(this.sysMenuService.getById(id));
     }
@@ -55,6 +59,7 @@ public class SysMenuController {
     @SysLog("新增菜单")
     @PostMapping
     @Operation(summary = "新增菜单", description = "新增菜单 (sys_menu_add)")
+    @PreAuthorize("@pms.hasPermission('sys_menu_add')")
     public R save(@RequestBody @Valid SysMenu sysMenu) {
         this.sysMenuService.save(sysMenu);
         return R.ok(sysMenu);
@@ -63,6 +68,7 @@ public class SysMenuController {
     @SysLog("删除菜单")
     @DeleteMapping({"/{id}"})
     @Operation(summary = "删除菜单", description = "删除菜单 (sys_menu_del)")
+    @PreAuthorize("@pms.hasPermission('sys_menu_del')")
     public R removeById(@PathVariable Long id) {
         return this.sysMenuService.removeMenuById(id);
     }
@@ -70,6 +76,7 @@ public class SysMenuController {
     @SysLog("更新菜单")
     @PutMapping
     @Operation(summary = "更新菜单", description = "更新菜单 (sys_menu_edit)")
+    @PreAuthorize("@pms.hasPermission('sys_menu_edit')")
     public R update(@RequestBody @Valid SysMenu sysMenu) {
         return R.ok(this.sysMenuService.updateMenuById(sysMenu));
     }

@@ -1,4 +1,4 @@
-package cn.poria.upms.api.enums;
+package cn.poria.upms.api.constant;
 
 import lombok.Data;
 

@@ -5,7 +5,7 @@ import cn.poria.common.core.dto.RouteDto;
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
 import cn.poria.upms.api.entity.SysRouteConf;
-import cn.poria.upms.api.vo.RouteVo;
+import cn.poria.upms.api.vo.response.route.RouteVo;
 import cn.poria.upms.service.SysRouteConfService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

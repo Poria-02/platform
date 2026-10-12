@@ -1,11 +1,11 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.request.log;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "前端日志展示对象")
-public class PreLogVO {
+@Schema(description = "前端日志上报请求")
+public class PreLogModel {
 
     @Schema(description = "请求url")
     private String url;

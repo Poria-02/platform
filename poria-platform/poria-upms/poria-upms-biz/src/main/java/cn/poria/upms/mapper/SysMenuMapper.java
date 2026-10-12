@@ -1,7 +1,7 @@
 package cn.poria.upms.mapper;
 
 import cn.poria.upms.api.entity.SysMenu;
-import cn.poria.upms.api.vo.MenuVO;
+import cn.poria.upms.api.vo.response.menu.MenuVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
