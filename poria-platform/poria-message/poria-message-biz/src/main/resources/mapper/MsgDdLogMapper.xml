@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.poria.message.dao.MsgDdLogDao">
+
+
+
+    <resultMap type="cn.poria.message.entity.MsgDdLog" id="MsgDdLogMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="businessType" column="business_type" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="taskId" column="task_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="platform" column="platform" jdbcType="INTEGER"/>
+        <result property="templateKey" column="template_key" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="tenant_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="selectLogs" resultType="cn.poria.message.entity.MsgDdLog" parameterType="cn.poria.message.vo.request.LogQuery">
+        select id,business_type,phone,content,task_id,status,result,create_time,platform,template_key,tenant_id
+        from msg_dd_log
+        <where>
+            <if test="logQuery.content != null and logQuery.content != ''">
+                and content  like concat('%',#{logQuery.content},'%')
+            </if>
+            <if test="logQuery.mobile == null and logQuery.mobile != '' ">
+                and mobile = logQuery.mobile
+            </if>
+            <if test="logQuery.beginDate != null and logQuery.endDate != null ">
+                and create_time between #{logQuery.beginDate} and #{logQuery.endDate}
+            </if>
+            order by create_time desc;
+        </where>
+    </select>
+
+
+</mapper>

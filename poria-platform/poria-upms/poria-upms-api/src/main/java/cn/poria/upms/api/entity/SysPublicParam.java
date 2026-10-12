@@ -1,5 +1,6 @@
 package cn.poria.upms.api.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -59,4 +61,9 @@ public class SysPublicParam extends Model<SysPublicParam> {
 
     @Schema(description = "类型[1-检索；2-原文...]", example = "1")
     private String publicType;
+
+    @Schema(description = "备注")
+    @Size(max = 500, message = "备注不能超过500个字符")
+    @TableField(updateStrategy = FieldStrategy.NOT_NULL)
+    private String remarks;
 }

@@ -1,0 +1,61 @@
+package cn.poria.message.service.impl.sms;
+
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.net.URLEncodeUtil;
+import cn.hutool.crypto.digest.MD5;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.poria.message.enums.SmsPlatformEnum;
+import cn.poria.message.service.MsgSmsLogService;
+import cn.poria.message.service.MsgTemplateService;
+import cn.poria.message.service.SmsService;
+import cn.poria.message.vo.request.SmsSend;
+import cn.poria.message.vo.response.template.TemplateVo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.Charset;
+import java.util.Date;
+
+@Service
+@Slf4j
+public class LtSmsSendServiceImpl implements SmsService {
+
+    @Value("${message.lt.loginName}")
+    private String loginName;
+    @Value("${message.lt.password}")
+    private String password;
+    @Value("${message.lt.url}")
+    private String url;
+
+    @Autowired
+    private MsgTemplateService templateService;
+
+    @Autowired
+    private MsgSmsLogService smsLogService;
+
+    @Override
+    public void sendSms(SmsSend smsSend, TemplateVo template) {
+
+        String content = templateService.getContentByKey(smsSend.getKey(),smsSend.getParam());
+        JSONObject jsonParam = new JSONObject();
+        jsonParam.putIfAbsent("LoginName",loginName);
+        jsonParam.putIfAbsent("Pwd",password);
+        jsonParam.putIfAbsent("FeeType",2); //2 为行业套餐 3 为政务套餐
+        jsonParam.putIfAbsent("Mobile",smsSend.getPhones());
+        jsonParam.putIfAbsent("Content", content);
+
+        log.info("短信请求参数:{}",jsonParam);
+
+        String result = HttpUtil.post(url + "SendSms",jsonParam);
+        log.info("发送结果:{}",result);
+    }
+
+    @Override
+    public boolean supports(String platform) {
+        return SmsPlatformEnum.LT.getCode().equals(platform);
+    }
+}
