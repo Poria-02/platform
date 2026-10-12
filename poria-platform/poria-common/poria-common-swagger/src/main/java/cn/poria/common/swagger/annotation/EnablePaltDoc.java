@@ -10,7 +10,6 @@ import java.lang.annotation.*;
 /**
  * 开启 pig spring doc
  *
- * @author shanxincd
  * @date 2022-03-26
  */
 @Target({ ElementType.TYPE })

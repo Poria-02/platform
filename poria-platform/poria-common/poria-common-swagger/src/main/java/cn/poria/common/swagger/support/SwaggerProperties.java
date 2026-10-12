@@ -11,7 +11,6 @@ import java.util.Map;
 /**
  * SwaggerProperties
  *
- * @author shanxincd
  * @date 2018/7/25 14:00
  */
 @Data
