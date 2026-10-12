@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author shanxincd
+ * @author
  * @date 2018/8/30 数据权限查询参数
  */
 @Data

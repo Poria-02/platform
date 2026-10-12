@@ -226,8 +226,9 @@ public class SysTreeDictItemController {
     @SysLog("导入字典")
     @PostMapping({"/import"})
     @Operation(summary = "导入字典", description = "导入字典")
-    public void importtDict(@RequestParam("file") MultipartFile file) throws IOException {
+    public R<Void> importtDict(@RequestParam("file") MultipartFile file) throws IOException {
         this.treeDictItemService.importDict(file);
+        return R.ok();
     }
 
     @Inner

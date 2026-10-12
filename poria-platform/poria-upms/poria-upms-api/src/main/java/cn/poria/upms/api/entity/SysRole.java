@@ -46,9 +46,9 @@ public class SysRole extends Model<SysRole> {
     private String dsScope;
 
     @JsonIgnore
-    @AssertTrue(message = "数据权限仅支持全部、自定义、本级；自定义范围请选择有效部门")
+    @AssertTrue(message = "数据权限仅支持全部、自定义、本级、本级及以下；自定义范围请选择有效部门")
     public boolean isDataScopeValid() {
-        if (dsType == null || dsType == 0 || dsType == 3) {
+        if (dsType == null || dsType == 0 || dsType == 2 || dsType == 3) {
             return true;
         }
         if (dsType != 1 || dsScope == null || dsScope.isBlank()) {

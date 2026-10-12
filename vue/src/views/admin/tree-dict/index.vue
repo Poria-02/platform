@@ -1,6 +1,7 @@
 <template>
-  <ResourcePage title="分级字典" section="系统管理" description="维护层级字典与字典项。" singular="字典" :api="api" :columns="columns" :filters="filters" :fields="fields">
-    <template #row-actions="{ row }"><el-button link type="primary" @click="selectDict(row)">字典项</el-button></template>
+  <ResourcePage ref="pageRef" title="分级字典" section="系统管理" description="维护层级字典与字典项。" singular="字典" :api="api" :columns="columns" :filters="filters" :fields="fields">
+    <template #actions><DictionaryTransfer ref="transferRef" :api="api" extension="treedict" @imported="refreshImported" /></template>
+    <template #row-actions="{ row }"><el-button link type="primary" @click="selectDict(row)">字典项</el-button><el-button link type="primary" @click="transferRef.exportFile([row.code])">导出</el-button></template>
   </ResourcePage>
   <el-dialog :model-value="Boolean(selected)" :title="`字典项 · ${selected?.name || ''}`" width="min(980px, calc(100vw - 24px))" @close="selected = null">
     <div v-if="itemParents.length" class="item-location"><el-button link type="primary" @click="itemParents.pop()">返回上级</el-button><span>{{ itemParents.map(item => item.name).join(' / ') }}</span></div>
@@ -12,11 +13,15 @@
 <script setup>
 import { computed, ref } from 'vue'
 import ResourcePage from '@/components/ResourcePage.vue'
+import DictionaryTransfer from '@/components/DictionaryTransfer.vue'
 import * as api from './api'
+const pageRef = ref()
+const transferRef = ref()
 const selected = ref(null)
 const itemParents = ref([])
 const parentId = computed(() => itemParents.value.at(-1)?.id || '0')
 function selectDict(row) { selected.value = row; itemParents.value = [] }
+function refreshImported() { selected.value = null; itemParents.value = []; pageRef.value.load() }
 const columns = [{ prop: 'code', label: '编码' }, { prop: 'name', label: '名称' }, { prop: 'remark', label: '备注', width: 220 }, { prop: 'createTime', label: '创建时间', width: 180 }]
 const filters = [{ prop: 'code', label: '编码' }, { prop: 'name', label: '名称' }]
 const fields = [{ prop: 'code', label: '编码', required: true, createOnly: true }, { prop: 'name', label: '名称', required: true }, { prop: 'isTree', label: '树形结构', type: 'select', createOnly: true, default: true, options: [{ label: '是', value: true }, { label: '否', value: false }] }, { prop: 'remark', label: '备注', type: 'textarea' }]
