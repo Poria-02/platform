@@ -1,5 +1,6 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.request.treeDict;
 
+import cn.poria.upms.api.util.PageSearch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

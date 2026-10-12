@@ -2,7 +2,6 @@ package cn.poria.upms.controller;
 
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.upms.api.entity.SysTagItem;
 import cn.poria.upms.service.SysTagItemService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -38,13 +37,6 @@ public class SysTagItemController {
     @PreAuthorize("@pms.hasPermission('admin_tagItem_key')")
     @Cacheable(value = {"tag_items"}, key = "#tagKey", unless = "#result.data.isEmpty()")
     public R<List<SysTagItem>> selectByKeys(@PathVariable("tagKey") String tagKey) {
-        return R.ok(this.sysTagItemService.selectByKeys(tagKey));
-    }
-
-    @Inner
-    @GetMapping({"/items/{tagKey}"})
-    @Cacheable(value = {"tag_items"}, key = "#tagKey", unless = "#result.data.isEmpty()")
-    public R<List<SysTagItem>> selectItemsByKeys(@PathVariable("tagKey") String tagKey) {
         return R.ok(this.sysTagItemService.selectByKeys(tagKey));
     }
 

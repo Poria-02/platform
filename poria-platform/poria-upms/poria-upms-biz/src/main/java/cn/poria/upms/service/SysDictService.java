@@ -2,7 +2,7 @@ package cn.poria.upms.service;
 
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.entity.SysDict;
-import cn.poria.upms.api.vo.ExportDictModel;
+import cn.poria.upms.api.vo.request.dict.ExportDictModel;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

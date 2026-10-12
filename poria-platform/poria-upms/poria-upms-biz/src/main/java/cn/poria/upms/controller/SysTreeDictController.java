@@ -5,10 +5,11 @@ import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.upms.api.entity.SysTreeDict;
-import cn.poria.upms.api.enums.DictionaryType;
-import cn.poria.upms.api.vo.DictQueryModel;
-import cn.poria.upms.api.vo.TreeDictModel;
-import cn.poria.upms.api.vo.TreeDictVO;
+import cn.poria.upms.api.constant.DictionaryType;
+import cn.poria.upms.api.vo.request.treeDict.DictQueryModel;
+import cn.poria.upms.api.vo.request.treeDict.TreeDictModel;
+import cn.poria.upms.api.vo.request.treeDict.TreeDictSaveModel;
+import cn.poria.upms.api.vo.response.treeDict.TreeDictVO;
 import cn.poria.upms.service.SysTreeDictService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -34,12 +36,14 @@ public class SysTreeDictController {
 
     @Operation(summary = "字典类型")
     @GetMapping({"/types"})
+    @PreAuthorize("@pms.hasPermission('sys_treedict_types')")
     public R<List<DictionaryType>> types() {
         return R.ok(this.sysTreeDictService.getAllType());
     }
 
     @Operation(summary = "分页查询分级字典", description = "分页查询分级字典")
     @GetMapping({"/page"})
+    @PreAuthorize("@pms.hasPermission('sys_treedict_page')")
     public R<IPage<TreeDictVO>> page(@Validated DictQueryModel queryModel) {
         IPage<SysTreeDict> page = this.sysTreeDictService.page(queryModel);
         IPage<TreeDictVO> beanPage = page.convert((dict) -> {
@@ -54,6 +58,7 @@ public class SysTreeDictController {
 
     @Operation(summary = "获取字典")
     @GetMapping({"/{id}"})
+    @PreAuthorize("@pms.hasPermission('sys_treedict_get')")
     public R<TreeDictVO> find(@PathVariable("id") @NotBlank(message = "字典ID不能为空") String id) {
         Optional<SysTreeDict> dictOpt = this.sysTreeDictService.findById(id);
         Assert.isTrue(dictOpt.isPresent(), "字典不存在");
@@ -67,7 +72,8 @@ public class SysTreeDictController {
     @Operation(summary = "保存字典")
     @PostMapping({"/save"})
     @SysLog("保存字典")
-    public R<String> save(@Validated @RequestBody @NotNull(message = "字典不能为空") TreeDictVO bean) {
+    @PreAuthorize("@pms.hasPermission('sys_treedict_add')")
+    public R<String> save(@Validated @RequestBody @NotNull(message = "字典不能为空") TreeDictSaveModel bean) {
         bean.setType(DictionaryType.CUSTOMER.getId());
         Optional<SysTreeDict> sysTreeDict = this.sysTreeDictService.findByCode(bean.getCode());
         Assert.isTrue(sysTreeDict.isEmpty(), String.format("字典编码%s已存在", bean.getCode()));
@@ -83,6 +89,7 @@ public class SysTreeDictController {
     @Operation(summary = "修改字典")
     @PostMapping({"/update"})
     @SysLog("修改字典")
+    @PreAuthorize("@pms.hasPermission('sys_treedict_edit')")
     public R updateDict(@Validated @RequestBody TreeDictModel req) {
         Optional<SysTreeDict> dictOpt = this.sysTreeDictService.findById(req.getId());
         Assert.isTrue(dictOpt.isPresent(), "字典不存在");
@@ -100,6 +107,7 @@ public class SysTreeDictController {
     @Operation(summary = "删除字典")
     @SysLog("删除字典")
     @DeleteMapping({"/del/{id}"})
+    @PreAuthorize("@pms.hasPermission('sys_treedict_del')")
     public R<Boolean> delDict(@PathVariable @NotBlank(message = "字典ID不能为空") String id) {
         Optional<SysTreeDict> dictOpt = this.sysTreeDictService.findById(id);
         Assert.isTrue(dictOpt.isPresent(), "字典不存在");

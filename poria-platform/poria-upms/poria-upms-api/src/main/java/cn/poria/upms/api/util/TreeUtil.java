@@ -1,4 +1,4 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.util;
 
 import cn.poria.upms.api.dto.MenuTree;
 import cn.poria.upms.api.dto.TreeNode;

@@ -2,7 +2,6 @@ package cn.poria.upms.controller;
 
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.upms.api.entity.SysOauthClientDetails;
 import cn.poria.upms.service.SysOauthClientDetailsService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -69,11 +68,5 @@ public class SysClientController {
     public R clearClientCache() {
         this.clientDetailsService.clearClientCache();
         return R.ok();
-    }
-
-    @Inner
-    @GetMapping({"/getClientDetailsById/{clientId}"})
-    public R getClientDetailsById(@PathVariable String clientId) {
-        return R.ok(this.clientDetailsService.getOne(Wrappers.<SysOauthClientDetails>lambdaQuery().eq(SysOauthClientDetails::getClientId, clientId), false));
     }
 }

@@ -3,7 +3,7 @@ package cn.poria.upms.service;
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.dto.MenuTree;
 import cn.poria.upms.api.entity.SysMenu;
-import cn.poria.upms.api.vo.MenuVO;
+import cn.poria.upms.api.vo.response.menu.MenuVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 import java.util.Set;

@@ -32,7 +32,7 @@ import cn.poria.common.core.util.SpringContextHolder;
 import cn.poria.common.security.annotation.Inner;
 import cn.poria.upms.api.entity.SysOauthClientDetails;
 import cn.poria.upms.api.feign.RemoteClientDetailsService;
-import cn.poria.upms.api.vo.TokenVo;
+import cn.poria.upms.api.vo.response.token.TokenVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

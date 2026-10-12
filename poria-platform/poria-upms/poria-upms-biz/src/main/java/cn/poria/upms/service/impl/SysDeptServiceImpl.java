@@ -6,7 +6,7 @@ import cn.poria.common.data.datascope.DataScope;
 import cn.poria.upms.api.dto.DeptTree;
 import cn.poria.upms.api.entity.SysDept;
 import cn.poria.upms.api.entity.SysDeptRelation;
-import cn.poria.upms.api.vo.TreeUtil;
+import cn.poria.upms.api.util.TreeUtil;
 import cn.poria.upms.mapper.SysDeptMapper;
 import cn.poria.upms.service.SysDeptRelationService;
 import cn.poria.upms.service.SysDeptService;

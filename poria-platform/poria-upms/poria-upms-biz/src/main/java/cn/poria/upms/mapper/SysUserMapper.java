@@ -3,7 +3,7 @@ package cn.poria.upms.mapper;
 import cn.poria.common.data.datascope.DataScope;
 import cn.poria.upms.api.dto.UserDTO;
 import cn.poria.upms.api.entity.SysUser;
-import cn.poria.upms.api.vo.UserVO;
+import cn.poria.upms.api.vo.response.user.UserVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

@@ -1,6 +1,6 @@
 package cn.poria.upms.api.dto;
 
-import cn.poria.upms.api.vo.MenuVO;
+import cn.poria.upms.api.vo.response.menu.MenuVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

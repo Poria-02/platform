@@ -1,15 +1,14 @@
-package cn.poria.upms.api.vo;
+package cn.poria.upms.api.vo.response.treeDict;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class TreeDictItemModel {
+public class TreeDictItemVo implements Serializable {
 
     private String id;
 
@@ -27,10 +26,9 @@ public class TreeDictItemModel {
 
     private String pid = "";
 
-    @Schema(description = "排序,最长6位")
-    private @Max(value = 999999L, message = "排序值过大") @Min(value = 0L, message = "排序值太小") Integer sort;
+    private Integer sort;
 
-    private List<TreeDictItemModel> childs;
+    private List<TreeDictItemVo> childs;
 
     @Schema(description = "字典ID")
     @NotBlank(message = "字典ID不能为空")

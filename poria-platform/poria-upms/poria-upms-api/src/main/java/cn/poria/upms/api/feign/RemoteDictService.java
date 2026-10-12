@@ -3,7 +3,7 @@ package cn.poria.upms.api.feign;
 import cn.poria.common.core.constant.ServiceNameConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.upms.api.entity.SysDictItem;
-import cn.poria.upms.api.vo.TreeDictItemVo;
+import cn.poria.upms.api.vo.response.treeDict.TreeDictItemVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

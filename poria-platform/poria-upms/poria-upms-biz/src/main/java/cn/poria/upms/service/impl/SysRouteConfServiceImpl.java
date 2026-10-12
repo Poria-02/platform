@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import cn.poria.common.core.dto.RouteDto;
 import cn.poria.common.core.event.DynamicRouteInitEvent;
 import cn.poria.upms.api.entity.SysRouteConf;
-import cn.poria.upms.api.vo.RouteVo;
+import cn.poria.upms.api.vo.response.route.RouteVo;
 import cn.poria.upms.mapper.SysRouteConfMapper;
 import cn.poria.upms.service.SysRouteConfService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
