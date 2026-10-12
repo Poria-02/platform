@@ -16,10 +16,13 @@
 
 package cn.poria.common.security.annotation;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 import java.lang.annotation.*;
 
 /**
  * 服务调用不鉴权注解
+ * 标记的类或方法不展示在 Swagger / OpenAPI 文档中，与 value 的取值无关。
  *
  * @author shanxincd
  * @date 2020-06-14
@@ -27,6 +30,7 @@ import java.lang.annotation.*;
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Hidden
 public @interface Inner {
 
 	/**

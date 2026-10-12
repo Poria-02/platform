@@ -49,3 +49,19 @@ npm run dev
 4. 配置域名解析和 HTTPS。使用独立后端域名时，后端网关或反向代理需允许页面部署域名跨域访问，允许接口所需的请求方法及 `Authorization`、`Content-Type` 请求头，并处理 `OPTIONS` 预检请求。
 
 5. 访问页面部署域名，检查登录、验证码和业务接口。修改生产环境变量后，需重新打包并部署 `dist` 才会生效。
+
+## XXL-Job 定时任务界面
+
+已在“系统管理”下提供固定的“定时任务”入口，页面路径为 `/admin/job/index`，无需再往菜单数据库添加记录。入口面向已登录的平台用户，访问页面仍经过平台登录校验；XXL-Job 内部操作权限由 Admin 自己管理。
+
+在 `.env.development` 或 `.env.production` 中填写唯一的界面地址配置：
+
+```dotenv
+VITE_XXL_JOB_ADMIN_URL=http://服务器地址:9080/xxl-job-admin/
+```
+
+把示例地址替换为浏览器实际可访问的 Admin 地址，包含 `/xxl-job-admin/`。地址为空时页面显示未配置提示，不会请求调度中心。该地址直接用于 iframe，不经过平台的 API 代理，也不会附加平台访问令牌；用户在内嵌界面中使用 XXL-Job 自己的账号正常登录。
+
+环境变量变更后，开发环境由你重启已有前端实例，生产环境由你重新打包并部署。HTTPS 平台应配置 HTTPS 调度中心地址。Admin 或其代理需允许平台页面通过 iframe 嵌入，浏览器也需允许其登录 Cookie；跨站 Cookie 被拦截时会影响登录，前端地址配置不能绕过这些浏览器限制。
+
+端口和官方初始化 SQL 获取位置见 [XXL-Job 端口与 SQL 说明](../poria-platform/poria-job/XXL-Job-Docker-部署指南.md)。

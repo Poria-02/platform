@@ -51,7 +51,18 @@ const mobileOpen = ref(false)
 const tabs = ref([{ path: '/index', title: '工作台' }])
 const contextMenu = reactive({ open: false, path: '', x: 0, y: 0 })
 const contextMenuRef = ref(null)
-const menuRoots = computed(() => session.menus.filter(item => item.path !== '/index' && String(item.type) !== '1'))
+const menuRoots = computed(() => {
+  const roots = session.menus.filter(item => item.path !== '/index' && String(item.type) !== '1')
+  const jobMenu = { id: 'builtin:scheduled-jobs', title: '定时任务', path: '/admin/job/index', icon: 'clock', type: '0', children: [] }
+  const systemMenu = roots.find(item => item.title === '系统管理')
+  if (!systemMenu) {
+    return [...roots, { id: 'builtin:system', title: '系统管理', icon: 'setting', type: '0', children: [jobMenu] }]
+  }
+  return roots.map(item => item === systemMenu ? {
+    ...item,
+    children: [...(item.children || []).filter(child => child.path !== jobMenu.path), jobMenu]
+  } : item)
+})
 const currentTitle = computed(() => route.meta.title || '工作台')
 const initial = computed(() => session.displayName.slice(0, 1).toUpperCase())
 let stopClock
