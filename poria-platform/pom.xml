@@ -35,6 +35,7 @@
 		<module>poria-gateway</module>
 		<module>poria-job</module>
 		<module>poria-base</module>
+		<module>poria-message</module>
     </modules>
 
 	<dependencies>
@@ -59,6 +60,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>cn.poria</groupId>
+				<artifactId>poria-message-api</artifactId>
+				<version>${poria.version}</version>
+			</dependency>
 			<!--poria 公共版本定义-->
 			<dependency>
 				<groupId>cn.poria</groupId>

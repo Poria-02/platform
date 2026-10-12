@@ -1,0 +1,105 @@
+server:
+  port: ${SERVER_PORT:8007}
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+    include: kafka
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:}
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MESSAGE_DATABASE:poria_message}?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      minimum-idle: 1
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      auto-startup: ${MESSAGE_KAFKA_ENABLED:false}
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLE:true}
+
+logging:
+  level:
+    cn.poria.message.dao: ${MESSAGE_SQL_LOG_LEVEL:info}
+
+message:
+  mas:
+    ecName: ${SMS_MAS_EC_NAME:}
+    apId: ${SMS_MAS_AP_ID:}
+    sign: ${SMS_MAS_SIGN:}
+    secretKey: ${SMS_MAS_SECRET_KEY:}
+    url: ${SMS_MAS_URL:}
+  alis:
+    apId: ${SMS_ALI_ACCESS_KEY_ID:}
+    sign: ${SMS_ALI_SIGN:}
+    secretKey: ${SMS_ALI_ACCESS_KEY_SECRET:}
+  lt:
+    loginName: ${SMS_LT_LOGIN_NAME:}
+    password: ${SMS_LT_PASSWORD:}
+    url: ${SMS_LT_URL:}
+  esurfing:
+    plat:
+      url: ${SMS_ESURFING_URL:}
+      appKey: ${SMS_ESURFING_APP_KEY:}
+      appSecret: ${SMS_ESURFING_APP_SECRET:}
+      reportUrl: ${SMS_ESURFING_REPORT_URL:}
+      moUrl: ${SMS_ESURFING_MO_URL:}
+  ntes:
+    url: ${SMS_NTES_URL:}
+    appKey: ${SMS_NTES_APP_KEY:}
+    appSecret: ${SMS_NTES_APP_SECRET:}
+    nonce: ${SMS_NTES_NONCE:}
+    businessId: ${SMS_NTES_BUSINESS_ID:}
+
+convert:
+  url: ${MESSAGE_CONVERT_URL:}
+netease:
+  appSecret: ${NETEASE_APP_SECRET:}
+  appKey: ${NETEASE_APP_KEY:}
+tx:
+  im:
+    sdkAppId: ${TX_IM_SDK_APP_ID:0}
+    secretKey: ${TX_IM_SECRET_KEY:}
+    adminAccountName: ${TX_IM_ADMIN_ACCOUNT:administrator}
+    singExpireTime: ${TX_IM_SIGN_EXPIRE_TIME:604800}
+  trtc:
+    sdkAppId: ${TX_TRTC_SDK_APP_ID:0}
+    secretId: ${TX_TRTC_SECRET_ID:}
+    secretKey: ${TX_TRTC_SECRET_KEY:}
+    adminAccountName: ${TX_TRTC_ADMIN_ACCOUNT:administrator}
+    singExpireTime: ${TX_TRTC_SIGN_EXPIRE_TIME:604800}
+    callbackUrl: ${TX_TRTC_CALLBACK_URL:}
+  vod:
+    sdkAppId: ${TX_VOD_SDK_APP_ID:0}
+    singExpireTime: ${TX_VOD_SIGN_EXPIRE_TIME:604800}
+follow:
+  url: ${MESSAGE_FOLLOW_URL:}
+ali:
+  asr-apikey: ${ALI_ASR_API_KEY:}
+call:
+  url: ${MESSAGE_CALL_URL:}
+  appId: ${MESSAGE_CALL_APP_ID:}
+  secretKey: ${MESSAGE_CALL_SECRET_KEY:}
+cs:
+  accessKeyId: ${ALI_CONTENT_ACCESS_KEY_ID:}
+  accessKeySecret: ${ALI_CONTENT_ACCESS_KEY_SECRET:}
+yxxh:
+  base-url: ${YXXH_BASE_URL:}
+  appId: ${YXXH_APP_ID:}
+  token: ${YXXH_TOKEN:}

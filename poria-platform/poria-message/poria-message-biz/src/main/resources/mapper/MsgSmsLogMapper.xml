@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.poria.message.dao.MsgSmsLogDao">
+
+    <resultMap type="cn.poria.message.entity.MsgSmsLog" id="MsgSmsLogMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="businessType" column="business_type" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="taskId" column="task_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="platform" column="platform" jdbcType="VARCHAR"/>
+        <result property="templateKey" column="template_key" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="tenant_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+</mapper>

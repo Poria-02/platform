@@ -1,0 +1,22 @@
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      auto-startup: ${MESSAGE_KAFKA_ENABLED:false}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        fetch.max.bytes: 10485760
+        max.partition.fetch.bytes: 10485760
+        security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+        sasl.mechanism: ${KAFKA_SASL_MECHANISM:SCRAM-SHA-512}
+        sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
+    poria-producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        max.request.size: 10485760
+        security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+        sasl.mechanism: ${KAFKA_SASL_MECHANISM:SCRAM-SHA-512}
+        sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
