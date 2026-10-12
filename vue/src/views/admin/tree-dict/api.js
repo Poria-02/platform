@@ -1,4 +1,5 @@
 import { http } from '@/core/http'
+import { exportDictionary, importDictionary } from '@/core/dictionaryTransfer'
 export const list = params => http.get('/upms/treedict/page', { params })
 export const create = data => http.post('/upms/treedict/save', { code: data.code, name: data.name, isTree: data.isTree, remark: data.remark })
 export const update = data => http.post('/upms/treedict/update', { id: data.id, name: data.name, remark: data.remark })
@@ -7,3 +8,5 @@ export const listItems = (code, parentId = '0') => http.get(`/upms/treedict/item
 export const createItem = data => http.post('/upms/treedict/item/add', data)
 export const updateItem = data => http.put('/upms/treedict/item/update', data)
 export const removeItem = id => http.delete(`/upms/treedict/item/del/${id}`)
+export const exportDict = (dictTreeCode = []) => exportDictionary('/upms/treedict/item/export', { dictTreeCode })
+export const importDict = file => importDictionary('/upms/treedict/item/import', file)

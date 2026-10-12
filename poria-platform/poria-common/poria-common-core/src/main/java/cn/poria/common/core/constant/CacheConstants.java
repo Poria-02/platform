@@ -73,7 +73,7 @@ public interface CacheConstants {
 	/**
 	 * oauth 客户端信息
 	 */
-	String CLIENT_DETAILS_KEY = "poria_oauth:client:details";
+	String CLIENT_DETAILS_KEY = "oauth:client:details";
 
 	/**
 	 * spring boot admin 事件key

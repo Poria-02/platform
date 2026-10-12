@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name = "remoteTokenService", url = ServiceNameConstants.UPMS_SERVICE)
+@FeignClient(name = "remoteTokenService", url = "${PORIA_auth:http://poria-auth:3000}")
 public interface RemoteTokenService {
     @PostMapping({"/token/page"})
     R<Page> getTokenPage(@RequestBody Map<String, Object> params, @RequestHeader("from") String from);

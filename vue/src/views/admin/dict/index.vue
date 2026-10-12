@@ -1,6 +1,7 @@
 <template>
-  <ResourcePage title="字典管理" section="系统管理" description="维护字典类型与字典项。" singular="字典" :api="api" :columns="columns" :filters="filters" :fields="fields">
-    <template #row-actions="{ row }"><el-button link type="primary" @click="selected = row">字典项</el-button></template>
+  <ResourcePage ref="pageRef" title="字典管理" section="系统管理" description="维护字典类型与字典项。" singular="字典" :api="api" :columns="columns" :filters="filters" :fields="fields">
+    <template #actions><DictionaryTransfer ref="transferRef" :api="api" extension="dict" @imported="refreshImported" /></template>
+    <template #row-actions="{ row }"><el-button link type="primary" @click="selected = row">字典项</el-button><el-button link type="primary" @click="transferRef.exportFile([row.type])">导出</el-button></template>
   </ResourcePage>
   <el-dialog :model-value="Boolean(selected)" :title="`字典项 · ${selected?.type || ''}`" width="min(980px, calc(100vw - 24px))" @close="selected = null">
     <ResourcePage v-if="selected" title="字典项" section="字典管理" :api="itemApi" :columns="itemColumns" :fields="itemFields" />
@@ -9,8 +10,12 @@
 <script setup>
 import { computed, ref } from 'vue'
 import ResourcePage from '@/components/ResourcePage.vue'
+import DictionaryTransfer from '@/components/DictionaryTransfer.vue'
 import * as api from './api'
+const pageRef = ref()
+const transferRef = ref()
 const selected = ref(null)
+function refreshImported() { selected.value = null; pageRef.value.load() }
 const columns = [{ prop: 'type', label: '字典类型' }, { prop: 'description', label: '说明' }, { prop: 'system', label: '所属系统', dictionary: 'dict_type' }, { prop: 'remarks', label: '备注' }]
 const filters = [{ prop: 'type', label: '字典类型' }, { prop: 'system', label: '所属系统', type: 'select', dictionary: 'dict_type' }]
 const fields = [{ prop: 'type', label: '字典类型', required: true }, { prop: 'description', label: '说明' }, { prop: 'system', label: '所属系统', type: 'select', dictionary: 'dict_type', default: '0' }, { prop: 'remarks', label: '备注', type: 'textarea' }]
