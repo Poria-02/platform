@@ -2,19 +2,26 @@
   <div class="console-shell" :class="{ 'sidebar-collapsed': collapsed, 'mobile-open': mobileOpen }">
     <div v-if="mobileOpen" class="mobile-scrim" @click="mobileOpen = false" />
     <aside class="console-sidebar">
-      <router-link class="sidebar-brand" to="/index" @click="mobileOpen = false"><span class="brand-mark" aria-hidden="true"><i /><i /><i /><i /></span><span class="brand-word">PORIA<small>管理工作台</small></span></router-link>
+      <router-link class="sidebar-brand" to="/index" @click="mobileOpen = false"><span class="brand-mark" aria-hidden="true">P</span><span class="brand-word">PORIA<small>管理工作台</small></span></router-link>
       <nav class="sidebar-nav" aria-label="主菜单">
         <router-link class="menu-link" to="/index" @click="mobileOpen = false"><span class="menu-symbol"><MenuIcon name="house" /></span><span>工作台</span></router-link>
         <MenuItem v-for="item in menuRoots" :key="item.id || item.path" :item="item" />
       </nav>
       <div class="sidebar-weather"><WeatherWidget /></div>
-      <div class="sidebar-bottom"><span class="sidebar-status-dot" />Poria Platform</div>
+      <div class="sidebar-account">
+        <router-link class="sidebar-account__profile" to="/profile/index" aria-label="打开个人中心" title="个人中心" @click="mobileOpen = false">
+          <span class="account-avatar">{{ initial }}</span>
+          <span class="sidebar-account__info"><strong>{{ session.displayName }}</strong><small>个人中心</small></span>
+        </router-link>
+        <button class="sidebar-account__logout" type="button" aria-label="退出登录" title="退出登录" @click="handleCommand('logout')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12" /></svg>
+        </button>
+      </div>
     </aside>
     <div class="console-main">
       <header class="console-header">
         <button class="nav-toggle" type="button" aria-label="切换菜单" @click="toggleSidebar">☰</button>
         <div class="header-location"><span>工作空间</span><span class="breadcrumb-sep">/</span><strong>{{ currentTitle }}</strong></div>
-        <div class="header-actions"><el-dropdown trigger="click" @command="handleCommand"><button type="button" class="account-button"><span class="account-avatar">{{ initial }}</span><span class="account-name">{{ session.displayName }}</span><span>⌄</span></button><template #dropdown><el-dropdown-menu><el-dropdown-item command="logout">退出登录</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div>
       </header>
       <div class="workspace-tabs" role="tablist" aria-label="已打开页面">
         <div v-for="tab in tabs" :key="tab.path" class="workspace-tab" :class="{ 'workspace-tab--active': route.path === tab.path }" role="tab" tabindex="0" :aria-selected="route.path === tab.path" @click="openTab(tab.path)" @contextmenu.prevent="openContextMenu($event, tab.path)" @keydown.enter="openTab(tab.path)" @keydown.space.prevent="openTab(tab.path)">

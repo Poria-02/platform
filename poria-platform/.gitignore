@@ -61,3 +61,6 @@ gen_code
 ### node ###
 node_modules
 /poria-organization/poria-organization-biz/target/
+
+### sql ###
+sql

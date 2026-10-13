@@ -31,6 +31,7 @@ import cn.poria.upms.api.entity.SysUserRole;
 import cn.poria.upms.api.util.ParamResolver;
 import cn.poria.upms.api.vo.response.menu.MenuVO;
 import cn.poria.upms.api.vo.response.user.UserVO;
+import cn.poria.upms.api.vo.response.user.UserProfileVO;
 import cn.poria.upms.config.AuthConfigProperties;
 import cn.poria.upms.mapper.SysUserMapper;
 import cn.poria.upms.service.SysDeptRelationService;
@@ -146,6 +147,31 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public UserVO selectUserVoById(Integer id) {
         return this.baseMapper.getUserVoById(id);
+    }
+
+    @Override
+    public UserProfileVO getUserProfile(String userId) {
+        SysUser user = this.getById(userId);
+        if (user == null) {
+            throw new ServiceException("当前账号不存在");
+        }
+        UserProfileVO profile = new UserProfileVO();
+        profile.setUserId(user.getUserId());
+        profile.setUsername(user.getUsername());
+        profile.setPhone(user.getPhone());
+        profile.setAvatar(user.getAvatar());
+        profile.setLockFlag(user.getLockFlag());
+        profile.setCreateTime(user.getCreateTime());
+        profile.setUpdateTime(user.getUpdateTime());
+        if (user.getDeptId() != null) {
+            SysDept dept = this.sysDeptService.getById(user.getDeptId());
+            if (dept != null) {
+                profile.setDeptName(dept.getName());
+            }
+        }
+        profile.setRoles(this.sysRoleService.findRolesByUserId(user.getUserId()).stream()
+                .map(SysRole::getRoleName).filter(StrUtil::isNotBlank).distinct().toList());
+        return profile;
     }
 
     @CacheEvict(value = {"user_details"}, key = "#sysUser.username")

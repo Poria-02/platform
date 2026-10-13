@@ -2,6 +2,22 @@
 
 以下命令在 PowerShell 7 中执行，需要先安装 Node.js 和 npm。
 
+## 页面维护
+
+管理页面分别在 `src/views/admin/<业务目录>/index.vue` 中维护查询、表格、分页和页面操作，不再由通用列表组件统一生成。编辑弹窗位于同目录的 `EditDialog.vue`，自行维护该业务的表单、校验和保存请求；字典和标签的子项列表、子项编辑分别位于 `ItemsDialog.vue`、`ItemEditDialog.vue`。角色菜单权限使用 `role/MenuPermissionDialog.vue`，日志和令牌详情使用各自目录的 `DetailDialog.vue`。
+
+页面继续使用 Element Plus 基础控件、公共认证和 HTTP 请求工具。查询栏不带外层卡片；弹窗的配色、间距、滚动和响应式样式在 `src/styles/index.css` 中维护，业务布局在对应弹窗文件中维护。
+
+当前登录页和管理平台采用黑白极简风格：白色导航、黑色选中态及主要按钮、灰阶表格和小圆角弹窗。全局主题颜色由 `src/styles/index.css` 中的 `--accent`、`--ink`、`--muted`、`--line` 等变量维护；日历、天气和图标选择器在各自组件中维护布局。错误提示、节假日等表示业务状态的颜色继续保留。XXL-Job 内嵌页面由调度中心自身控制样式，不继承平台主题。
+
+## 个人中心
+
+左下角账号卡片进入 `/profile/index`，右侧图标单独退出登录。页面、请求和修改弹窗分别位于 `src/views/profile/index.vue`、`api.js`、`EditDialog.vue`，按独立页面维护。
+
+查询使用 `GET /upms/user/me`，仅返回本人资料，需要 `sys_user_profile`。修改手机号和密码直接使用原有 `PUT /upms/user/edit`，保持原接口实现，需要 `sys_user_edit`；前端提交本人用户名、原头像，以及手机号或加密后的原密码、新密码。修改密码成功后退出并重新登录。部门和角色由管理员维护。
+
+在其他环境中，需要在菜单管理中登记“查看个人中心”操作权限 `sys_user_profile`（按钮类型 `1`、所属平台 `admin`），并把它和已有的“用户修改”权限 `sys_user_edit` 追加到所有角色原有菜单权限中。`sys_user_edit` 同时被用户管理的更新接口共用。无需改表；新增查询接口需要由部署人员重新构建并启动 UPMS。已登录账号需重新登录获得新的权限。
+
 ## 本地启动
 
 进入前端目录，首次使用时安装依赖：

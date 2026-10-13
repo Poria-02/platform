@@ -1,14 +1,95 @@
-<template><ResourcePage title="敏感数据日志" section="审计与记录" description="审阅敏感数据访问与操作记录。" :api="api" :columns="columns" :filters="filters"><template #row-actions="{ row }"><el-button link type="primary" @click="showDetail(row)">详情</el-button></template></ResourcePage><el-dialog v-model="dialog.open" title="日志详情" width="min(720px, calc(100vw - 28px))"><el-descriptions :column="1" border><el-descriptions-item v-for="([key, value]) in Object.entries(dialog.data)" :key="key" :label="key">{{ key === 'userType' ? userTypes[value] || value : value }}</el-descriptions-item></el-descriptions></el-dialog></template>
+<template>
+  <div class="resource-page">
+    <header class="page-heading">
+      <div class="page-heading__copy"><div class="page-eyebrow">PORIA / 审计与记录</div><h1>敏感数据日志</h1><p>审阅敏感数据访问与操作记录。</p></div>
+    </header>
+    <div class="resource-toolbar">
+      <div class="filter-bar">
+        <el-input v-model="query.createName" placeholder="搜索操作人" clearable @keyup.enter="search" />
+        <el-input v-model="query.createBy" placeholder="搜索操作人 ID" clearable @keyup.enter="search" />
+        <el-button type="primary" plain @click="search">查询</el-button>
+        <el-button text @click="resetSearch">重置</el-button>
+      </div>
+      <div class="page-heading__actions">
+
+        <el-button @click="load">刷新</el-button>
+
+      </div>
+    </div>
+    <section class="surface-card">
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+
+      <el-table v-loading="loading" :data="rows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
+        <el-table-column prop="sensitiveInfo" label="敏感信息" :min-width="230" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.sensitiveInfo, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="createName" label="操作人" :min-width="130" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.createName, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="userType" label="用户类型" :min-width="130" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.userType, { format: value => userTypes[value] || value || '—' }, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="时间" :min-width="180" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.createTime, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="190" fixed="right">
+          <template #default="scope">
+            <el-button link type="primary" @click="showDetail(scope.row)">详情</el-button>
+
+          </template>
+        </el-table-column>
+      </el-table>
+      <div v-if="total > 0" class="table-footer">
+        <span>共 {{ total }} 条记录</span>
+        <el-pagination v-model:current-page="page.current" v-model:page-size="page.size" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @size-change="load" @current-change="load" />
+      </div>
+    </section>
+
+  </div><DetailDialog ref="detailRef" :user-types="userTypes" />
+</template>
+
 <script setup>
-import { reactive } from 'vue'
-import ResourcePage from '@/components/ResourcePage.vue'
+import DetailDialog from './DetailDialog.vue'
+
+import { onMounted, reactive, ref } from 'vue'
+import { displayResourceValue } from '@/core/resourceValues'
 import * as api from './api'
+
 const userTypes = { 1: '用户', 2: '患者', 3: '医护' }
-const columns = [{ prop: 'sensitiveInfo', label: '敏感信息', width: 230 }, { prop: 'createName', label: '操作人' }, { prop: 'userType', label: '用户类型', format: value => userTypes[value] || value || '—' }, { prop: 'createTime', label: '时间', width: 180 }]
-const filters = [{ prop: 'createName', label: '操作人' }, { prop: 'createBy', label: '操作人 ID' }]
-const dialog = reactive({ open: false, data: {} })
-async function showDetail(row) {
-  try { dialog.data = await api.detail(row.id) || row; dialog.open = true }
-  catch { /* HTTP 层显示错误 */ }
+
+const loading = ref(false)
+const loadError = ref('')
+const rows = ref([])
+let loadSequence = 0
+
+const total = ref(0)
+const page = reactive({ current: 1, size: 10 })
+
+const query = reactive({ createName: '', createBy: '' })
+
+async function load() {
+  const sequence = ++loadSequence
+  loading.value = true
+  try {
+    const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)), current: page.current, size: page.size }
+    const data = await api.list(params)
+    if (sequence !== loadSequence) return
+    rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
+    total.value = Number(Array.isArray(data) ? data.length : data?.total ?? data?.totalCount ?? rows.value.length)
+
+    loadError.value = ''
+  } catch (error) {
+    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+  } finally {
+    if (sequence === loadSequence) loading.value = false
+  }
 }
+
+function search() { page.current = 1; return load() }
+function resetSearch() { query.createName = ''; query.createBy = ''; return search() }
+
+onMounted(load)
+
+const detailRef = ref()
+function showDetail(row) { return detailRef.value?.open(row) }
 </script>

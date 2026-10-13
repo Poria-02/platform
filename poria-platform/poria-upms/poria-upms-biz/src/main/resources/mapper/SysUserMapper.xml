@@ -135,7 +135,7 @@
 		u.del_flag,
 		u.lock_flag,
 		u.tenant_id,
-		d.name AS deptName
+		d.name AS dept_name
 		FROM
 		sys_user  u
 		LEFT JOIN sys_dept  d ON d.dept_id = u.dept_id

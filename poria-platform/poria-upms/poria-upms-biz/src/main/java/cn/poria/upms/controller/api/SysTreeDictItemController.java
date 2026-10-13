@@ -1,4 +1,4 @@
-package cn.poria.upms.controller;
+package cn.poria.upms.controller.api;
 
 import cn.poria.common.core.util.Assert;
 import cn.poria.common.core.util.R;
