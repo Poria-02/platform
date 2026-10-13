@@ -45,8 +45,8 @@ export function refreshTokens(refreshToken) {
   })
 }
 
-export async function captcha(randomStr) {
-  const blob = await http.get('/code', { params: { randomStr }, responseType: 'blob', headers: { Accept: 'text/plain' }, skipToken: true, skipAuthRedirect: true, silent: true })
+export async function captcha(randomStr, config = {}) {
+  const blob = await http.get('/code', { ...config, params: { randomStr }, responseType: 'blob', headers: { Accept: 'text/plain' }, skipToken: true, skipAuthRedirect: true, silent: true })
   if (!blob.type.startsWith('image/')) throw new Error('验证码服务暂不可用')
   return blob
 }

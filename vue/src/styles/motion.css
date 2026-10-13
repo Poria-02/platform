@@ -1,0 +1,92 @@
+:root {
+  --motion-fast: 160ms;
+  --motion-base: 220ms;
+  --motion-enter: 240ms;
+  --motion-leave: 140ms;
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-ease-out: cubic-bezier(.4, 0, 1, 1);
+  --el-transition-duration: var(--motion-base);
+  --el-transition-duration-fast: var(--motion-fast);
+  --el-transition-fade-linear: opacity var(--motion-fast) ease;
+}
+
+.app-fade-enter-active { transition: opacity var(--motion-enter) var(--motion-ease); }
+.app-fade-leave-active { transition: opacity var(--motion-leave) var(--motion-ease-out); pointer-events: none; }
+.app-fade-enter-from, .app-fade-leave-to { opacity: 0; }
+
+.page-fade-enter-active { transition: opacity var(--motion-enter) var(--motion-ease), transform var(--motion-enter) var(--motion-ease); }
+.page-fade-leave-active { transition: opacity var(--motion-leave) var(--motion-ease-out), transform var(--motion-leave) var(--motion-ease-out); pointer-events: none; }
+.page-fade-enter-from { opacity: 0; transform: translateY(6px); }
+.page-fade-leave-to { opacity: 0; transform: translateY(-3px); }
+
+.panel-fade-enter-active { transition: opacity var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease); }
+.panel-fade-leave-active { transition: opacity var(--motion-leave) var(--motion-ease-out), transform var(--motion-leave) var(--motion-ease-out); pointer-events: none; }
+.panel-fade-enter-from, .panel-fade-leave-to { opacity: 0; transform: translateY(4px); }
+.workspace-tab-menu { animation: none; }
+
+.motion-expand { display: grid; grid-template-rows: 1fr; }
+.motion-expand__inner { min-height: 0; overflow: hidden; }
+.menu-expand-enter-active, .section-expand-enter-active { transition: grid-template-rows var(--motion-base) var(--motion-ease), opacity var(--motion-base) var(--motion-ease), margin var(--motion-base) var(--motion-ease); }
+.menu-expand-leave-active, .section-expand-leave-active { transition: grid-template-rows var(--motion-fast) var(--motion-ease-out), opacity var(--motion-fast) var(--motion-ease-out), margin var(--motion-fast) var(--motion-ease-out); pointer-events: none; }
+.menu-expand-enter-from, .menu-expand-leave-to,
+.section-expand-enter-from, .section-expand-leave-to { grid-template-rows: 0fr; opacity: 0; transform: none; }
+.menu-expand-enter-from, .menu-expand-leave-to { margin-top: 0; margin-bottom: 0; }
+
+.dialog-motion-enter-active { transition: opacity var(--motion-base) var(--motion-ease); }
+.dialog-motion-leave-active { transition: opacity var(--motion-fast) var(--motion-ease-out); pointer-events: none; }
+.dialog-motion-enter-from, .dialog-motion-leave-to { opacity: 0; }
+.dialog-motion-enter-active .el-dialog { transition: transform var(--motion-base) var(--motion-ease); }
+.dialog-motion-leave-active .el-dialog { transition: transform var(--motion-fast) var(--motion-ease-out); }
+.dialog-motion-enter-from .el-dialog, .dialog-motion-leave-to .el-dialog { transform: translateY(8px) scale(.99); }
+
+.fade-in-linear-enter-active .el-overlay-message-box,
+.fade-in-linear-leave-active .el-overlay-message-box { animation: none; }
+.fade-in-linear-enter-active .el-message-box { transition: transform var(--motion-fast) var(--motion-ease); }
+.fade-in-linear-leave-active .el-message-box { transition: transform var(--motion-fast) var(--motion-ease-out); }
+.fade-in-linear-enter-from .el-message-box,
+.fade-in-linear-leave-to .el-message-box { transform: translateY(6px) scale(.99); }
+
+.el-zoom-in-top-enter-active, .el-zoom-in-top-leave-active,
+.el-zoom-in-bottom-enter-active, .el-zoom-in-bottom-leave-active,
+.el-zoom-in-center-enter-active, .el-zoom-in-center-leave-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+}
+.el-zoom-in-top-enter-from, .el-zoom-in-top-leave-to,
+.el-zoom-in-bottom-enter-from, .el-zoom-in-bottom-leave-to,
+.el-zoom-in-center-enter-from, .el-zoom-in-center-leave-to { opacity: 0; transform: scale(.985); }
+
+.el-button, .el-input__wrapper, .el-select__wrapper, .el-switch__core, .el-switch__action,
+.nav-toggle, .workspace-tab, .menu-link, .menu-group__title,
+.sidebar-account__profile, .sidebar-account__logout {
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-ease);
+}
+.data-table .el-table__body tr > td { transition: background-color var(--motion-fast) ease; }
+.data-table .el-table__body tbody > tr, .resource-error { animation: motion-content-in var(--motion-fast) ease-out; }
+@keyframes motion-content-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 1ms;
+    --motion-base: 1ms;
+    --motion-enter: 1ms;
+    --motion-leave: 1ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  .page-fade-enter-from, .page-fade-leave-to,
+  .panel-fade-enter-from, .panel-fade-leave-to,
+  .dialog-motion-enter-from .el-dialog, .dialog-motion-leave-to .el-dialog,
+  .fade-in-linear-enter-from .el-message-box, .fade-in-linear-leave-to .el-message-box,
+  .el-zoom-in-top-enter-from, .el-zoom-in-top-leave-to,
+  .el-zoom-in-bottom-enter-from, .el-zoom-in-bottom-leave-to,
+  .el-zoom-in-center-enter-from, .el-zoom-in-center-leave-to { transform: none; }
+}

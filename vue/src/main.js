@@ -1,14 +1,18 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import locale from 'element-plus/es/locale/lang/zh-cn'
+import elementPlus from './ui/elementPlus'
 import App from './App.vue'
 import router from './core/router'
 import { startIdleMonitor } from './core/idle'
-import { startTokenRefreshMonitor } from './core/session'
+import { startPageSessionMonitor, startTokenRefreshMonitor } from './core/session'
+import { initializePageSession } from './core/token'
+import stableLoading from './core/stableLoading'
 import './styles/index.css'
+import './styles/motion.css'
+import './styles/loading.css'
 
-createApp(App).use(createPinia()).use(router).use(ElementPlus, { locale }).mount('#app')
+initializePageSession()
+createApp(App).use(createPinia()).use(router).use(elementPlus).directive('stable-loading', stableLoading).mount('#app')
 startIdleMonitor()
 startTokenRefreshMonitor()
+startPageSessionMonitor()

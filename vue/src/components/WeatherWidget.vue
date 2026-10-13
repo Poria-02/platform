@@ -10,48 +10,50 @@
       <span class="weather-condition">{{ condition.label }}</span>
     </div>
     <div v-else-if="weatherLoading" class="weather-message">正在获取天气…</div>
-    <button v-else class="weather-message weather-retry" type="button" @click="refreshWeather">{{ weatherError || '天气暂不可用' }}，重试</button>
+    <button v-else class="weather-message weather-retry" type="button" aria-label="重新获取天气" @click="refreshWeather">暂无天气数据</button>
     <div v-if="weather" class="weather-detail">体感 {{ Math.round(weather.apparent_temperature) }}° · 湿度 {{ weather.relative_humidity_2m }}%</div>
-    <div class="weather-source">{{ weather?.time ? `${weather.time.slice(11, 16)} 更新 · ` : '' }}Open-Meteo</div>
+    <div v-if="weather" class="weather-source">{{ weather.time.slice(11, 16) }} 更新 · Open-Meteo</div>
 
-    <div v-if="menuOpen" class="weather-menu">
-      <div class="weather-menu-title"><strong>切换地点</strong><span>右键或点星标设为默认</span></div>
-      <input v-model="query" class="weather-search" type="search" placeholder="搜索省、市、区县，如陕西" aria-label="搜索天气地点" autocomplete="off">
-      <template v-if="query.trim().length >= 2">
-        <div class="weather-results-title">区县结果<span v-if="districtMatches.length"> · {{ districtMatches.length }} 条</span></div>
-        <div v-if="districtLoading" class="weather-search-status">正在读取全国区县…</div>
-        <div v-else-if="districtError" class="weather-search-status">区县读取失败。<button type="button" @click="loadAreaData">重试</button></div>
-        <div v-else-if="districtMatches.length" class="weather-list">
-          <div v-for="location in districtMatches" :key="location.id" class="weather-option" @contextmenu.prevent="setDefault(location)">
-            <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small>{{ location.detail }}</small></button>
-            <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" :title="location.id === defaultLocationId ? '当前默认地点' : '设为默认地点'" @click="setDefault(location)">{{ location.id === defaultLocationId ? '★' : '☆' }}</button>
+    <Transition name="panel-fade">
+      <div v-if="menuOpen" class="weather-menu">
+        <div class="weather-menu-title"><strong>切换地点</strong><span>右键或点星标设为默认</span></div>
+        <input v-model="query" class="weather-search" type="search" placeholder="搜索省、市、区县，如陕西" aria-label="搜索天气地点" autocomplete="off">
+        <template v-if="query.trim().length >= 2">
+          <div class="weather-results-title">区县结果<span v-if="districtMatches.length"> · {{ districtMatches.length }} 条</span></div>
+          <div v-if="districtLoading" class="weather-search-status">正在读取全国区县…</div>
+          <div v-else-if="districtError" class="weather-search-status">暂无区县数据。<button type="button" @click="loadAreaData">重新获取</button></div>
+          <div v-else-if="districtMatches.length" class="weather-list">
+            <div v-for="location in districtMatches" :key="location.id" class="weather-option" @contextmenu.prevent="setDefault(location)">
+              <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small>{{ location.detail }}</small></button>
+              <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" :title="location.id === defaultLocationId ? '当前默认地点' : '设为默认地点'" @click="setDefault(location)">{{ location.id === defaultLocationId ? '★' : '☆' }}</button>
+            </div>
           </div>
-        </div>
-        <div v-else-if="searching" class="weather-search-status">正在搜索其他地点…</div>
-        <div v-else-if="searchError" class="weather-search-status">搜索失败，请重试</div>
-        <div v-else-if="!searchResults.length && !matchingLocations.length" class="weather-search-status">未找到地点，请试试城市名称</div>
-        <div v-else-if="searchResults.length" class="weather-list">
-          <div v-for="location in searchResults" :key="location.id" class="weather-option" @contextmenu.prevent="setDefault(location)">
-            <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small v-if="location.detail">{{ location.detail }}</small></button>
-            <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" title="设为默认地点" @click="setDefault(location)">☆</button>
+          <div v-else-if="searching" class="weather-search-status">正在搜索其他地点…</div>
+          <div v-else-if="searchError" class="weather-search-status">暂无地点数据，请尝试其他关键词</div>
+          <div v-else-if="!searchResults.length && !matchingLocations.length" class="weather-search-status">未找到地点，请试试城市名称</div>
+          <div v-else-if="searchResults.length" class="weather-list">
+            <div v-for="location in searchResults" :key="location.id" class="weather-option" @contextmenu.prevent="setDefault(location)">
+              <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small v-if="location.detail">{{ location.detail }}</small></button>
+              <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" title="设为默认地点" @click="setDefault(location)">☆</button>
+            </div>
           </div>
-        </div>
-      </template>
-      <template v-if="matchingLocations.length">
-        <div class="weather-results-title">常用地点</div>
-        <div class="weather-list">
-          <div v-for="location in matchingLocations" :key="location.id" class="weather-option" :class="{ 'weather-option--selected': location.id === selectedLocation.id }" @contextmenu.prevent="setDefault(location)">
-            <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small v-if="location.detail">{{ location.detail }}</small></button>
-            <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" :title="location.id === defaultLocationId ? '当前默认地点' : '设为默认地点'" @click="setDefault(location)">{{ location.id === defaultLocationId ? '★' : '☆' }}</button>
+        </template>
+        <template v-if="matchingLocations.length">
+          <div class="weather-results-title">常用地点</div>
+          <div class="weather-list">
+            <div v-for="location in matchingLocations" :key="location.id" class="weather-option" :class="{ 'weather-option--selected': location.id === selectedLocation.id }" @contextmenu.prevent="setDefault(location)">
+              <button type="button" class="weather-option-name" @click="selectLocation(location)">{{ location.name }}<small v-if="location.detail">{{ location.detail }}</small></button>
+              <button type="button" class="weather-default" :aria-label="`将${location.name}设为默认`" :title="location.id === defaultLocationId ? '当前默认地点' : '设为默认地点'" @click="setDefault(location)">{{ location.id === defaultLocationId ? '★' : '☆' }}</button>
+            </div>
           </div>
-        </div>
-      </template>
-    </div>
+        </template>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { computed, nextTick, onActivated, onDeactivated, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { loadDistricts, resolveDistrictCoordinates } from './districts'
 import { findDistricts, findWeatherLocations, matchesSavedLocation } from './weatherSearch'
 
@@ -77,7 +79,6 @@ const searching = ref(false)
 const searchError = ref(false)
 const weather = ref(null)
 const weatherLoading = ref(true)
-const weatherError = ref('')
 const districts = ref([])
 const districtLoading = ref(false)
 const districtError = ref(false)
@@ -108,15 +109,9 @@ onMounted(() => {
   restoreLocations()
   document.addEventListener('pointerdown', handleOutside)
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('visibilitychange', refreshIfStale)
   refreshWeather()
-})
-onActivated(() => {
-  if (lastWeatherAt && Date.now() - lastWeatherAt > 30 * 60 * 1000) refreshWeather()
-  refreshTimer = window.setInterval(refreshWeather, 30 * 60 * 1000)
-})
-onDeactivated(() => {
-  closeMenu()
-  window.clearInterval(refreshTimer)
+  refreshTimer = window.setInterval(refreshIfStale, 30 * 60 * 1000)
 })
 onUnmounted(() => {
   closeMenu()
@@ -124,7 +119,12 @@ onUnmounted(() => {
   window.clearInterval(refreshTimer)
   document.removeEventListener('pointerdown', handleOutside)
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('visibilitychange', refreshIfStale)
 })
+
+function refreshIfStale() {
+  if (!document.hidden && !weatherLoading.value && (!lastWeatherAt || Date.now() - lastWeatherAt >= 30 * 60 * 1000)) void refreshWeather()
+}
 
 watch(query, value => {
   window.clearTimeout(searchTimer)
@@ -231,7 +231,6 @@ async function refreshWeather() {
   const timeout = window.setTimeout(() => controller.abort(), 12000)
   weatherLoading.value = true
   weather.value = null
-  weatherError.value = ''
   try {
     let location = selectedLocation.value
     if (location.code && (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude))) {
@@ -246,12 +245,12 @@ async function refreshWeather() {
     const response = await fetch(url, { signal: controller.signal, credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store' })
     if (!response.ok) throw new Error('天气查询失败')
     const data = await response.json()
-    if (!Number.isFinite(data.current?.temperature_2m)) throw new Error('天气数据无效')
+    if (!['temperature_2m', 'apparent_temperature', 'relative_humidity_2m', 'weather_code', 'is_day'].every(key => Number.isFinite(data?.current?.[key])) || typeof data?.current?.time !== 'string') throw new Error('天气数据无效')
     if (weatherRequest === controller) {
       weather.value = data.current
       lastWeatherAt = Date.now()
     }
-  } catch (error) { if (!controller.signal.aborted && weatherRequest === controller) weatherError.value = error.message || '天气暂不可用' }
+  } catch { /* 天气属于辅助信息，获取失败时仅显示空状态。 */ }
   finally {
     window.clearTimeout(timeout)
     if (weatherRequest === controller) weatherLoading.value = false

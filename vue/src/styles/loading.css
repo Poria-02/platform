@@ -1,0 +1,14 @@
+.el-button.stable-loading { position: relative; }
+.el-button.stable-loading > .el-icon.is-loading {
+  position: absolute;
+  left: var(--loading-icon-left, 0px);
+  top: var(--loading-icon-top, 0px);
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  font-size: 12px;
+  pointer-events: none;
+  visibility: hidden;
+}
+.el-button.stable-loading > .el-icon.is-loading + span { margin-left: 0; }
+.el-button.stable-loading.has-loading-room > .el-icon.is-loading { visibility: visible; }

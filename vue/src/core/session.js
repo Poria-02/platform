@@ -4,6 +4,7 @@ import { login, logout, refreshTokens } from '@/views/login/api'
 import { fetchMenus } from './menu'
 import { clearSession, readSession, saveSession, tokenDetails } from './token'
 import { createTokenRefresher } from './refresh'
+import { invalidateDictionaries } from './dictionaries'
 
 const refreshers = new WeakMap()
 
@@ -53,30 +54,40 @@ export const useSession = defineStore('session', {
       const accessToken = this.current.accessToken
       this.clearLocal()
       void logout(accessToken).catch(() => undefined)
+      await this.redirectToLogin()
+    },
+    async redirectToLogin() {
       const { default: router, clearMenuRoutes } = await import('./router')
       if (this.current) return
       clearMenuRoutes()
       if (router.currentRoute.value.path !== '/login') {
-        await router.replace({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
+        await router.replace('/login')
       }
     },
     async ensureMenus() {
+      const sessionId = this.current?.idleId
+      if (!sessionId) return []
       if (this.menusReady) return this.menus
       if (!this.menusLoading) {
-        this.menusLoading = fetchMenus().then(menus => {
+        const operation = fetchMenus().then(menus => {
+          if (this.current?.idleId !== sessionId) return []
           this.menus = menus
           this.menusReady = true
           this.menuError = ''
           return menus
         }).catch(error => {
+          if (this.current?.idleId !== sessionId) return []
           this.menuError = error.message || '菜单加载失败'
           throw error
-        }).finally(() => { this.menusLoading = null })
+        }).finally(() => { if (this.menusLoading === operation) this.menusLoading = null })
+        this.menusLoading = operation
       }
       return this.menusLoading
     },
     clearLocal() {
-      clearSession()
+      invalidateDictionaries()
+      clearSession(this.current?.idleId)
+      refreshers.delete(this)
       this.current = null
       this.menus = []
       this.menusReady = false
@@ -86,8 +97,8 @@ export const useSession = defineStore('session', {
     async signOut() {
       const accessToken = this.current?.accessToken
       this.clearLocal()
-      if (!accessToken) return
-      await logout(accessToken).catch(() => undefined)
+      if (accessToken) void logout(accessToken).catch(() => undefined)
+      await this.redirectToLogin()
     }
   }
 })
@@ -110,4 +121,12 @@ export function startTokenRefreshMonitor() {
   watch(() => [session.current?.idleId, session.current?.refreshAt], () => schedule(), { immediate: true })
   document.addEventListener('visibilitychange', () => { if (!document.hidden) void check() })
   window.addEventListener('focus', () => { void check() })
+}
+
+export function startPageSessionMonitor() {
+  const session = useSession()
+  window.addEventListener('pageshow', event => {
+    // 从浏览器前进/后退缓存恢复的页面也不复用旧账号。
+    if (event.persisted && session.authenticated) void session.signOut()
+  })
 }

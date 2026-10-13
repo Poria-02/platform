@@ -11,6 +11,7 @@ const router = createRouter({
       path: '/', name: 'console', component: ConsoleLayout, redirect: '/index',
       children: [
         { path: 'index', name: 'home', component: () => import('@/views/index/index.vue'), meta: { title: '工作台' } },
+        { path: 'functions/index', name: 'functions', component: () => import('@/views/functions/index.vue'), meta: { title: '全部功能' } },
         { path: 'admin/job/index', name: 'scheduled-jobs', component: () => import('@/views/admin/job/index.vue'), meta: { title: '定时任务' } },
         { path: 'profile/index', name: 'profile', component: () => import('@/views/profile/index.vue'), meta: { title: '个人中心' } }
       ]
@@ -23,7 +24,7 @@ const installed = new Set()
 
 export function installMenuRoutes(menus) {
   for (const menu of flattenMenus(menus)) {
-    if (!isPageMenu(menu) || ['/index', '/admin/job/index', '/profile/index'].includes(menu.path) || installed.has(menu.path)) continue
+    if (!isPageMenu(menu) || ['/index', '/functions/index', '/admin/job/index', '/profile/index'].includes(menu.path) || installed.has(menu.path)) continue
     const component = pageFor(menu.path)
     const redirect = component ? '' : firstPagePath(menu.children)
     const route = {
@@ -46,13 +47,12 @@ router.beforeEach(async to => {
   const session = useSession()
   if (to.meta.public) return session.authenticated ? '/index' : true
   if (!session.authenticated) return { path: '/login', query: { redirect: to.fullPath } }
-  if (!session.menusReady) {
+  if (!session.menusReady && !(to.path === '/index' && session.menuError)) {
     try {
       installMenuRoutes(await session.ensureMenus())
       return { path: to.fullPath, replace: true }
     } catch {
       if (!session.authenticated) return { path: '/login', query: { redirect: to.fullPath } }
-      session.menusReady = true
       return to.path === '/index' ? true : '/index'
     }
   }

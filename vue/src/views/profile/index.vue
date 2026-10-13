@@ -2,7 +2,7 @@
   <div class="profile-page" :aria-busy="loading">
     <header class="profile-heading">
       <div><h1>个人中心</h1><p>查看你的账号资料与角色信息。</p></div>
-      <el-button :loading="loading" @click="loadProfile">刷新资料</el-button>
+      <el-button v-stable-loading="loading" :loading="loading" @click="loadProfile">刷新资料</el-button>
     </header>
     <div class="profile-grid">
       <section class="profile-identity" aria-label="账号概览">
@@ -18,7 +18,7 @@
       </section>
       <div class="profile-details">
         <section class="profile-section" aria-labelledby="profile-basic-title">
-          <header class="profile-section__heading"><div><h2 id="profile-basic-title">基本资料</h2><p>当前登录账号的信息</p></div><span class="profile-section__note">只读</span></header>
+          <header class="profile-section__heading"><div><h2 id="profile-basic-title">基本资料</h2><p>当前登录账号的信息</p></div></header>
           <div v-if="loading && !profile" class="profile-loading" role="status">正在加载账号资料…</div>
           <dl v-else class="profile-fields">
             <div><dt>账号名称</dt><dd>{{ profile?.username || '—' }}</dd></div>
@@ -48,13 +48,10 @@
 <script setup>
 import { computed, onActivated, onMounted, ref } from 'vue'
 import { useSession } from '@/core/session'
-import { useRouter } from 'vue-router'
-import { clearMenuRoutes } from '@/core/router'
 import { fetchProfile } from './api'
 import EditDialog from './EditDialog.vue'
 
 const session = useSession()
-const router = useRouter()
 const editDialog = ref()
 const profile = ref(null)
 const loading = ref(false)
@@ -80,8 +77,6 @@ async function handleSaved(mode) {
   if (mode === 'password') {
     profile.value = null
     await session.signOut()
-    clearMenuRoutes()
-    await router.replace('/login')
   } else { await loadProfile() }
 }
 

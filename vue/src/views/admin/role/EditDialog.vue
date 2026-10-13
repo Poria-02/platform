@@ -15,14 +15,14 @@
       </el-form-item>
       <el-form-item label="数据权限范围（自定义部门）" prop="dsScope" class="form-field--wide">
         <template v-if="editor.form.dsType === 1">
-          <el-tree-select :model-value="scopeIds(editor.form.dsScope)" :data="departments" :props="{ label: 'name', children: 'children' }" node-key="id" multiple show-checkbox check-strictly filterable style="width:100%" placeholder="选择允许访问的部门" @visible-change="loadDepartments" @update:model-value="editor.form.dsScope = $event.join(',')" />
+          <el-tree-select :model-value="scopeIds(editor.form.dsScope)" :data="departments" :props="{ label: 'name', children: 'children' }" node-key="id" popper-class="department-tree-popper" :indent="22" highlight-current multiple show-checkbox check-strictly filterable style="width:100%" placeholder="选择允许访问的部门" @visible-change="loadDepartments" @update:model-value="editor.form.dsScope = $event.join(',')" />
           <span v-if="departmentError" class="scope-error">{{ departmentError }}</span>
           <p class="scope-hint">只允许选中的部门。选择父部门不会自动包含下级，需要逐个勾选。</p>
         </template><span v-else class="scope-hint">{{ editor.form.dsType === 0 ? '全部数据无需选择部门。' : '无需选择部门，范围由登录用户所属部门确定。' }}</span>
       </el-form-item>
       <p class="scope-hint form-field--wide">用户拥有多个角色时，数据范围合并；任一角色为“全部”时，可访问全部部门数据。</p>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" :loading="editor.saving" @click="save">保存</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
   </el-dialog>
 </template>
 

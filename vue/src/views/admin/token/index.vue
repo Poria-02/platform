@@ -32,14 +32,14 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" @click="showDetail(scope.row)">查看</el-button><el-button link type="danger" :loading="deletingToken === scope.row.accessToken" :disabled="Boolean(deletingToken)" @click="removeToken(scope.row)">删除令牌</el-button>
+            <el-button link type="primary" @click="showDetail(scope.row)">查看</el-button><el-button v-if="canRemove" link type="danger" v-stable-loading="deletingToken === scope.row.accessToken" :loading="deletingToken === scope.row.accessToken" :disabled="Boolean(deletingToken)" @click="removeToken(scope.row)">删除令牌</el-button>
 
           </template>
         </el-table-column>
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination v-model:current-page="page.current" v-model:page-size="page.size" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @size-change="load" @current-change="load" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
 
@@ -50,7 +50,6 @@
 
 <script setup>
 import DetailDialog from './DetailDialog.vue'
-
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
@@ -59,6 +58,13 @@ import { readSession } from '@/core/token'
 import { clearMenuRoutes } from '@/core/router'
 import router from '@/core/router'
 import * as api from './api'
+import { useResourcePermissions } from '@/core/permissions'
+import { useRequestController } from '@/core/requestController'
+import { useListRouteState } from '@/core/listRouteState'
+
+const { canRemove } = useResourcePermissions('token')
+
+const nextListRequest = useRequestController()
 
 const detail = reactive({ open: false, row: {} })
 
@@ -72,6 +78,7 @@ function showDetail(row) {
 }
 
 async function removeToken(row) {
+  if (!canRemove.value || deletingToken.value) return
   try {
     await ElMessageBox.confirm('确认删除该令牌并结束对应会话吗？', '删除令牌', { type: 'warning' })
   } catch { return }
@@ -108,19 +115,23 @@ let loadSequence = 0
 const total = ref(0)
 const page = reactive({ current: 1, size: 10 })
 
+const { syncListRoute, changePage, changePageSize } = useListRouteState({ page, reload: load, isLoading: () => loading.value })
+
 async function load() {
   const sequence = ++loadSequence
+  const request = nextListRequest()
   loading.value = true
   try {
-    const params = { current: page.current, size: page.size }
-    const data = await api.list(params)
+    const params = await syncListRoute()
+    if (!params || sequence !== loadSequence) return
+    const data = await api.list(params, request)
     if (sequence !== loadSequence) return
     rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
     total.value = Number(Array.isArray(data) ? data.length : data?.total ?? data?.totalCount ?? rows.value.length)
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }

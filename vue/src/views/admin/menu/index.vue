@@ -8,7 +8,7 @@
         <el-input v-model="query.name" placeholder="搜索菜单名称" clearable @keyup.enter="search" />
         <el-input v-model="query.platform" placeholder="搜索平台" clearable @keyup.enter="search" />
         <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button text @click="resetSearch">重置</el-button>
+        <el-button @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
 
@@ -57,7 +57,6 @@
 
 <script setup>
 import EditDialog from './EditDialog.vue'
-
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
@@ -65,6 +64,13 @@ import MenuIcon from '@/ui/MenuIcon.vue'
 import { useSession } from '@/core/session'
 import { clearMenuRoutes, installMenuRoutes } from '@/core/router'
 import * as api from './api'
+import { useRequestController } from '@/core/requestController'
+import { useListRouteState } from '@/core/listRouteState'
+import { useResourcePermissions } from '@/core/permissions'
+
+const nextListRequest = useRequestController()
+
+const { canCreate, canEdit, canRemove } = useResourcePermissions('menu')
 
 const session = useSession()
 
@@ -79,18 +85,14 @@ async function refreshMenus() {
   } catch { /* 当前页面已显示保存结果，导航将在下次加载时重试。 */ }
 }
 
-const canCreate = computed(() => Boolean(api.create))
-
-const canEdit = computed(() => Boolean(api.update))
-
-const canRemove = computed(() => Boolean(api.remove))
-
 const loading = ref(false)
 const loadError = ref('')
 const rows = ref([])
 let loadSequence = 0
 
 const query = reactive({ name: '', platform: '' })
+
+const { syncListRoute } = useListRouteState({ query, reload: load, isLoading: () => loading.value })
 
 const typeChoices = computed(() => menuTypes)
 
@@ -125,17 +127,19 @@ function expandAll() {
 
 async function load() {
   const sequence = ++loadSequence
+  const request = nextListRequest()
   loading.value = true
   try {
-    const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)),  }
-    const data = await api.list(params)
+    const params = await syncListRoute()
+    if (!params || sequence !== loadSequence) return
+    const data = await api.list(params, request)
     if (sequence !== loadSequence) return
     rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
 
     if (Object.values(query).some(value => value !== '')) expandAll()
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }

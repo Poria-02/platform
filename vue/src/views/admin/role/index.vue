@@ -8,7 +8,7 @@
         <el-input v-model="query.roleName" placeholder="搜索角色名称" clearable @keyup.enter="search" />
         <el-input v-model="query.roleCode" placeholder="搜索角色编码" clearable @keyup.enter="search" />
         <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button text @click="resetSearch">重置</el-button>
+        <el-button @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
 
@@ -37,7 +37,7 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" @click="openMenus(scope.row)">菜单权限</el-button>
+            <el-button v-if="canMenus" link type="primary" @click="openMenus(scope.row)">菜单权限</el-button>
             <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
             <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
@@ -45,7 +45,7 @@
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination v-model:current-page="page.current" v-model:page-size="page.size" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @size-change="load" @current-change="load" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
     <EditDialog ref="editorRef" :data-scope-options="dataScopeOptions" :scope-option="scopeOption" :departments="departments" :department-error="departmentError" :scope-ids="scopeIds" :load-departments="loadDepartments" :can-create="canCreate" :can-edit="canEdit" :ds-type-choices="dsTypeChoices" @saved="load" />
@@ -55,13 +55,18 @@
 
 <script setup>
 import MenuPermissionDialog from './MenuPermissionDialog.vue'
-
 import EditDialog from './EditDialog.vue'
-
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
 import * as api from './api'
+import { useRequestController } from '@/core/requestController'
+import { useListRouteState } from '@/core/listRouteState'
+import { useResourcePermissions } from '@/core/permissions'
+
+const nextListRequest = useRequestController()
+
+const { canCreate, canEdit, canRemove, canMenus } = useResourcePermissions('role')
 
 const dataScopeOptions = [
   { label: '全部', value: 0, description: '允许访问全部部门的数据。' },
@@ -92,12 +97,6 @@ async function loadDepartments(visible) {
   } finally { departmentsLoading = false }
 }
 
-const canCreate = computed(() => Boolean(api.create))
-
-const canEdit = computed(() => Boolean(api.update))
-
-const canRemove = computed(() => Boolean(api.remove))
-
 const loading = ref(false)
 const loadError = ref('')
 const rows = ref([])
@@ -108,21 +107,25 @@ const page = reactive({ current: 1, size: 10 })
 
 const query = reactive({ roleName: '', roleCode: '' })
 
+const { syncListRoute, changePage, changePageSize } = useListRouteState({ query, page, reload: load, isLoading: () => loading.value })
+
 const dsTypeChoices = computed(() => dataScopeOptions)
 
 async function load() {
   const sequence = ++loadSequence
+  const request = nextListRequest()
   loading.value = true
   try {
-    const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)), current: page.current, size: page.size }
-    const data = await api.list(params)
+    const params = await syncListRoute()
+    if (!params || sequence !== loadSequence) return
+    const data = await api.list(params, request)
     if (sequence !== loadSequence) return
     rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
     total.value = Number(Array.isArray(data) ? data.length : data?.total ?? data?.totalCount ?? rows.value.length)
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }
@@ -155,7 +158,7 @@ function openEdit(row) {
 }
 
 const permissionRef = ref()
-function openMenus(row) { return permissionRef.value?.open(row) }
+function openMenus(row) { if (canMenus.value) return permissionRef.value?.open(row) }
 </script>
 
 <style scoped>

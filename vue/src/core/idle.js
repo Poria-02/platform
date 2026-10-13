@@ -2,7 +2,6 @@ import { watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useSession } from './session'
 import { activityKey, idleTimeout, saveSession } from './token'
-import router, { clearMenuRoutes } from './router'
 
 const activityEvents = ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'scroll']
 export function startIdleMonitor() {
@@ -30,9 +29,7 @@ export function startIdleMonitor() {
     revoking = true
     clearTimeout(timer)
     try { await session.signOut() }
-    catch { session.clearLocal() }
-    clearMenuRoutes()
-    await router.replace('/login')
+    catch { session.clearLocal(); await session.redirectToLogin() }
     ElMessage.info('已超过 30 分钟未操作，请重新登录')
     revoking = false
   }
@@ -58,8 +55,7 @@ export function startIdleMonitor() {
     if (!session.current?.idleId || event.key !== activityKey(session.current.idleId)) return
     if (event.newValue === null) {
       session.clearLocal()
-      clearMenuRoutes()
-      void router.replace('/login')
+      void session.redirectToLogin()
     } else schedule()
   })
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check() })

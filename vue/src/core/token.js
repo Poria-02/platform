@@ -27,6 +27,7 @@ export function tokenDetails(data, previous = {}, now = Date.now()) {
   return {
     accessToken,
     refreshToken,
+    departmentId: user ? user.orgId ?? null : previous.departmentId ?? null,
     permissions: Array.isArray(authorities)
       ? authorities.map(item => typeof item === 'string' ? item : item?.authority).filter(Boolean)
       : previous.permissions || [],
@@ -51,9 +52,14 @@ export function saveSession(session) {
   sessionStorage.setItem(storageKey, JSON.stringify(session))
 }
 
-export function clearSession() {
-  let idleId
-  try { idleId = JSON.parse(sessionStorage.getItem(storageKey) || 'null')?.idleId } catch { /* 无效会话直接清除。 */ }
+export function initializePageSession(navigationType = globalThis.performance?.getEntriesByType?.('navigation')?.[0]?.type) {
+  // 仅普通刷新可以恢复登录；重新打开或恢复关闭的页面需重新登录。
+  if (navigationType !== 'reload' || !readSession()) clearSession(undefined, { removeActivity: false })
+}
+
+export function clearSession(sessionId, { removeActivity = true } = {}) {
+  let idleId = sessionId
+  try { idleId ??= JSON.parse(sessionStorage.getItem(storageKey) || 'null')?.idleId } catch { /* 无效会话直接清除。 */ }
   sessionStorage.removeItem(storageKey)
-  if (idleId) localStorage.removeItem(activityKey(idleId))
+  if (idleId && removeActivity) localStorage.removeItem(activityKey(idleId))
 }

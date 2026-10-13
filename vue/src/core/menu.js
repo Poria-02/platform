@@ -68,3 +68,16 @@ export function firstPagePath(items) {
 export async function fetchMenus() {
   return normalizeMenus(await fetchMyMenus())
 }
+
+export function consoleMenus(menus) {
+  const roots = menus.filter(item => item.path !== '/index' && String(item.type) !== '1')
+  const jobMenu = { id: 'builtin:scheduled-jobs', title: '定时任务', path: '/admin/job/index', icon: 'clock', type: '0', children: [] }
+  const systemMenu = roots.find(item => item.title === '系统管理')
+  if (!systemMenu) {
+    return [...roots, { id: 'builtin:system', title: '系统管理', icon: 'setting', type: '0', children: [jobMenu] }]
+  }
+  return roots.map(item => item === systemMenu ? {
+    ...item,
+    children: [...(item.children || []).filter(child => child.path !== jobMenu.path), jobMenu]
+  } : item)
+}

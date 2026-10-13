@@ -46,22 +46,18 @@
 
 <script setup>
 import ItemEditDialog from './ItemEditDialog.vue'
-
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
 import * as api from './api'
+import { useResourcePermissions } from '@/core/permissions'
+
+const { canCreate: itemCanCreate, canEdit: itemCanEdit, canRemove: itemCanRemove } = useResourcePermissions('dictItem')
 
 const props = defineProps({
   selected: { type: Object, required: true }
 })
 const emit = defineEmits(["close"])
-
-const itemCanCreate = computed(() => Boolean(api.createItem))
-
-const itemCanEdit = computed(() => Boolean(api.updateItem))
-
-const itemCanRemove = computed(() => Boolean(api.removeItem))
 
 const itemLoading = ref(false)
 

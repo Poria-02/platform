@@ -1,6 +1,6 @@
 import { http } from '@/core/http'
-export async function list({ current = 1, size = 10, roleName = '', roleCode = '' } = {}) {
-  const roles = await http.get('/upms/role/list') || []
+export async function list({ current = 1, size = 10, roleName = '', roleCode = '' } = {}, config = {}) {
+  const roles = await http.get('/upms/role/list', config) || []
   const filtered = roles.filter(role =>
     (!roleName || role.roleName?.includes(roleName)) && (!roleCode || role.roleCode?.includes(roleCode)))
   const start = (current - 1) * size
