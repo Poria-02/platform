@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.R;
-import cn.poria.common.core.util.RetOps;
 import cn.poria.common.security.service.PlatUser;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.upms.api.entity.SysRole;
@@ -29,59 +28,80 @@ public class PlatDefaultDatascopeHandle implements DataScopeHandle {
     @Override
     public Boolean calcScope(DataScope dataScope) {
 
+        dataScope.setResolvedDeptList(new ArrayList<>());
+        dataScope.setAllDepartments(false);
         PlatUser user = SecurityUtils.getUser();
-        Set<String> roleIdList = user == null ? Collections.EMPTY_SET : user.getRoles();
-        List<Long> deptList = dataScope.getDeptList();
-
-        // 当前用户的角色为空 , 返回false
+        Set<String> roleIdList = user == null ? Collections.emptySet() : user.getRoles();
         if (CollectionUtil.isEmpty(roleIdList)) {
             return false;
         }
-
         R<List<SysRole>> result = dataScopeService.getRoleList(new ArrayList<>(roleIdList));
-
-        // @formatter:off
-        SysRole role = RetOps.of(result).getData().orElseGet(Collections::emptyList).stream().min(Comparator.comparingInt(SysRole::getDsType)).orElse(null);
-        //角色有可能已经删除了
-        if (role == null){
+        if (result == null || !result.isSuccess() || result.getData() == null) {
             return false;
         }
-
+        // 保留原有角色类型优先级，只使用当前账号实际拥有的有效角色。
+        SysRole role = result.getData().stream()
+                .filter(Objects::nonNull)
+                .filter(item -> roleIdList.contains(String.valueOf(item.getRoleId())))
+                .filter(item -> item.getDsType() != null && item.getDsType() >= 0 && item.getDsType() <= 3)
+                .min(Comparator.comparingInt(SysRole::getDsType)).orElse(null);
+        if (role == null) {
+            return false;
+        }
         Integer dsType = role.getDsType();
-        // 查询全部
-        if (DataScopeTypeEnum.ALL.getType() == dsType) {
-            return true;
-        }
-        // 自定义
+        boolean allDepartments = DataScopeTypeEnum.ALL.getType() == dsType;
+        Set<Long> allowedDepartments = new LinkedHashSet<>();
         if (DataScopeTypeEnum.CUSTOM.getType() == dsType && StrUtil.isNotBlank(role.getDsScope())) {
-            String dsScope = role.getDsScope();
-            deptList.addAll(Arrays.stream(dsScope.split(StrUtil.COMMA)).map(Long::parseLong).toList());
-        }
-
-        // 只查询本级
-        if (DataScopeTypeEnum.OWN_LEVEL.getType() == dsType) {
-            if (user != null) {
-                deptList.add(user.getOrgId());
-            }else {
-                return  false;
+            try {
+                for (String value : role.getDsScope().split(StrUtil.COMMA, -1)) {
+                    long id = Long.parseLong(value.trim());
+                    if (id <= 0) {
+                        return false;
+                    }
+                    allowedDepartments.add(id);
+                }
+            } catch (NumberFormatException ex) {
+                return false;
             }
         }
-
-        // 查询本级及以下部门
+        if (DataScopeTypeEnum.OWN_LEVEL.getType() == dsType && user.getOrgId() != null && user.getOrgId() > 0) {
+            allowedDepartments.add(user.getOrgId());
+        }
         if (DataScopeTypeEnum.DEPT_LEVEL.getType() == dsType) {
-            Long deptId = null;
-            if (user != null) {deptId = user.getOrgId();}
+            Long deptId = user.getOrgId();
             if (deptId == null || deptId <= 0) {
                 return false;
             }
             R<List<Long>> body = deptService.getDeptIdsWithChildrenInner(deptId, SecurityConstants.FROM_IN);
-            if (body != null && body.isSuccess() && body.getData() != null) {
-                deptList.addAll(body.getData().stream()
-                        .filter(id -> id != null && id > 0).distinct().toList());
+            if (body == null || !body.isSuccess() || body.getData() == null) {
+                return false;
+            }
+            body.getData().stream().filter(id -> id != null && id > 0).forEach(allowedDepartments::add);
+        }
+        // 查询部门是筛选条件，只能与账号允许的范围取交集。
+        if (CollectionUtil.isNotEmpty(dataScope.getDeptList())) {
+            Set<Long> requestedDepartments = new LinkedHashSet<>();
+            dataScope.getDeptList().stream().filter(id -> id != null && id > 0).forEach(requestedDepartments::add);
+            if (allDepartments) {
+                allowedDepartments.addAll(requestedDepartments);
+                allDepartments = false;
+            } else {
+                allowedDepartments.retainAll(requestedDepartments);
             }
         }
-
-
-        return false;
+        if (Boolean.TRUE.equals(dataScope.getIsOnly())) {
+            Long deptId = user.getOrgId();
+            if (allDepartments) {
+                if (deptId != null && deptId > 0) {
+                    allowedDepartments.add(deptId);
+                }
+                allDepartments = false;
+            } else {
+                allowedDepartments.removeIf(id -> !id.equals(deptId));
+            }
+        }
+        dataScope.setResolvedDeptList(new ArrayList<>(allowedDepartments));
+        dataScope.setAllDepartments(allDepartments);
+        return allDepartments && StrUtil.isBlank(dataScope.getUsername());
     }
 }

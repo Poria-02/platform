@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" v-model="dialog.open" :title="`菜单权限 · ${dialog.roleName}`" width="min(680px, calc(100vw - 28px))" append-to-body>
-    <p class="menu-permission-hint">分别勾选页面和操作权限，保存时会自动包含上级菜单。</p>
+    <p class="menu-permission-hint">分别勾选页面和操作权限，保存时会自动包含上级菜单；所有角色默认保留个人中心查看和修改权限。</p>
     <el-tree ref="treeRef" :data="dialog.tree" node-key="id" show-checkbox check-strictly :props="{ label: 'name', children: 'children' }" :default-checked-keys="dialog.checked" />
     <template #footer><el-button @click="dialog.open = false">取消</el-button><el-button type="primary" :loading="dialog.saving" @click="saveMenus">保存权限</el-button></template>
   </el-dialog>
