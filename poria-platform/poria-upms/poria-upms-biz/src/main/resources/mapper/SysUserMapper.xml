@@ -148,6 +148,6 @@
 				AND u.dept_id = #{query.deptId}
 			</if>
 		</where>
-		ORDER BY u.create_time DESC
+		ORDER BY u.create_time DESC, u.user_id DESC
 	</select>
 </mapper>
