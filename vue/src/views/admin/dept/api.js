@@ -2,6 +2,7 @@ import { http } from '@/core/http'
 
 export const tree = () => http.get('/upms/dept/tree')
 export const detail = id => http.get(`/upms/dept/detail/${id}`)
+export const typeItems = () => http.get('/upms/dict/type/dept_type', { silent: true })
 
 function payload(data) {
   return {
@@ -9,7 +10,7 @@ function payload(data) {
     name: data.name?.trim(),
     parentId: data.parentId ?? 0,
     sort: data.sort ?? 0,
-    type: data.type,
+    type: data.type === '' || data.type == null ? null : Number(data.type),
     detailId: data.detailId || null
   }
 }

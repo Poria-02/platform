@@ -11,7 +11,8 @@ const router = createRouter({
       path: '/', name: 'console', component: ConsoleLayout, redirect: '/index',
       children: [
         { path: 'index', name: 'home', component: () => import('@/views/index/index.vue'), meta: { title: '工作台' } },
-        { path: 'admin/job/index', name: 'scheduled-jobs', component: () => import('@/views/admin/job/index.vue'), meta: { title: '定时任务' } }
+        { path: 'admin/job/index', name: 'scheduled-jobs', component: () => import('@/views/admin/job/index.vue'), meta: { title: '定时任务' } },
+        { path: 'profile/index', name: 'profile', component: () => import('@/views/profile/index.vue'), meta: { title: '个人中心' } }
       ]
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/not-found/index.vue') }
@@ -22,7 +23,7 @@ const installed = new Set()
 
 export function installMenuRoutes(menus) {
   for (const menu of flattenMenus(menus)) {
-    if (!isPageMenu(menu) || ['/index', '/admin/job/index'].includes(menu.path) || installed.has(menu.path)) continue
+    if (!isPageMenu(menu) || ['/index', '/admin/job/index', '/profile/index'].includes(menu.path) || installed.has(menu.path)) continue
     const component = pageFor(menu.path)
     const redirect = component ? '' : firstPagePath(menu.children)
     const route = {

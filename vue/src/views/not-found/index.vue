@@ -6,5 +6,5 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 </script>
 <style scoped>
-.empty-page { max-width: 650px; margin: 14vh auto; padding: 36px; border: 1px solid #e8eff2; border-radius: 18px; background: #fff; text-align: center; }.empty-page__number { font-size: 110px; line-height: 1; font-weight: 850; letter-spacing: -.09em; color: #d4eee3; }h1 { margin: 18px 0 8px; color: #23344b; font-size: 29px; }p { color: #8392a5; }.empty-page__files { display: grid; gap: 8px; margin: 24px 0; }code { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #edf8f3; color: #278d72; }.text-link { color: #278d72; font-weight: 700; }
+.empty-page { max-width: 650px; margin: 14vh auto; padding: 36px; border: 1px solid #eeeeee; border-radius: 4px; background: #ffffff; text-align: center; }.empty-page__number { font-size: 110px; line-height: 1; font-weight: 850; letter-spacing: -.09em; color: #e8e8e8; }h1 { margin: 18px 0 8px; color: #323232; font-size: 29px; }p { color: #909090; }.empty-page__files { display: grid; gap: 8px; margin: 24px 0; }code { display: inline-block; padding: 8px 12px; border-radius: 4px; background: #f5f5f5; color: #757575; }.text-link { color: #757575; font-weight: 700; }
 </style>

@@ -1,24 +1,75 @@
 <template>
-  <ResourcePage title="菜单管理" section="组织与权限" description="定义导航结构。path 同时决定页面路由与前端目录。" singular="菜单" :api="api" id-key="id" :columns="columns" :filters="filters" :fields="fields" :pagination="false" tree-mode :prepare-edit="prepareEdit" @saved="refreshMenus" @removed="refreshMenus">
-    <template #cell-icon="{ row }"><span class="menu-icon-cell"><MenuIcon :name="row.icon" /><span>{{ row.icon || '默认' }}</span></span></template>
-    <template #field-icon="{ form }"><IconPicker v-model="form.icon" /></template>
-    <template #form-hint="{ form }"><div class="path-hint"><strong>目录映射</strong><p>例如 <code>/admin/menu/index</code> 对应：</p><code>src/views/admin/menu/index.vue</code><br><code>src/views/admin/menu/api.js</code><p>相对路径按父菜单路径展开。按钮类型 1 不生成页面路由。</p><p v-if="form.path && form.path.startsWith('/')">当前路径将查找对应目录下的 <code>index.vue</code> 和 <code>api.js</code></p></div></template>
-  </ResourcePage>
+  <div class="resource-page">
+    <header class="page-heading">
+      <div class="page-heading__copy"><div class="page-eyebrow">PORIA / 组织与权限</div><h1>菜单管理</h1><p>定义导航结构。path 同时决定页面路由与前端目录。</p></div>
+    </header>
+    <div class="resource-toolbar">
+      <div class="filter-bar">
+        <el-input v-model="query.name" placeholder="搜索菜单名称" clearable @keyup.enter="search" />
+        <el-input v-model="query.platform" placeholder="搜索平台" clearable @keyup.enter="search" />
+        <el-button type="primary" plain @click="search">查询</el-button>
+        <el-button text @click="resetSearch">重置</el-button>
+      </div>
+      <div class="page-heading__actions">
+
+        <el-button @click="load">刷新</el-button>
+        <el-button v-if="canCreate" type="primary" @click="openCreate()">新增菜单</el-button>
+      </div>
+    </div>
+    <section class="surface-card">
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+
+      <el-table v-loading="loading" :data="visibleRows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
+        <el-table-column prop="name" label="名称" :min-width="190" show-overflow-tooltip>
+          <template #default="scope"><div class="tree-label" :style="{ paddingLeft: `${scope.row.__depth * 18}px` }"><button v-if="scope.row.__hasChildren" class="tree-label__toggle" type="button" :aria-expanded="expandedIds.has(scope.row.id)" @click="toggleNode(scope.row)"><span :class="{ 'tree-label__arrow--open': expandedIds.has(scope.row.id) }">›</span>{{ displayResourceValue(scope.row.name, {}, [], scope.row) }}</button><span v-else class="tree-label__leaf"><span class="tree-label__spacer" />{{ displayResourceValue(scope.row.name, {}, [], scope.row) }}</span></div></template>
+        </el-table-column>
+        <el-table-column prop="icon" label="图标" :min-width="125" show-overflow-tooltip>
+          <template #default="scope"><span class="menu-icon-cell"><MenuIcon :name="scope.row.icon" /><span>{{ scope.row.icon || '默认' }}</span></span></template>
+        </el-table-column>
+        <el-table-column prop="path" label="路由 path" :min-width="220" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.path, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="permission" label="权限标识" :min-width="180" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.permission, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="type" label="类型" :min-width="130" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.type, {}, typeChoices, scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="platform" label="平台" :min-width="130" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.platform, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column prop="sort" label="排序" :min-width="130" show-overflow-tooltip>
+          <template #default="scope">{{ displayResourceValue(scope.row.sort, {}, [], scope.row) }}</template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="190" fixed="right">
+          <template #default="scope">
+
+            <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+    </section>
+    <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" :type-choices="typeChoices" @saved="afterMenuSaved" />
+  </div>
 </template>
+
 <script setup>
-import { defineAsyncComponent } from 'vue'
-import ResourcePage from '@/components/ResourcePage.vue'
+import EditDialog from './EditDialog.vue'
+
+import { computed, onMounted, reactive, ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { displayResourceValue } from '@/core/resourceValues'
 import MenuIcon from '@/ui/MenuIcon.vue'
 import { useSession } from '@/core/session'
 import { clearMenuRoutes, installMenuRoutes } from '@/core/router'
 import * as api from './api'
-const IconPicker = defineAsyncComponent(() => import('@/ui/IconPicker.vue'))
+
 const session = useSession()
+
 const menuTypes = [{ label: '菜单', value: '0' }, { label: '按钮', value: '1' }]
-const columns = [{ prop: 'name', label: '名称', width: 190 }, { prop: 'icon', label: '图标', width: 125 }, { prop: 'path', label: '路由 path', width: 220 }, { prop: 'permission', label: '权限标识', width: 180 }, { prop: 'type', label: '类型', options: menuTypes }, { prop: 'platform', label: '平台' }, { prop: 'sort', label: '排序' }]
-const filters = [{ prop: 'name', label: '菜单名称' }, { prop: 'platform', label: '平台' }]
-const fields = [{ prop: 'name', label: '菜单名称', required: true }, { prop: 'path', label: '路由 path' }, { prop: 'permission', label: '权限标识' }, { prop: 'parentId', label: '上级菜单 ID', type: 'number', min: -1, default: -1 }, { prop: 'icon', label: '图标' }, { prop: 'type', label: '菜单类型', type: 'select', required: true, default: '0', options: menuTypes }, { prop: 'platform', label: '所属平台' }, { prop: 'sort', label: '排序', type: 'number', default: 0 }]
-const prepareEdit = row => ({ menuId: row.id, ...Object.fromEntries(fields.map(field => [field.prop, row[field.prop] ?? field.default ?? ''])) })
+
 async function refreshMenus() {
   session.menusReady = false
   try {
@@ -27,5 +78,96 @@ async function refreshMenus() {
     installMenuRoutes(menus)
   } catch { /* 当前页面已显示保存结果，导航将在下次加载时重试。 */ }
 }
+
+const canCreate = computed(() => Boolean(api.create))
+
+const canEdit = computed(() => Boolean(api.update))
+
+const canRemove = computed(() => Boolean(api.remove))
+
+const loading = ref(false)
+const loadError = ref('')
+const rows = ref([])
+let loadSequence = 0
+
+const query = reactive({ name: '', platform: '' })
+
+const typeChoices = computed(() => menuTypes)
+
+const expandedIds = ref(new Set())
+const visibleRows = computed(() => {
+  const result = []
+  function append(nodes, depth) {
+    for (const node of nodes) {
+      const { children, ...row } = node
+      const hasChildren = Boolean(children?.length)
+      result.push({ ...row, __depth: depth, __hasChildren: hasChildren })
+      if (hasChildren && expandedIds.value.has(node.id)) append(children, depth + 1)
+    }
+  }
+  append(rows.value, 0)
+  return result
+})
+function toggleNode(row) {
+  const next = new Set(expandedIds.value)
+  if (next.has(row.id)) next.delete(row.id)
+  else next.add(row.id)
+  expandedIds.value = next
+}
+function expandAll() {
+  const ids = new Set()
+  function append(nodes) {
+    for (const node of nodes) if (node.children?.length) { ids.add(node.id); append(node.children) }
+  }
+  append(rows.value)
+  expandedIds.value = ids
+}
+
+async function load() {
+  const sequence = ++loadSequence
+  loading.value = true
+  try {
+    const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)),  }
+    const data = await api.list(params)
+    if (sequence !== loadSequence) return
+    rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
+
+    if (Object.values(query).some(value => value !== '')) expandAll()
+    loadError.value = ''
+  } catch (error) {
+    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+  } finally {
+    if (sequence === loadSequence) loading.value = false
+  }
+}
+
+function search() { return load() }
+function resetSearch() { query.name = ''; query.platform = ''; return search() }
+
+async function remove(row) {
+  if (!canRemove.value) return
+  try { await ElMessageBox.confirm("确认删除这条菜单吗？", '确认删除', { type: 'warning' }) } catch { return }
+  try {
+    const result = await api.remove(row.id)
+    if (result === false) { ElMessage.error('删除未完成'); return }
+    ElMessage.success('删除成功')
+
+    await load()
+    await refreshMenus()
+  } catch { /* 请求层显示错误。 */ }
+}
+
+onMounted(load)
+
+const editorRef = ref()
+function openCreate(defaults = {}) {
+  if (canCreate.value) editorRef.value?.openCreate(defaults)
+}
+function openEdit(row) {
+  if (canEdit.value) return editorRef.value?.openEdit(row)
+}
+
+async function afterMenuSaved() { await load(); await refreshMenus() }
 </script>
-<style scoped>.path-hint { grid-column: 1 / -1; padding: 14px; border-radius: 9px; background: #eef8f3; color: #356455; font-size: 12px; line-height: 1.6; }.path-hint p { margin: 6px 0; }.path-hint code { color: #116b58; font-weight: 700; }.menu-icon-cell { display: inline-flex; align-items: center; gap: 7px; color: #60768a; }.menu-icon-cell .el-icon { color: #33a983; font-size: 16px; }</style>
+
+<style scoped>.path-hint { grid-column: 1 / -1; padding: 14px; border-radius: 4px; background: #f6f6f6; color: #595959; font-size: 12px; line-height: 1.6; }.path-hint p { margin: 6px 0; }.path-hint code { color: #565656; font-weight: 700; }.menu-icon-cell { display: inline-flex; align-items: center; gap: 7px; color: #737373; }.menu-icon-cell .el-icon { color: #8d8d8d; font-size: 16px; }</style>

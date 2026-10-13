@@ -7,6 +7,7 @@ import cn.poria.upms.api.dto.UserInfo;
 import cn.poria.upms.api.dto.UserPwdUpdateDTO;
 import cn.poria.upms.api.entity.SysUser;
 import cn.poria.upms.api.vo.response.user.UserVO;
+import cn.poria.upms.api.vo.response.user.UserProfileVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -28,6 +29,8 @@ public interface SysUserService extends IService<SysUser> {
    Boolean updateUser(UserDTO userDto);
 
    UserVO selectUserVoById(Integer id);
+
+   UserProfileVO getUserProfile(String userId);
 
    List<SysUser> listAncestorUsers(String username);
 

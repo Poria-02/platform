@@ -1,10 +1,13 @@
-package cn.poria.upms.controller;
+package cn.poria.upms.controller.api;
 
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
+import cn.poria.common.security.service.PlatUser;
+import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.upms.api.dto.UserDTO;
 import cn.poria.upms.api.entity.SysUser;
 import cn.poria.upms.api.vo.response.user.UserVO;
+import cn.poria.upms.api.vo.response.user.UserProfileVO;
 import cn.poria.upms.service.SysUserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +18,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +30,17 @@ public class SysUserController {
 
     @Resource
     private final SysUserService userService;
+
+    @GetMapping("/me")
+    @Operation(summary = "查看个人中心", description = "仅返回当前登录用户的资料（sys_user_profile）")
+    @PreAuthorize("@pms.hasPermission('sys_user_profile')")
+    public R<UserProfileVO> currentProfile() {
+        PlatUser user = SecurityUtils.getUser();
+        if (user == null) {
+            throw new AccessDeniedException("请先使用平台账号登录");
+        }
+        return R.ok(this.userService.getUserProfile(user.getId()));
+    }
 
     @GetMapping({"/{id}"})
     @Operation(summary = "通过ID查询用户信息", description = "通过ID查询用户信息(sys_user_get)")

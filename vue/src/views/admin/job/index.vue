@@ -24,7 +24,7 @@ const revision = ref(0)
 .job-heading h1 { margin: 6px 0 7px; color: var(--ink); font-size: 28px; letter-spacing: -.035em; }
 .job-heading p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .job-content { height: max(620px, calc(100vh - 265px)); }
-.job-content iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.job-content iframe { display: block; width: 100%; height: 100%; border: 0; background: #ffffff; }
 .job-content .el-empty { height: 100%; }
 @media (max-width: 700px) { .job-heading { align-items: flex-start; flex-direction: column; } .job-content { height: max(540px, calc(100vh - 300px)); } }
 </style>
