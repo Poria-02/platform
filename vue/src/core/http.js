@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { clearSession, readSession } from './token'
+import { readSession } from './token'
 
 export const http = axios.create({
   baseURL: import.meta.env.VITE_API_PREFIX || '/api',
@@ -45,6 +45,7 @@ function readResponse(response) {
 }
 
 async function handleError(error) {
+  if (axios.isCancel(error)) return Promise.reject(error)
   const config = error.config || error.response?.config || {}
   const body = error.response?.data
   const hadSession = Boolean(readSession())
@@ -66,13 +67,11 @@ async function handleError(error) {
         return Promise.reject(refreshError)
       }
     }
-    clearSession()
-    const [{ useSession }, { default: router, clearMenuRoutes }] = await Promise.all([import('./session'), import('./router')])
-    useSession().$reset()
-    clearMenuRoutes()
-    if (router.currentRoute.value.path !== '/login') {
-      router.replace({ path: '/login', query: { redirect: router.currentRoute.value.fullPath } })
-    }
+    const { useSession } = await import('./session')
+    const session = useSession()
+    if (config.authSessionId && config.authSessionId !== session.current?.idleId) return Promise.reject(error)
+    session.clearLocal()
+    await session.redirectToLogin()
   }
   if (!config.silent && !(unauthorized && !hadSession)) ElMessage.error(body?.msg || error.message || '网络连接失败')
   return Promise.reject(error)

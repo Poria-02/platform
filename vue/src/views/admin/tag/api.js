@@ -1,5 +1,5 @@
 import { http } from '@/core/http'
-export const list = params => http.get('/upms/tag/page', { params })
+export const list = (params, config = {}) => http.get('/upms/tag/page', { ...config, params })
 export const create = data => http.post('/upms/tag', data)
 export const update = data => http.put('/upms/tag', data)
 export const remove = id => http.delete(`/upms/tag/${id}`)

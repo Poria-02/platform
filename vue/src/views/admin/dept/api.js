@@ -1,8 +1,9 @@
 import { http } from '@/core/http'
+import { fetchDictionary } from '@/core/dictionaries'
 
-export const tree = () => http.get('/upms/dept/tree')
+export const tree = (config = {}) => http.get('/upms/dept/tree', config)
 export const detail = id => http.get(`/upms/dept/detail/${id}`)
-export const typeItems = () => http.get('/upms/dict/type/dept_type', { silent: true })
+export const typeItems = () => fetchDictionary('dept_type')
 
 function payload(data) {
   return {

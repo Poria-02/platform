@@ -8,12 +8,12 @@
         <el-input v-model="query.type" placeholder="搜索字典类型" clearable @keyup.enter="search" />
         <el-select v-model="query.system" placeholder="选择所属系统" clearable><el-option v-for="option in systemChoices" :key="option.value" :label="option.label" :value="option.value" /></el-select>
         <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button text @click="resetSearch">重置</el-button>
+        <el-button @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
         <input ref="fileInput" type="file" accept=".dict" hidden :disabled="transferBusy" @change="importFile">
-        <el-button :loading="importing" :disabled="transferBusy" @click="fileInput.click()">导入字典</el-button>
-        <el-button :loading="exporting" :disabled="transferBusy" @click="exportFile()">导出全部</el-button>
+        <el-button v-if="canImport" v-stable-loading="importing" :loading="importing" :disabled="transferBusy" @click="fileInput.click()">导入字典</el-button>
+        <el-button v-if="canExport" v-stable-loading="exporting" :loading="exporting" :disabled="transferBusy" @click="exportFile()">导出全部</el-button>
         <el-button @click="load">刷新</el-button>
         <el-button v-if="canCreate" type="primary" @click="openCreate()">新增字典</el-button>
       </div>
@@ -36,7 +36,7 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" @click="selected = scope.row">字典项</el-button><el-button link type="primary" @click="exportFile([scope.row.type])">导出</el-button>
+            <el-button v-if="canItems" link type="primary" @click="selected = scope.row">字典项</el-button><el-button v-if="canExport" link type="primary" @click="exportFile([scope.row.type])">导出</el-button>
             <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
             <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
@@ -44,7 +44,7 @@
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination v-model:current-page="page.current" v-model:page-size="page.size" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @size-change="load" @current-change="load" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
     <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" :system-choices="systemChoices" @saved="load" />
@@ -54,15 +54,20 @@
 
 <script setup>
 import ItemsDialog from './ItemsDialog.vue'
-
 import EditDialog from './EditDialog.vue'
-
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue, optionsForField } from '@/core/resourceValues'
 import * as api from './api'
+import { useRequestController } from '@/core/requestController'
+import { useListRouteState } from '@/core/listRouteState'
+import { useResourcePermissions } from '@/core/permissions'
 import { saveDictionary } from '@/core/dictionaryTransfer'
-import { http } from '@/core/http'
+import { fetchDictionary } from '@/core/dictionaries'
+
+const nextListRequest = useRequestController()
+
+const { canCreate, canEdit, canRemove, canItems, canImport, canExport } = useResourcePermissions('dict')
 
 const selected = ref(null)
 
@@ -79,7 +84,7 @@ const transferBusy = computed(() => importing.value || exporting.value)
 async function importFile(event) {
   const file = event.target.files?.[0]
   event.target.value = ''
-  if (!file || transferBusy.value) return
+  if (!file || transferBusy.value || !canImport.value) return
   if (!file.name.toLowerCase().endsWith('.dict')) { ElMessage.error('请选择 .dict 字典文件'); return }
   if (!file.size) { ElMessage.error('文件不能为空'); return }
   importing.value = true
@@ -93,18 +98,12 @@ async function importFile(event) {
 }
 
 async function exportFile(codes = []) {
-  if (transferBusy.value) return
+  if (transferBusy.value || !canExport.value) return
   exporting.value = true
   try { saveDictionary(await api.exportDict(codes), 'dictionary.dict') }
   catch (error) { ElMessage.error(error.message || '字典导出失败') }
   finally { exporting.value = false }
 }
-
-const canCreate = computed(() => Boolean(api.create))
-
-const canEdit = computed(() => Boolean(api.update))
-
-const canRemove = computed(() => Boolean(api.remove))
 
 const loading = ref(false)
 const loadError = ref('')
@@ -116,18 +115,23 @@ const page = reactive({ current: 1, size: 10 })
 
 const query = reactive({ type: '', system: '' })
 
+const { syncListRoute, changePage, changePageSize } = useListRouteState({ query, page, reload: load, isLoading: () => loading.value })
+
 const dictionaryItems = ref([])
 const dictionaryError = ref('')
 
 const systemChoices = computed(() => optionsForField({ dictionary: 'dict_type' }, dictionaryItems.value))
 
+let dictionaryLoadSequence = 0
 async function loadDictionaries() {
+  const sequence = ++dictionaryLoadSequence
   const types = ["dict_type"]
   const results = await Promise.allSettled(types.map(async type => {
-    const data = await http.get(`/upms/dict/type/${encodeURIComponent(type)}`, { silent: true })
+    const data = await fetchDictionary(type)
     if (!Array.isArray(data)) throw new Error('字典数据格式错误')
     return data.map(entry => ({ ...entry, type }))
   }))
+  if (sequence !== dictionaryLoadSequence) return
   dictionaryItems.value = results.flatMap((result, i) => result.status === 'fulfilled'
     ? result.value : dictionaryItems.value.filter(entry => entry.type === types[i]))
   dictionaryError.value = results.some(result => result.status === 'rejected') ? '部分选项加载失败，请重试' : ''
@@ -135,17 +139,20 @@ async function loadDictionaries() {
 
 async function load() {
   const sequence = ++loadSequence
+  const request = nextListRequest()
   loading.value = true
   try {
-    const params = { ...Object.fromEntries(Object.entries(query).filter(([, value]) => value !== '' && value !== null && value !== undefined)), current: page.current, size: page.size }
-    const [data] = await Promise.all([api.list(params), loadDictionaries()])
+    const params = await syncListRoute()
+    if (!params || sequence !== loadSequence) return
+    void loadDictionaries()
+    const data = await api.list(params, request)
     if (sequence !== loadSequence) return
     rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
     total.value = Number(Array.isArray(data) ? data.length : data?.total ?? data?.totalCount ?? rows.value.length)
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }

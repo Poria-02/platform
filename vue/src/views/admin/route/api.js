@@ -1,5 +1,5 @@
 import { http } from '@/core/http'
-export const list = () => http.get('/upms/route/list')
+export const list = (_params, config = {}) => http.get('/upms/route/list', config)
 export const detail = id => http.get(`/upms/route/detail/${id}`)
 export const create = data => http.post('/upms/route/addOrUpdate', data)
 export const update = data => http.post('/upms/route/addOrUpdate', data)

@@ -6,7 +6,7 @@
     <div class="resource-toolbar">
 
       <div class="page-heading__actions">
-        <el-button :loading="refreshing" @click="refresh()">刷新网关路由</el-button>
+        <el-button v-if="canRefresh" v-stable-loading="refreshing" :loading="refreshing" @click="refresh()">刷新网关路由</el-button>
         <el-button @click="load">刷新</el-button>
         <el-button v-if="canCreate" type="primary" @click="openCreate()">新增路由</el-button>
       </div>
@@ -46,26 +46,26 @@
 
 <script setup>
 import EditDialog from './EditDialog.vue'
-
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
 import * as api from './api'
+import { useRequestController } from '@/core/requestController'
+import { useResourcePermissions } from '@/core/permissions'
+
+const nextListRequest = useRequestController()
+
+const { canCreate, canEdit, canRemove, canRefresh } = useResourcePermissions('route')
 
 const refreshing = ref(false)
 
 async function refresh() {
+  if (!canRefresh.value || refreshing.value) return
   refreshing.value = true
   try { await api.refresh(); ElMessage.success('网关路由已刷新'); await load() }
   catch { /* HTTP 层显示错误 */ }
   finally { refreshing.value = false }
 }
-
-const canCreate = computed(() => Boolean(api.create))
-
-const canEdit = computed(() => Boolean(api.update))
-
-const canRemove = computed(() => Boolean(api.remove))
 
 const loading = ref(false)
 const loadError = ref('')
@@ -74,16 +74,17 @@ let loadSequence = 0
 
 async function load() {
   const sequence = ++loadSequence
+  const request = nextListRequest()
   loading.value = true
   try {
     const params = {  }
-    const data = await api.list(params)
+    const data = await api.list(params, request)
     if (sequence !== loadSequence) return
     rows.value = Array.isArray(data) ? data : data?.records || data?.rows || data?.list || []
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence) loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }

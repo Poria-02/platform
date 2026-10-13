@@ -17,14 +17,14 @@
           <el-form-item label="验证码" prop="verifyCode" class="captcha-item">
             <div class="captcha-row">
               <el-input v-model="form.verifyCode" name="verifyCode" size="large" autocomplete="one-time-code" placeholder="请输入验证码" />
-              <button class="captcha-button" type="button" :disabled="captchaLoading" title="刷新验证码" @click="refreshCaptcha">
+              <button class="captcha-button" type="button" :disabled="captchaLoading || submitting" title="刷新验证码" @click="refreshCaptcha">
                 <img v-if="captchaUrl" :src="captchaUrl" alt="验证码" />
                 <span v-else>{{ captchaLoading ? '加载中' : '点击刷新' }}</span>
               </button>
             </div>
           </el-form-item>
           <p class="login-help">看不清？点击验证码刷新</p>
-          <el-button type="primary" size="large" class="submit-button" :loading="submitting" @click="submit">进入工作台</el-button>
+          <el-button type="primary" size="large" class="submit-button" v-stable-loading="submitting" :loading="submitting" :disabled="captchaLoading || !captchaUrl" @click="submit">进入工作台</el-button>
         </el-form>
       </section>
     </main>
@@ -55,39 +55,49 @@ const rules = {
 const captchaUrl = ref('')
 const captchaLoading = ref(false)
 const submitting = ref(false)
+let captchaRequest
 
 async function refreshCaptcha() {
+  if (captchaLoading.value) return
   captchaLoading.value = true
+  const controller = new AbortController()
+  captchaRequest = controller
+  if (captchaUrl.value) URL.revokeObjectURL(captchaUrl.value)
+  captchaUrl.value = ''
   form.verifyCode = ''
   form.randomStr = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`
   try {
-    const blob = await captcha(form.randomStr)
-    if (captchaUrl.value) URL.revokeObjectURL(captchaUrl.value)
+    const blob = await captcha(form.randomStr, { signal: controller.signal })
+    if (controller.signal.aborted) return
     captchaUrl.value = URL.createObjectURL(blob)
   } catch {
-    ElMessage.error('验证码加载失败，请检查网关连接')
+    if (!controller.signal.aborted) ElMessage.error('验证码加载失败，请检查网关连接')
   } finally {
     captchaLoading.value = false
   }
 }
 
 async function submit() {
-  if (!(await formRef.value.validate().catch(() => false))) return
+  if (submitting.value || captchaLoading.value || !captchaUrl.value) return
   submitting.value = true
   try {
-    await session.signIn(form)
+    if (!(await formRef.value.validate().catch(() => false))) return
+    await session.signIn({ ...form })
     const redirect = String(route.query.redirect || '')
     await router.replace(redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/index')
   } catch (error) {
     ElMessage.error(error?.message || '登录失败')
-    refreshCaptcha()
+    await refreshCaptcha()
   } finally {
     submitting.value = false
   }
 }
 
 onMounted(refreshCaptcha)
-onBeforeUnmount(() => { if (captchaUrl.value) URL.revokeObjectURL(captchaUrl.value) })
+onBeforeUnmount(() => {
+  captchaRequest?.abort()
+  if (captchaUrl.value) URL.revokeObjectURL(captchaUrl.value)
+})
 </script>
 
 <style scoped>

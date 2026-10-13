@@ -2,7 +2,11 @@
   <div v-if="visible">
     <div v-if="children.length" class="menu-group">
       <button class="menu-group__title" type="button" :aria-expanded="open" @click="open = !open"><span class="menu-symbol"><MenuIcon :name="item.icon" /></span><span>{{ item.title }}</span><span class="menu-chevron" :class="{ open }">⌄</span></button>
-      <transition name="menu-expand"><div v-if="open" class="menu-group__children"><MenuItem v-for="child in children" :key="child.id || child.path" :item="child" :depth="depth + 1" /></div></transition>
+      <Transition name="menu-expand">
+        <div v-if="open" class="menu-group__children motion-expand">
+          <div class="motion-expand__inner"><MenuItem v-for="child in children" :key="child.id || child.path" :item="child" :depth="depth + 1" /></div>
+        </div>
+      </Transition>
     </div>
     <a v-else-if="external" class="menu-link" :style="{ paddingLeft: `${20 + depth * 16}px` }" :href="item.path" target="_blank" rel="noopener noreferrer"><span class="menu-symbol"><MenuIcon :name="item.icon" /></span><span>{{ item.title }}</span><span class="external-mark">↗</span></a>
     <router-link v-else class="menu-link" :style="{ paddingLeft: `${20 + depth * 16}px` }" :to="item.path"><span class="menu-symbol"><MenuIcon :name="item.icon" /></span><span>{{ item.title }}</span></router-link>

@@ -1,6 +1,6 @@
 import { http } from '@/core/http'
-export async function list({ name = '', platform = '', ...params } = {}) {
-  const tree = await http.get('/upms/menu/tree', { params }) || []
+export async function list({ name = '', platform = '', ...params } = {}, config = {}) {
+  const tree = await http.get('/upms/menu/tree', { ...config, params }) || []
   if (!name && !platform) return tree
   function filter(nodes) {
     return nodes.flatMap(node => {

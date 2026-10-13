@@ -12,7 +12,7 @@
         <el-form-item label="确认新密码" prop="confirmation"><el-input v-model="editor.form.confirmation" type="password" autocomplete="new-password" show-password placeholder="请再次输入新密码" /></el-form-item>
       </template>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" :loading="editor.saving" @click="save">保存修改</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存修改</el-button></template>
   </el-dialog>
 </template>
 

@@ -5,7 +5,7 @@
         <el-input v-model="editor.form.name" placeholder="请输入部门名称" @update:model-value="clearFieldError('name')" />
       </el-form-item>
       <el-form-item label="上级部门" prop="parentId">
-        <el-tree-select v-model="editor.form.parentId" :data="parentOptions(editor.form.deptId)" :props="{ label: 'name', children: 'children' }" node-key="id" check-strictly filterable default-expand-all style="width:100%" placeholder="请选择上级部门" />
+        <el-tree-select v-model="editor.form.parentId" :data="parentOptions(editor.form.deptId)" :props="{ label: 'name', children: 'children' }" node-key="id" popper-class="department-tree-popper" :indent="22" highlight-current check-strictly filterable default-expand-all style="width:100%" placeholder="请选择上级部门" />
       </el-form-item>
       <el-form-item label="部门类型" prop="type">
         <el-select v-model="editor.form.type" style="width:100%" placeholder="请选择部门类型" @update:model-value="clearFieldError('type')"><el-option v-for="option in typeChoices" :key="option.value" :label="option.label" :value="option.value" /></el-select>
@@ -18,7 +18,7 @@
       </el-form-item>
 
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" :loading="editor.saving" @click="save">保存</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
   </el-dialog>
 </template>
 

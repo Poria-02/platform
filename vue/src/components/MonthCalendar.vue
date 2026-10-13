@@ -39,26 +39,28 @@
       </div>
     </div>
 
-    <div class="calendar-grid" role="group" :aria-label="`${viewYear}年${viewMonth + 1}月`">
-      <div v-for="day in orderedWeekdays" :key="day" class="weekday">{{ day }}</div>
-      <button
-        v-for="day in calendarDays"
-        :key="day.key"
-        type="button"
-        class="calendar-day"
-        :class="{ 'calendar-day--outside': !day.inMonth, 'calendar-day--weekend': day.weekend, 'calendar-day--today': day.today, 'calendar-day--selected': day.selected, 'calendar-day--festival': day.festival, 'calendar-day--holiday': displayHoliday && day.schedule?.kind === 'rest', 'calendar-day--makeup': displayHoliday && day.schedule?.kind === 'work' }"
-        :aria-label="`${fullDate(day.date)}，农历${day.lunar.full}${day.festival ? `，${day.festival}` : ''}${displayHoliday && day.schedule ? `，${day.schedule.name}${day.schedule.kind === 'rest' ? '放假' : '调休上班'}` : ''}`"
-        :aria-current="day.today ? 'date' : undefined"
-        :aria-pressed="day.selected"
-        @click="selectDay(day.date)"
-      >
-        <span v-if="displayHoliday && day.schedule" class="schedule-mark">{{ day.schedule.kind === 'rest' ? '休' : '班' }}</span>
-        <span v-if="day.today" class="today-mark">今</span>
-        <span class="day-number">{{ day.date.getDate() }}</span>
-        <span class="day-caption" :class="{ 'day-caption--festival': day.festival }">{{ day.festival || day.lunar.short }}</span>
-      </button>
-    </div>
+    <Transition name="panel-fade" mode="out-in">
+      <div :key="`${viewYear}-${viewMonth}`" class="calendar-grid" role="group" :aria-label="`${viewYear}年${viewMonth + 1}月`">
+        <div v-for="day in orderedWeekdays" :key="day" class="weekday">{{ day }}</div>
+        <button
+          v-for="day in calendarDays"
+          :key="day.key"
+          type="button"
+          class="calendar-day"
+          :class="{ 'calendar-day--outside': !day.inMonth, 'calendar-day--weekend': day.weekend, 'calendar-day--today': day.today, 'calendar-day--selected': day.selected, 'calendar-day--festival': day.festival, 'calendar-day--holiday': displayHoliday && day.schedule?.kind === 'rest', 'calendar-day--makeup': displayHoliday && day.schedule?.kind === 'work' }"
+          :aria-label="`${fullDate(day.date)}，农历${day.lunar.full}${day.festival ? `，${day.festival}` : ''}${displayHoliday && day.schedule ? `，${day.schedule.name}${day.schedule.kind === 'rest' ? '放假' : '调休上班'}` : ''}`"
+          :aria-current="day.today ? 'date' : undefined"
+          :aria-pressed="day.selected"
+          @click="selectDay(day.date)"
+        >
+          <span v-if="displayHoliday && day.schedule" class="schedule-mark">{{ day.schedule.kind === 'rest' ? '休' : '班' }}</span>
+          <span v-if="day.today" class="today-mark">今</span>
+          <span class="day-number">{{ day.date.getDate() }}</span>
+          <span class="day-caption" :class="{ 'day-caption--festival': day.festival }">{{ day.festival || day.lunar.short }}</span>
+        </button>
+      </div>
 
+    </Transition>
     <div class="calendar-footer">
       <span class="footer-label">选中日期</span>
       <span>{{ fullDate(selectedDate) }} · 农历{{ selectedLunar.full }}</span>
@@ -69,7 +71,6 @@
     </div>
     <div v-if="displayHoliday" class="holiday-source">{{ viewYear }}年放假安排来自<a :href="holidaySource" target="_blank" rel="noopener noreferrer">节假日接口</a></div>
     <div v-else-if="holidayLoading" class="holiday-source" role="status">正在获取放假安排…</div>
-    <div v-else-if="holidayError" class="holiday-source" role="status">放假安排获取失败。<button type="button" @click="refreshHolidaySchedule(viewYear)">重试</button></div>
   </section>
 </template>
 
@@ -91,7 +92,6 @@ const weekStartsOn = ref(1)
 const showHolidaySchedule = ref(true)
 const holidaySchedule = shallowRef(null)
 const holidayLoading = ref(false)
-const holidayError = ref(false)
 let holidayRequest
 
 const yearOptions = Array.from({ length: 201 }, (_, index) => initialDate.getFullYear() - 100 + index)
@@ -127,15 +127,16 @@ async function refreshHolidaySchedule(year) {
   holidayRequest?.abort()
   const controller = new AbortController()
   holidayRequest = controller
+  const timeout = window.setTimeout(() => controller.abort(), 12000)
   holidaySchedule.value = null
-  holidayError.value = false
   holidayLoading.value = true
   try {
     const schedule = await fetchHolidaySchedule(year, controller.signal)
     if (holidayRequest === controller && !controller.signal.aborted) holidaySchedule.value = schedule
   } catch {
-    if (holidayRequest === controller && !controller.signal.aborted) holidayError.value = true
+    // 放假安排属于辅助信息，获取失败时继续显示本地日历。
   } finally {
+    window.clearTimeout(timeout)
     if (holidayRequest === controller) {
       holidayLoading.value = false
       holidayRequest = undefined
