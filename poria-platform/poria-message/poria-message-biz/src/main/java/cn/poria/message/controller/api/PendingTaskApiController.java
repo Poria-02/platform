@@ -78,7 +78,7 @@ public class PendingTaskApiController {
      * @return 待办任务详情
      */
     @GetMapping("/{id}")
-    @Operation(summary = "查询我的待办详情", description = "查询我的待办详情")
+    @Operation(summary = "查询待办详情", description = "查询待办详情")
     public R<PendingTaskVo> detail(@PathVariable String id) {
         PendingTaskVo task = msgPendingTaskService.findDetails(id);
 
