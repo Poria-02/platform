@@ -1,23 +1,8 @@
 -- Poria 消息服务新库初始化，供人工审核后执行；不包含业务数据。
--- 前 8 张表取自 unhm 的建表脚本，并按当前实体补充字段；其余表按实体定义补齐。
+-- 前 7 张表取自 unhm 的建表脚本，并按当前实体补充字段；其余表按实体定义补齐。
 -- 此脚本只创建缺失的表，不用于已有数据库的结构升级。
 CREATE DATABASE IF NOT EXISTS `poria_message` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `poria_message`;
-CREATE TABLE IF NOT EXISTS `msg_dd_log`  (
-  `id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `business_type` int NULL DEFAULT NULL COMMENT '业务类型，见 BusinessType',
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '接收手机号',
-  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '内容',
-  `task_id` int NULL DEFAULT NULL COMMENT '任务ID',
-  `status` int NOT NULL COMMENT '发送状态，1：发送成功，2：失败，0：未发送，3：正在发送',
-  `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '发送结果',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `platform` int NULL DEFAULT NULL COMMENT '短信平台',
-  `template_key` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '模版KEY',
-  `tenant_id` int NULL DEFAULT NULL COMMENT '租户ID',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '短信发送具体详情' ROW_FORMAT = DYNAMIC;
-
 CREATE TABLE IF NOT EXISTS `msg_email_log`  (
   `id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `business_type` int NOT NULL COMMENT '业务类型，见 BusinessType',
@@ -85,11 +70,8 @@ CREATE TABLE IF NOT EXISTS `msg_template`  (
   `status` int NOT NULL DEFAULT 0 COMMENT '停用标志  1-正常，2-停用',
   `is_delete` int NULL DEFAULT NULL COMMENT '是否删除0-没删除 1-删除',
   `tenant_id` int NULL DEFAULT NULL COMMENT '租户ID',
-  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '钉钉机器人URL，钉钉消息传入',
-  `is_at_all` int NULL DEFAULT NULL COMMENT '是否@all 0-否 1-是钉钉消息使用',
-  `mobiles` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '通知手机号 钉钉小时使用',
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '消息跳转URL，支持模板变量',
   `platform` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '短信平台 短信消息传入',
-  `dd_sgin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '钉钉秘钥',
   `category` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '模版分类',
   `param_mapping` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '参数映射配置',
   PRIMARY KEY (`id`) USING BTREE

@@ -23,14 +23,6 @@ public class LogController {
     private LogService logService;
 
 
-    @Operation(summary = "钉钉消息记录",description = "钉钉消息记录(message_log_dd)")
-    @GetMapping("/dingding")
-    @PreAuthorize("@pms.hasPermission('message_log_dd')")
-    public R dingdingLog(LogQuery logQuery){
-        return R.ok(logService.selectDingDingLogs(logQuery));
-    }
-
-
     @Operation(summary = "短信消息记录",description = "短信发送记录(message_log_sms)")
     @GetMapping("/sms")
     @PreAuthorize("@pms.hasPermission('message_log_sms')")

@@ -14,10 +14,7 @@
         <result property="isDelete" column="is_delete" jdbcType="INTEGER"/>
         <result property="tenantId" column="tenant_id" jdbcType="INTEGER"/>
         <result property="url" column="url" jdbcType="VARCHAR"/>
-        <result property="isAtAll" column="is_at_all" jdbcType="INTEGER"/>
-        <result property="mobiles" column="mobiles" jdbcType="VARCHAR"/>
         <result property="platform" column="platform" jdbcType="VARCHAR"/>
-        <result property="ddSgin" column="dd_sgin" jdbcType="VARCHAR"/>
     </resultMap>
 
 

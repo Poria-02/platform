@@ -3,8 +3,6 @@ package cn.poria.message.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
-import cn.poria.message.dao.MsgDdLogDao;
-import cn.poria.message.entity.MsgDdLog;
 import cn.poria.message.entity.MsgSmsLog;
 import cn.poria.message.entity.MsgWxLog;
 import cn.poria.message.service.LogService;
@@ -20,25 +18,10 @@ import org.springframework.stereotype.Service;
 public class LogServiceImpl implements LogService {
 
     @Autowired
-    private MsgDdLogDao ddLogDao;
-
-    @Autowired
     private MsgSmsLogService smsLogService;
 
     @Autowired
     private MsgWxLogService wxLogService;
-
-    /**
-     * 分页查询钉钉消息
-     * @param logQuery
-     * @return
-     */
-    @Override
-    public IPage<MsgDdLog> selectDingDingLogs(LogQuery logQuery) {
-
-        return ddLogDao.selectLogs(new Page<>(logQuery.getCurrent(),logQuery.getSize()),logQuery);
-
-    }
 
     @Override
     public IPage<MsgSmsLog> selectSmsLogs(LogQuery query) {

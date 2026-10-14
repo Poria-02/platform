@@ -1,6 +1,5 @@
 package cn.poria.message.service.video.tx.service;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -8,16 +7,11 @@ import cn.poria.commom.kafka.KafkaUtil;
 import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.message.api.RemoteBaseService;
-import cn.poria.message.service.DingService;
 import cn.poria.message.service.video.VideoService;
-import cn.poria.message.vo.request.DingSend;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -25,9 +19,6 @@ public class TxVideoCallBackService {
 
     @Autowired
     private RemoteBaseService remoteBaseService;
-
-    @Autowired
-    private DingService dingService;
 
     @Autowired
     @Lazy
@@ -53,12 +44,7 @@ public class TxVideoCallBackService {
 
                 Object status = JSONUtil.getByPath(body, "EventInfo.Payload.Status");
                 if (ObjectUtil.equal(status, 3)) {
-                    ThreadUtil.execAsync(() -> {
-                        String error = "音视频录屏异常" + body.toString();
-                        Map param = new HashMap();
-                        param.put("error", error);
-                        dingService.sendDingText(DingSend.builder().key("SYSTEM_ERROR").param(param).build());
-                    });
+                    log.error("音视频录屏异常: {}", body);
                     return;
                 }
                 KafkaUtil.send("im_tencent_video_event_311", body.toString());

@@ -87,25 +87,11 @@ public class MsgTemplate {
     private Integer tenantId;
 
     /**
-     *钉钉机器人URL，钉钉消息传入
+     *消息跳转URL，支持模板变量
      */
 
-    @Schema(description = "钉钉机器人URL，钉钉消息传入")
+    @Schema(description = "消息跳转URL，支持模板变量")
     private String url;
-
-    /**
-     *是否@all 0-否 1-是钉钉消息使用
-     */
-
-    @Schema(description = "是否@all 0-否 1-是钉钉消息使用")
-    private Integer isAtAll;
-
-    /**
-     *通知手机号 钉钉小时使用
-     */
-
-    @Schema(description = "通知手机号 钉钉小时使用")
-    private String mobiles;
 
     /**
      *短信平台 短信消息传入
@@ -113,13 +99,6 @@ public class MsgTemplate {
 
     @Schema(description = "短信平台 短信消息传入")
     private String platform;
-
-    /**
-     *钉钉秘钥
-     */
-
-    @Schema(description = "钉钉秘钥")
-    private String ddSgin;
 
     /**
      * 模版分类
