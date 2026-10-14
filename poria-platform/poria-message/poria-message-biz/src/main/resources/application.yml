@@ -88,18 +88,8 @@ tx:
   vod:
     sdkAppId: ${TX_VOD_SDK_APP_ID:0}
     singExpireTime: ${TX_VOD_SIGN_EXPIRE_TIME:604800}
-follow:
-  url: ${MESSAGE_FOLLOW_URL:}
 ali:
   asr-apikey: ${ALI_ASR_API_KEY:}
-call:
-  url: ${MESSAGE_CALL_URL:}
-  appId: ${MESSAGE_CALL_APP_ID:}
-  secretKey: ${MESSAGE_CALL_SECRET_KEY:}
 cs:
   accessKeyId: ${ALI_CONTENT_ACCESS_KEY_ID:}
   accessKeySecret: ${ALI_CONTENT_ACCESS_KEY_SECRET:}
-yxxh:
-  base-url: ${YXXH_BASE_URL:}
-  appId: ${YXXH_APP_ID:}
-  token: ${YXXH_TOKEN:}

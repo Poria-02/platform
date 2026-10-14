@@ -21,9 +21,10 @@ public class InformMesController {
     @PostMapping
     public R informMessage(@RequestBody @Validated InformMesModel model) {
         InformMessageHandler informHandler = MessageInformConfiguration.get(model.getInterveneModus());
-        if(informHandler != null){
-            informHandler.handlerInformMes(model);
+        if (informHandler == null) {
+            return R.failed("不支持的通知方式");
         }
+        informHandler.handlerInformMes(model);
         return R.ok();
     }
 

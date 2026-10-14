@@ -65,7 +65,7 @@ public class InformMesModel {
     /**
      * 通知方式
      */
-    @Schema(description = "通知方式")
+    @Schema(description = "通知方式：1 小程序通知，2 短信")
     @NotNull(message = "通知方式不能为空！")
     private Integer interveneModus;
 

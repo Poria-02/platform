@@ -9,11 +9,7 @@ import cn.poria.message.vo.request.form.FormListModel;
 import cn.poria.message.vo.request.form.FormPatientQueryModel;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.request.ma.MaAccountMessageModel;
-import cn.poria.message.vo.request.outbound.OutBoundModel;
 import cn.poria.message.vo.request.template.StationLetterModel;
-import cn.poria.message.vo.request.yxxh.YxxhAXBModel;
-import cn.poria.message.vo.request.yxxh.YxxhRealNameModel;
-import cn.poria.message.vo.request.yxxh.YxxhUnbindModel;
 import cn.poria.message.vo.response.FormListVO;
 import cn.poria.message.vo.response.im.GroupInfoVo;
 import cn.poria.message.vo.response.im.RoomInfoVo;
@@ -180,15 +176,6 @@ public interface MessageApi {
     @GetMapping("/inner/questionnaire/item/list/{formKey}")
     R queryFormItems(@PathVariable("formKey") String formKey, @RequestHeader(SecurityConstants.FROM) String from);
 
-    @PostMapping("/inner/out/bound")
-    R bound(@RequestBody OutBoundModel request, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/yxxh/yxxhAXB")
-    R<String> yxxhAXBMsg(@RequestBody @Validated YxxhAXBModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PutMapping("/inner/yxxh/yxxhUnbind")
-    R yxxhUnbindMsg(@RequestBody @Validated YxxhUnbindModel yxxhUnbindModel, @RequestHeader(SecurityConstants.FROM) String from);
-
     @PostMapping("/inner/sms/convert/shortUrl")
     R<String> convertToShortUrl(@RequestBody @NotBlank(message = "链接不能为空") String longUrl, @RequestHeader(SecurityConstants.FROM) String from);
 
@@ -202,18 +189,6 @@ public interface MessageApi {
 
     @PostMapping("/inner/im/video/createCloudRecord")
     R createCloudRecording(@RequestBody ImCreateCloudRecordModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/missionLog/message/log")
-    R saveMissionLog(@RequestBody MissionLogModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 隐私通话实名认证
-     * @param yxxhRealNameModel
-     * @param from
-     * @return
-     */
-    @PostMapping("/inner/yxxh/realNameAuth")
-    R realNameAuth(@RequestBody YxxhRealNameModel yxxhRealNameModel, @RequestHeader(SecurityConstants.FROM) String from);
 
     @DeleteMapping("/inner/im/video/file/{id}")
     R delRoomRecFile(@PathVariable("id") String id, @RequestHeader(SecurityConstants.FROM) String from);
