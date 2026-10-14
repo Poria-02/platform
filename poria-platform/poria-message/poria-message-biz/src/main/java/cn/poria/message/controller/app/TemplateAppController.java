@@ -9,6 +9,7 @@ import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
 import cn.poria.common.security.annotation.Inner;
 import cn.poria.message.entity.MsgTemplate;
+import cn.poria.message.enums.TemplateType;
 import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.vo.request.ma.MaTemplateQueryModel;
 import cn.poria.message.vo.request.template.TemplateModel;
@@ -46,7 +47,7 @@ public class TemplateAppController {
     @PostMapping("/ma/list")
     public R getMaTemplateIds(@RequestBody MaTemplateQueryModel queryModel) {
 
-        List<MsgTemplate> list = msgTemplateService.list(new LambdaQueryWrapper<MsgTemplate>().in(MsgTemplate::getTemplateKey,queryModel.getTemplateKey()).eq(MsgTemplate::getType,9));
+        List<MsgTemplate> list = msgTemplateService.list(new LambdaQueryWrapper<MsgTemplate>().in(MsgTemplate::getTemplateKey,queryModel.getTemplateKey()).eq(MsgTemplate::getType,TemplateType.MA.getCode()));
 
         return R.ok(list.stream().filter(msgTemplate ->
                     StrUtil.contains(msgTemplate.getContent(),queryModel.getAppid())

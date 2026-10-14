@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.poria.message.dao.MsgPendingTaskDao;
 import cn.poria.message.entity.MsgPendingTask;
 import cn.poria.message.enums.PendingTaskType;
+import cn.poria.message.enums.TemplateType;
 import cn.poria.message.service.MsgPendingTaskService;
 import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.service.PendingTaskManager;
@@ -88,6 +89,7 @@ public class MsgPendingTaskServiceImpl extends ServiceImpl<MsgPendingTaskDao, Ms
 
         TemplateVo templateVo = msgTemplateService.selectByKey(model.getTemplateKey());
         Assert.notNull(templateVo,"模版不存在");
+        Assert.isTrue(TemplateType.STATION.getCode().equals(templateVo.getType()), "模板类型必须为站内信");
         if(templateVo.getStatus() != 1){
             return null;
         }
