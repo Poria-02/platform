@@ -33,9 +33,6 @@ public interface MessageApi {
     @PostMapping("/inner/sms/send")
     R sendSms(@RequestBody @Validated SmsSend req, @RequestHeader(SecurityConstants.FROM) String from);
 
-    @PostMapping("/inner/dd/sendText")
-    R sendDingText(@RequestBody DingSend dingSend, @RequestHeader(SecurityConstants.FROM) String from);
-
     /**
      * 发送微信模版消息
      */

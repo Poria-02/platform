@@ -10,7 +10,6 @@ public enum TemplateType {
     PUSH("3","推送消息模版"),
     STATION("4","站内信模版"),
     WX("5","微信消息模板"),
-    DINGDING("6","钉钉消息模板"),
     QYWX("7","企业微信消息模板"),
 
     MA("9","小程序订阅消息"),
