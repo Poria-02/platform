@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +47,23 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             Arrays.stream(menuIds.split(",")).map(String::trim).map(Integer::valueOf).forEach(ids::add);
         }
         personalMenus.stream().map(menu -> Math.toIntExact(menu.getMenuId())).forEach(ids::add);
+        // 所有角色保留消息查看入口及上级目录，不自动授予新增、编辑和删除按钮。
+        List<SysMenu> pageMenus = this.sysMenuMapper.selectList(Wrappers.<SysMenu>lambdaQuery()
+                .eq(SysMenu::getPlatform, "admin").eq(SysMenu::getType, "0"));
+        Map<Long, SysMenu> pagesById = new HashMap<>();
+        pageMenus.forEach(menu -> pagesById.put(menu.getMenuId(), menu));
+        Set<String> messagePaths = Set.of("/message/station-letter/index", "/message/announcement/index");
+        for (SysMenu page : pageMenus) {
+            if (StrUtil.isBlank(page.getPath()) || !messagePaths.contains(page.getPath())) {
+                continue;
+            }
+            Set<Long> visited = new LinkedHashSet<>();
+            SysMenu menu = page;
+            while (menu != null && visited.add(menu.getMenuId())) {
+                ids.add(Math.toIntExact(menu.getMenuId()));
+                menu = pagesById.get(menu.getParentId());
+            }
+        }
         List<SysRoleMenu> roleMenuList = ids.stream().map(menuId -> {
             SysRoleMenu roleMenu = new SysRoleMenu();
             roleMenu.setRoleId(roleId);

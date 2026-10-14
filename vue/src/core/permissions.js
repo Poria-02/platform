@@ -18,7 +18,10 @@ const permissions = {
   version: { create: 'base_version_add', edit: 'base_version_edit', remove: 'base_version_del' },
   log: { remove: 'sys_log_del' },
   token: { remove: 'sys_token_del' },
-  sensitiveLog: { detail: 'sys_sensitive_get' }
+  sensitiveLog: { detail: 'sys_sensitive_get' },
+  messageTemplate: { read: 'message_template_page', detail: 'message_template_get', create: 'message_template_add', edit: ['message_template_edit', 'message_template_get'], remove: 'message_template_del', status: 'message_template_status' },
+  messageSmsLog: { read: 'message_log_sms' },
+  messageWxLog: { read: 'message_log_wx' }
 }
 
 export function useResourcePermissions(resource) {

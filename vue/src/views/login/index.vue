@@ -71,7 +71,7 @@ async function refreshCaptcha() {
     if (controller.signal.aborted) return
     captchaUrl.value = URL.createObjectURL(blob)
   } catch {
-    if (!controller.signal.aborted) ElMessage.error('验证码加载失败，请检查网关连接')
+    if (!controller.signal.aborted) ElMessage.error('验证码加载失败')
   } finally {
     captchaLoading.value = false
   }

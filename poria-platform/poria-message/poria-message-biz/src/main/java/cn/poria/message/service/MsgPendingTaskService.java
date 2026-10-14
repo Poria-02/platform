@@ -3,7 +3,6 @@ package cn.poria.message.service;
 import cn.poria.message.entity.MsgPendingTask;
 import cn.poria.message.vo.request.PendingTaskModel;
 import cn.poria.message.vo.request.PendingTaskQueryModel;
-import cn.poria.message.vo.request.template.StationLetterModel;
 import cn.poria.message.vo.response.PendingTaskVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,27 +21,28 @@ public interface MsgPendingTaskService extends IService<MsgPendingTask> {
 
     /**
      * 完成待办任务
+     *
      * @param id
      */
-    void commitPendingTask(String  id);
+    void commitPendingTask(String id);
 
     /**
-     * 发送站内信
-     * @param model
+     * 当前用户未完成数量，站内信及公告对应未读数量
+     *
+     * @param type 待办类型，不传则统计全部类型
+     * @return 未完成数量
      */
-    String sendStationLetter(StationLetterModel model);
+    Integer unDoneCount(Integer type);
 
     /**
-     * 未完成数量
+     * 根据id查询详情
+     *
      * @return
      */
-    Integer unDoneCount();
+    PendingTaskVo findDetails(String id);
 
-	/**
-	 * 根据id查询详情
-	 * @return
-	 */
-	MsgPendingTask  findDetails(String id);
-
+    /**
+     * 将当前用户的公告和站内信全部标记为已读
+     */
     void setAllToReadPendingTask();
 }

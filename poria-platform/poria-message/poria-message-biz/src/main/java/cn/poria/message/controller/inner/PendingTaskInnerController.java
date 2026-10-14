@@ -3,7 +3,6 @@ package cn.poria.message.controller.inner;
 
 import cn.poria.message.service.MsgPendingTaskService;
 import cn.poria.message.vo.request.PendingTaskModel;
-import cn.poria.message.vo.request.template.StationLetterModel;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import cn.poria.common.security.annotation.Inner;
@@ -36,17 +35,6 @@ public class PendingTaskInnerController {
     public R insert(@RequestBody @Validated PendingTaskModel msgPendingTask) {
         msgPendingTaskService.savePendingTask(msgPendingTask);
         return R.ok();
-    }
-
-
-    /**
-     * 站内信
-     * @return
-     */
-    @Inner
-    @PostMapping("/stationLetter")
-    public R sendStationLetter(@RequestBody @Validated StationLetterModel model){
-        return R.ok(msgPendingTaskService.sendStationLetter(model));
     }
 
     @Inner

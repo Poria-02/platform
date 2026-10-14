@@ -8,6 +8,7 @@ import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.service.SmsService;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,10 @@ import java.util.List;
 public class DefaultSmsSendService implements SmsService {
 
 
-    @Autowired
+    @Resource
     private MsgTemplateService templateService;
 
-    @Autowired
+    @Resource
     private MsgSmsLogService smsLogService;
 
     @Override

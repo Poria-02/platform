@@ -25,12 +25,12 @@ const installed = new Set()
 export function installMenuRoutes(menus) {
   for (const menu of flattenMenus(menus)) {
     if (!isPageMenu(menu) || ['/index', '/functions/index', '/admin/job/index', '/profile/index'].includes(menu.path) || installed.has(menu.path)) continue
-    const component = pageFor(menu.path)
+    const component = pageFor(menu.path, menu.title)
     const redirect = component ? '' : firstPagePath(menu.children)
     const route = {
       path: menu.path.slice(1),
       name: `menu:${menu.path}`,
-      meta: { title: menu.title, icon: menu.icon, menuPath: menu.path, expectedFiles: pageFiles(menu.path) },
+      meta: { title: menu.title, icon: menu.icon, menuPath: menu.path, expectedFiles: pageFiles(menu.path, menu.title) },
       ...(redirect ? { redirect } : { component: component || (() => import('@/views/not-found/index.vue')) })
     }
     router.addRoute('console', route)

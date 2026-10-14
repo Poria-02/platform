@@ -9,7 +9,7 @@ import cn.poria.message.vo.request.form.FormListModel;
 import cn.poria.message.vo.request.form.FormPatientQueryModel;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.request.ma.MaAccountMessageModel;
-import cn.poria.message.vo.request.template.StationLetterModel;
+import cn.poria.message.vo.request.center.StationLetterModel;
 import cn.poria.message.vo.response.FormListVO;
 import cn.poria.message.vo.response.im.GroupInfoVo;
 import cn.poria.message.vo.response.im.RoomInfoVo;
@@ -50,8 +50,8 @@ public interface MessageApi {
     /**
      * 发送站内信
      */
-    @PostMapping("/inner/pending/task/stationLetter")
-    R sendStationLetter(@RequestBody @Validated StationLetterModel model, @RequestHeader(SecurityConstants.FROM) String from);
+    @PostMapping("/inner/station/letter/sendStationLetter")
+    R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
     @GetMapping("/inner/template/key/{key}")
     R<TemplateVo> getTemplateByKey(@PathVariable("key")String key, @RequestHeader(SecurityConstants.FROM) String from);
