@@ -9,7 +9,7 @@ export function buildFunctionCatalog(menus, { includeProfile = false } = {}) {
       const title = menu.title || menu.name || '未命名功能'
       const external = isExternal(menu.path)
       const path = menu.path
-      const available = path && (external || path === '/admin/job/index' || path === '/profile/index' || pageFor(path))
+      const available = path && (external || path === '/admin/job/index' || path === '/profile/index' || pageFor(path, title))
       if (available && !['/', '/index', '/functions/index'].includes(path) && !paths.has(path)) {
         paths.add(path)
         entries.push({

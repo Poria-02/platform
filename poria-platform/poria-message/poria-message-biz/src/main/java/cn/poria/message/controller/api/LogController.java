@@ -2,6 +2,7 @@ package cn.poria.message.controller.api;
 
 import cn.poria.common.core.util.R;
 import cn.poria.message.entity.MsgSmsLog;
+import cn.poria.message.vo.response.PendingTaskVo;
 import cn.poria.message.entity.MsgWxLog;
 import cn.poria.message.service.LogService;
 import cn.poria.message.vo.request.LogQuery;
@@ -22,6 +23,11 @@ public class LogController {
     @Autowired
     private LogService logService;
 
+    @GetMapping("/stationLetter")
+    @Operation(summary = "站内信记录", description = "通过待办功能分页查询当前用户类型99的站内信记录")
+    public R<IPage<PendingTaskVo>> stationLetters(LogQuery query) {
+        return R.ok(logService.selectStationLetters(query));
+    }
 
     @Operation(summary = "短信消息记录",description = "短信发送记录(message_log_sms)")
     @GetMapping("/sms")

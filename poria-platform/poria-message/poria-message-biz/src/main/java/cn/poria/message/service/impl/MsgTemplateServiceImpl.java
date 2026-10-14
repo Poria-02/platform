@@ -49,7 +49,8 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
         queryWrapper.eq(StrUtil.isNotBlank(queryModel.getCategory()),MsgTemplate::getCategory,queryModel.getCategory());
         queryWrapper.eq(StrUtil.isNotBlank(queryModel.getTemplateKey()),MsgTemplate::getTemplateKey,queryModel.getTemplateKey());
         queryWrapper.and(StrUtil.isNotBlank(queryModel.getKeywords()),
-                wapper->wapper.like(MsgTemplate::getTitle,queryModel.getKeywords()).or().like(MsgTemplate::getContent,queryModel.getKeywords()));
+                wapper->wapper.like(MsgTemplate::getTitle,queryModel.getKeywords()).or().like(MsgTemplate::getContent,queryModel.getKeywords())
+                        .or().like(MsgTemplate::getTemplateKey,queryModel.getKeywords()));
         IPage<MsgTemplate> result = this.page(page,queryWrapper);
         return  result.convert(msgTemplate -> {
             TemplateVo templateVo = new TemplateVo();

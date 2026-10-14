@@ -3,6 +3,7 @@ package cn.poria.message.service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
+import cn.poria.common.core.util.Assert;
 import cn.poria.message.entity.MsgPendingTask;
 import cn.poria.message.enums.im.type.IMMsgTypeCustom;
 import cn.poria.message.service.im.tx.service.TxIMP2PService;
@@ -55,7 +56,7 @@ public class PendingTaskManager {
             BeanUtils.copyProperties(model,mpt);
             mpt.setType(model.getType().getCode());
             mpt.setStatus(0);
-            msgPendingTaskService.save(mpt);
+            Assert.isTrue(msgPendingTaskService.save(mpt), "待办任务保存失败");
         }
         if (ObjectUtil.isNotNull(model.getImPush())){
             HashMap<String, Object> map = new HashMap<>();

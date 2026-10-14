@@ -1,12 +1,16 @@
 import {
-  ElButton, ElDescriptions, ElDescriptionsItem, ElDialog, ElEmpty,
-  ElForm, ElFormItem, ElIcon, ElInput, ElInputNumber, ElLoading,
+  ElBadge, ElButton, ElCheckbox, ElDescriptions, ElDescriptionsItem, ElDialog, ElDrawer, ElEmpty,
+  ElDatePicker, ElForm, ElFormItem, ElIcon, ElInput, ElInputNumber, ElLoading,
   ElMessage, ElMessageBox, ElOption, ElPagination, ElPopover,
-  ElSelect, ElSwitch, ElTable, ElTableColumn, ElTree, ElTreeSelect
+  ElSelect, ElSwitch, ElTable, ElTableColumn, ElTabPane, ElTabs, ElTag, ElTree, ElTreeSelect
 } from 'element-plus'
 import 'element-plus/es/components/button/style/css.mjs'
+import 'element-plus/es/components/badge/style/css.mjs'
+import 'element-plus/es/components/checkbox/style/css.mjs'
+import 'element-plus/es/components/date-picker/style/css.mjs'
 import 'element-plus/es/components/descriptions/style/css.mjs'
 import 'element-plus/es/components/dialog/style/css.mjs'
+import 'element-plus/es/components/drawer/style/css.mjs'
 import 'element-plus/es/components/empty/style/css.mjs'
 import 'element-plus/es/components/form/style/css.mjs'
 import 'element-plus/es/components/icon/style/css.mjs'
@@ -20,6 +24,8 @@ import 'element-plus/es/components/popover/style/css.mjs'
 import 'element-plus/es/components/select/style/css.mjs'
 import 'element-plus/es/components/switch/style/css.mjs'
 import 'element-plus/es/components/table/style/css.mjs'
+import 'element-plus/es/components/tabs/style/css.mjs'
+import 'element-plus/es/components/tag/style/css.mjs'
 import 'element-plus/es/components/tree/style/css.mjs'
 import 'element-plus/es/components/tree-select/style/css.mjs'
 
@@ -27,10 +33,10 @@ import 'element-plus/es/components/tree-select/style/css.mjs'
 export default {
   install(app) {
     for (const component of [
-      ElButton, ElDescriptions, ElDescriptionsItem, ElDialog, ElEmpty,
-      ElForm, ElFormItem, ElIcon, ElInput, ElInputNumber, ElLoading,
+      ElBadge, ElButton, ElCheckbox, ElDescriptions, ElDescriptionsItem, ElDialog, ElDrawer, ElEmpty,
+      ElDatePicker, ElForm, ElFormItem, ElIcon, ElInput, ElInputNumber, ElLoading,
       ElMessage, ElMessageBox, ElOption, ElPagination, ElPopover,
-      ElSelect, ElSwitch, ElTable, ElTableColumn, ElTree, ElTreeSelect
+      ElSelect, ElSwitch, ElTable, ElTableColumn, ElTabPane, ElTabs, ElTag, ElTree, ElTreeSelect
     ]) app.use(component)
   }
 }

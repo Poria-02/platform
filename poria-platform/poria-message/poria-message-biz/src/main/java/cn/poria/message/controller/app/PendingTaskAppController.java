@@ -33,13 +33,11 @@ public class PendingTaskAppController {
      * @param req
      * @return
      */
-    @Operation(summary = "查询代办列表",description = "查询代办列表")
+    @Operation(summary = "查询代办列表",description = "查询当前用户的待办")
     @GetMapping("/user/page")
-    public R<IPage<PendingTaskVo>> userPendingTask(PendingTaskQueryModel req){
-        IPage<PendingTaskVo> page = msgPendingTaskService.userPendingTask(req);
-        return R.ok(page);
+    public R<IPage<PendingTaskVo>> userPendingTask(@Validated PendingTaskQueryModel req){
+        return R.ok(msgPendingTaskService.userPendingTask(req));
     }
-
 
     @PutMapping("/{id}")
     @Operation(summary = "完成待办任务", description = "完成待办任务")
@@ -48,20 +46,20 @@ public class PendingTaskAppController {
         return R.ok();
     }
 
-    @Operation(summary = "未完成数量", description = "未完成数量")
+    @Operation(summary = "未完成数量", description = "查询当前用户指定类型的未完成数量")
     @GetMapping("/unDone/count")
-    public R<Integer> unDoneCount(){
-        return R.ok(msgPendingTaskService.unDoneCount());
+    public R<Integer> unDoneCount(@RequestParam(required = false) Integer type){
+        return R.ok(msgPendingTaskService.unDoneCount(type));
     }
 
 	@GetMapping("/{pid}")
 	@Operation(summary = "根据id查询详情", description = "根据id查询详情")
-	public R<MsgPendingTask> findUser(@PathVariable("pid") @Validated String pid) {
+	public R<PendingTaskVo> findUser(@PathVariable("pid") @Validated String pid) {
 		return R.ok(msgPendingTaskService.findDetails(pid));
 	}
 
     @PostMapping("/allToRead")
-    @Operation(summary = "一键已读待办任务", description = "一键已读待办任务")
+    @Operation(summary = "一键已读公告和站内信", description = "无需传参，将当前用户未读的公告（98）和站内信（99）全部标记为已读")
     public R setAllToReadPendingTask() {
         msgPendingTaskService.setAllToReadPendingTask();
         return R.ok();

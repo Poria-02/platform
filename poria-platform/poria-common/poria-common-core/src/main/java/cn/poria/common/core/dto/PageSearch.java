@@ -6,9 +6,6 @@ import lombok.Data;
 
 
 /**
- * 版权所有
- *
- * @Author: yuhaitao
  * @Date 2020/5/10 6:01 下午
  */
 @Data

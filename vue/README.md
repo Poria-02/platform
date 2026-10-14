@@ -42,6 +42,18 @@ Element Plus 的组件、指令、服务及样式按需维护在 `src/ui/element
 
 新版 UPMS 会在新增角色和保存角色菜单权限时自动保留这两项默认权限。该规则由后端执行，角色权限弹窗只提示这一行为；部署新版 UPMS 后生效。当前环境的所有角色也应补齐这两项授权，授权完成后需退出并重新登录，以更新当前令牌携带的权限。
 
+## 消息中心
+
+站内信和公示公告由菜单管理中的 `path` 动态注册路由，不再在前端固定注入。页面路径分别为 `/message/station-letter/index` 和 `/message/announcement/index`，所属平台为 `admin`。UPMS 菜单初始化脚本为 `../poria-platform/poria-upms/poria-upms-biz/src/main/resources/db/message_center_menu.sql`，需在 UPMS 数据库执行；脚本可重复执行，保留已有授权并为所有现有角色补齐查看入口。新增角色和保存角色权限时，后端继续保留这两个页面及其上级菜单。
+
+消息查看、分页、未读数量和已读操作无需按钮权限。系统管理员通过角色菜单权限配置 `message_station_add`（发送站内信）、`message_announcement_add`（新增公告）、`message_announcement_edit`（编辑、发送、撤回公告）和 `message_announcement_del`（删除公告），普通角色仅保留查看入口。
+
+站内信、我的公告及公告管理的关键词查询均按标题或内容模糊匹配。
+
+站内信和公告发送均由前端提交 `userIds` 字符串列表。接收人支持按用户名搜索、多选、清空，以及“添加所有用户”；后者分页读取当前账号有权查询的所有未删除用户并添加到当前选择中，不受搜索关键词限制。接收人查询复用现有 `GET /upms/user/page`，使用 `username` 参数搜索，沿用 `sys_user_page` 权限和用户查询的数据范围；前端仅使用用户ID和用户名。公告保存草稿不要求选择接收人，每次发送或再次发送时重新选择。
+
+`POST /message/api/pending/task/allToRead` 及 App 对应接口无需传参，默认将当前用户未读的公告（98）和站内信（99）全部标记为已读，不处理其他业务待办。
+
 ## 本地启动
 
 进入前端目录，首次使用时安装依赖：

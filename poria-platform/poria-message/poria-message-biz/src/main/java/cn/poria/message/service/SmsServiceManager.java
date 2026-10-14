@@ -7,6 +7,7 @@ import cn.poria.message.enums.TemplateType;
 import cn.poria.message.util.TemplateParamUtil;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class SmsServiceManager {
 
-    @Autowired
+    @Resource
     private MsgTemplateService templateService;
 
-    private List<SmsService> smsServiceList;
+    private final List<SmsService> smsServiceList;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -48,7 +49,7 @@ public class SmsServiceManager {
             log.info("模版{}已停用",template.getTitle());
             return;
         }
-//        limit(req);
+        limit(req);
 
         //动态设置模板参数
         Map<String, String> param = TemplateParamUtil.settingTemplateParam(template, req.getParam());
@@ -70,13 +71,13 @@ public class SmsServiceManager {
     private void limit(SmsSend send){
 
         //每日短信发送总数限制
-        maxTotalLimit();
+//        maxTotalLimit();
 
         //同一手机号 重复短信限制
         repeatLimit(send);
 
         //同一手机号,当天短信数量限制
-        phoneMaxNumLimit(send);
+//        phoneMaxNumLimit(send);
 
 
 

@@ -21,7 +21,7 @@ public class StaffImMsgServiceImpl implements PendingTaskService{
 
     @Override
     public boolean support(PendingTaskType type) {
-        return PendingTaskType.STAFF_IM_MSG.equals(type);
+        return PendingTaskType.NULL.equals(type);
     }
 
     @Override

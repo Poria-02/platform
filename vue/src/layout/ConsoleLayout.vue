@@ -23,6 +23,7 @@
       <header class="console-header">
         <button class="nav-toggle" type="button" aria-label="切换菜单" @click="toggleSidebar">☰</button>
         <div class="header-location"><span>工作空间</span><span class="breadcrumb-sep">/</span><strong>{{ currentTitle }}</strong></div>
+        <MessagePanel />
       </header>
       <div class="workspace-tabs" role="tablist" aria-label="已打开页面">
         <div v-for="tab in tabs" :key="tab.path" class="workspace-tab" :class="{ 'workspace-tab--active': route.path === tab.path }" role="tab" tabindex="0" :aria-selected="route.path === tab.path" @click="openTab(tab.path)" @contextmenu.prevent="openContextMenu($event, tab.path)" @keydown.enter="openTab(tab.path)" @keydown.space.prevent="openTab(tab.path)">
@@ -60,6 +61,7 @@ import { installMenuRoutes } from '@/core/router'
 import { consoleMenus } from '@/core/menu'
 import WeatherWidget from '@/components/WeatherWidget.vue'
 import RoutePage from '@/components/RoutePage.vue'
+import MessagePanel from '@/components/MessagePanel.vue'
 import MenuItem from './MenuItem.vue'
 import MenuIcon from '@/ui/MenuIcon.vue'
 
