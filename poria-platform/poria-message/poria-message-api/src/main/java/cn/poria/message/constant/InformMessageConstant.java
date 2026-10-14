@@ -1,13 +1,15 @@
 package cn.poria.message.constant;
 
+import cn.poria.message.enums.TemplateType;
+
 public interface InformMessageConstant {
 
     /**
-     * 发送信息的两种方式
-     * 1 小程序通知  2 短信
+     * 通知方式与模板类型保持一致
+     * 1 短信  4 小程序通知
      */
-    Integer INFORM_WX = 1;
-    Integer INFORM_SMS = 2;
+    Integer INFORM_WX = Integer.valueOf(TemplateType.MA.getCode());
+    Integer INFORM_SMS = Integer.valueOf(TemplateType.SMS.getCode());
 
     /**
      * 视频录制缓存key

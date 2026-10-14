@@ -1,4 +1,4 @@
-package cn.poria.message.enums;
+package cn.poria.message.constant;
 
 public interface WebSocketConstants {
 

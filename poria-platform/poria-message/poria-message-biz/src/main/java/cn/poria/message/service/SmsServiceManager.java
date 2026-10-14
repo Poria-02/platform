@@ -3,6 +3,7 @@ package cn.poria.message.service;
 import cn.hutool.core.date.DateUtil;
 import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.Assert;
+import cn.poria.message.enums.TemplateType;
 import cn.poria.message.util.TemplateParamUtil;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
@@ -42,6 +43,7 @@ public class SmsServiceManager {
 
         TemplateVo template = templateService.selectByKey(req.getKey());
         Assert.notNull(template,"模版:{}编码不存在",req.getKey());
+        Assert.isTrue(TemplateType.SMS.getCode().equals(template.getType()), "模板类型必须为短信");
         if(template.getStatus() ==2){
             log.info("模版{}已停用",template.getTitle());
             return;

@@ -6,15 +6,9 @@ package cn.poria.message.enums;
 public enum TemplateType {
 
     SMS("1","短信消息"),
-    VOICE("2","语音消息模版"),
-    PUSH("3","推送消息模版"),
-    STATION("4","站内信模版"),
-    WX("5","微信消息模板"),
-    QYWX("7","企业微信消息模板"),
-
-    MA("9","小程序订阅消息"),
-
-    ;
+    STATION("2","站内信消息"),
+    WX("3","微信公众号消息"),
+    MA("4","小程序订阅消息");
 
 
     TemplateType(String code, String value) {

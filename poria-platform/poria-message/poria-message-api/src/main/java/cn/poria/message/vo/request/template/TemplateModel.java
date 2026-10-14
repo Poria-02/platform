@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -40,11 +41,12 @@ public class TemplateModel {
     private String content;
 
     /**
-     *模板类型 1-短信模板，2-消息推送模版，3-站内信
+     *模板类型 1-短信，2-站内信，3-微信公众号，4-小程序
      */
 
     @NotNull(message = "模版类型不能为空")
-    @Schema(description = "模板类型 字典message_type")
+    @Pattern(regexp = "[1-4]", message = "模板类型仅支持：1 短信、2 站内信、3 微信公众号、4 小程序")
+    @Schema(description = "模板类型：1 短信、2 站内信、3 微信公众号、4 小程序", allowableValues = {"1", "2", "3", "4"})
     private String type;
 
     /**
