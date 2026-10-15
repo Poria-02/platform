@@ -58,9 +58,10 @@ public class SmsServiceManager {
         for (SmsService smsService : smsServiceList) {
             if (smsService.supports(template.getPlatform())) {
                 smsService.sendSms(req, template);
-                break;
+                return;
             }
         }
+        throw new ServiceException("未找到短信平台[" + template.getPlatform() + "]");
     }
 
 

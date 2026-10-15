@@ -101,6 +101,11 @@ public interface CacheConstants {
 	String PARAMS_DETAILS = "params_details";
 
 	/**
+	 * 通用消息模板缓存，五分钟过期
+	 */
+	String MESSAGE_TEMPLATE = "message_template#5m";
+
+	/**
 	 * 租户缓存 (不区分租户)
 	 */
 	String TENANT_DETAILS = GLOBALLY + "tenant_details";

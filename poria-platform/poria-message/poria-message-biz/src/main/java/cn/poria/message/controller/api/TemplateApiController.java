@@ -1,5 +1,6 @@
 package cn.poria.message.controller.api;
 
+import cn.poria.common.core.constant.CacheConstants;
 import cn.poria.common.core.util.Assert;
 import cn.poria.common.core.util.R;
 import cn.poria.common.log.annotation.SysLog;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +76,7 @@ public class TemplateApiController {
      * @return 新增结果
      */
     @SysLog("新增消息模板")
+    @CacheEvict(value = CacheConstants.MESSAGE_TEMPLATE, allEntries = true)
     @PostMapping
     @PreAuthorize("@pms.hasPermission('message_template_add')")
     @Operation(summary = "新增通用消息模板", description = "新增通用消息模板 (权限：message_template_add)")
@@ -89,6 +92,7 @@ public class TemplateApiController {
      * @return 修改结果
      */
     @SysLog("修改消息模板")
+    @CacheEvict(value = CacheConstants.MESSAGE_TEMPLATE, allEntries = true)
     @PutMapping
     @PreAuthorize("@pms.hasPermission('message_template_edit')")
     @Operation(summary = "修改通用消息模板", description = "修改通用消息模板 (权限：message_template_edit)")
@@ -105,6 +109,7 @@ public class TemplateApiController {
      * @return 状态修改结果
      */
     @SysLog("启用停用")
+    @CacheEvict(value = CacheConstants.MESSAGE_TEMPLATE, allEntries = true)
     @PostMapping("/changeStatus/{id}/{status}")
     @PreAuthorize("@pms.hasPermission('message_template_status')")
     @Operation(summary = "启用或停用通用消息模板", description = "启用或停用通用消息模板 (权限：message_template_status)")
@@ -120,6 +125,7 @@ public class TemplateApiController {
      * @return 删除结果
      */
     @SysLog("通过id删除消息模板")
+    @CacheEvict(value = CacheConstants.MESSAGE_TEMPLATE, allEntries = true)
     @DeleteMapping("{id}")
     @PreAuthorize("@pms.hasPermission('message_template_del')")
     @Operation(summary = "通过ID删除通用消息模板", description = "通过ID删除通用消息模板 (权限：message_template_del)")
