@@ -209,7 +209,7 @@ public interface SecurityConstants {
 	 * 项目的license
 	 */
 	//TODO 修改域名
-	String PROJECT_LICENSE = "https://shanxi-ncd.cn";
+	String PROJECT_LICENSE = "https://poria.cn";
 
 	/**
 	 * 短信登录 参数名称

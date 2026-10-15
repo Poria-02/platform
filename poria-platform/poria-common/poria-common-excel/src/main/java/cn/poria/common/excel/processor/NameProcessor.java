@@ -3,7 +3,6 @@ package cn.poria.common.excel.processor;
 import java.lang.reflect.Method;
 
 /**
- * @author shanxincd
  * @date 2020/3/29
  */
 public interface NameProcessor {

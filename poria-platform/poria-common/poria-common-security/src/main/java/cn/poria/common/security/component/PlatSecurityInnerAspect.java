@@ -31,7 +31,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * @author shanxincd
  * @date 2022-06-04
  *
  * 服务间接口不鉴权处理逻辑

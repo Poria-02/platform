@@ -29,7 +29,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET;
 
 /**
- * @author shanxincd
  * @date 2019-06-24
  * <p>
  * 注入自自定义SQL 过滤

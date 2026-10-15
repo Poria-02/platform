@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * @author shanxincd
  * @date 2020/3/29
  */
 @Aspect

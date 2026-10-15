@@ -86,7 +86,7 @@ public class SysUserController {
     @GetMapping({"/page"})
     @Operation(summary = "分页查询用户", description = "分页查询用户(sys_user_page)")
     @PreAuthorize("@pms.hasPermission('sys_user_page')")
-//   @ConverDatas({@ConverData(table = "user_login_info", serviceId = "${PORIA_LOG:http://poria-log:8046}", key = "userId", value = "lastLoginTimeManager", dbKey = "username", dbValue = "max(login_time)", condition = "client='shanxincd' group by username"),
+//   @ConverDatas({@ConverData(table = "user_login_info", serviceId = "${PORIA_LOG:http://poria-log:8046}", key = "userId", value = "lastLoginTimeManager", dbKey = "username", dbValue = "max(login_time)", condition = "client='' group by username"),
 //           @ConverData(table = "user_login_info", serviceId = "${PORIA_LOG:http://poria-log:8046}", key = "userId", value = "lastLoginTimeOperate", dbKey = "username", dbValue = "max(login_time)", condition = "client='operate' group by username")})
     public R<IPage<UserVO>> getUserPage(Page page, UserDTO userDTO) {
         return R.ok(this.userService.getUsersWithRolePage(page, userDTO));

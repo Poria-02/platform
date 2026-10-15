@@ -1,4 +1,4 @@
-//package cn.shanxincd.ih.common.data.resolver;
+//package cn.poria.common.data.resolver;
 //
 //import cn.hutool.core.convert.Convert;
 //import cn.hutool.core.util.StrUtil;
@@ -8,7 +8,6 @@
 //import lombok.experimental.UtilityClass;
 //
 ///**
-// * @author shanxincd
 // * @date 2020/5/12
 // * <p>
 // * 系统参数配置解析器

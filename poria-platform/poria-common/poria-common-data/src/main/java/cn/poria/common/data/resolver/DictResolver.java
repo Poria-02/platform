@@ -1,4 +1,4 @@
-//package cn.shanxincd.ih.common.data.resolver;
+//package cn.common.data.resolver;
 //
 //import cn.hutool.core.lang.Assert;
 //import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;

@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * aws 自动配置类
- *
- * @author shanxincd
- * @author 858695266
  */
 @AllArgsConstructor
 @Configuration(proxyBeanMethods = false)

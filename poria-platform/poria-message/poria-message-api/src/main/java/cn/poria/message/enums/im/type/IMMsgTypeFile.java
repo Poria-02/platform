@@ -3,16 +3,14 @@ package cn.poria.message.enums.im.type;
 import cn.hutool.core.annotation.Alias;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @JsonTypeName("imMsgTypeFile")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class IMMsgTypeFile implements IMMsgBody {
 
     @Override

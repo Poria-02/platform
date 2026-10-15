@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * 扩展通用 Mapper，支持数据权限 和批量插入
  *
- * @author shanxincd
  * @date 2020-06-17
  */
 public interface PoriaBaseMapper<T> extends BaseMapper<T> {

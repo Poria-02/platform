@@ -1,9 +1,6 @@
 package cn.poria.common.data.datascope;
 
 /**
- * @author shanxincd
- * @date 2019-09-07
- * <p>
  * data scope 判断处理器,抽象服务扩展
  */
 public interface DataScopeHandle {

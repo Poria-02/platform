@@ -8,7 +8,6 @@ import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import java.lang.annotation.*;
 
 /**
- * @author shanxincd
  * @date 2020-02-08
  */
 @Target(ElementType.TYPE)

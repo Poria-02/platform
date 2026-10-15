@@ -9,7 +9,6 @@ import org.apache.ibatis.mapping.SqlSource;
 /**
  * 扩展支持COUNT查询数量
  *
- * @author shanxincd
  * @date 2020/6/17
  */
 public class SelectCountByScope extends AbstractMethod {

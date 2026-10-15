@@ -19,7 +19,6 @@ import java.security.Principal;
 import java.util.Objects;
 
 /**
- * @author shanxincd
  * @date 2022/5/28
  */
 @Slf4j

@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
- * @author shanxincd
  * @date 2022-06-02
  */
 @RequiredArgsConstructor
@@ -63,11 +62,6 @@ public class PlatResourceServerAutoConfiguration {
 		return new ResourceAuthExceptionEntryPoint(objectMapper, securityMessageSource);
 	}
 
-	/**
-	 * 资源服务器toke内省处理器
-	 * @param authorizationService token 存储实现
-	 * @return TokenIntrospector
-	 */
 	/**
 	 * 资源服务器toke内省处理器
 	 * @param authorizationService token 存储实现
