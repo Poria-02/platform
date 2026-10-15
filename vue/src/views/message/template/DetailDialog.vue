@@ -6,7 +6,6 @@
       <el-descriptions-item label="模板 Key">{{ detail.row.templateKey }}</el-descriptions-item>
       <el-descriptions-item label="类型">{{ displayResourceValue(detail.row.type, {}, templateTypes) }}</el-descriptions-item>
       <el-descriptions-item label="状态">{{ displayResourceValue(detail.row.status, {}, templateStatuses) }}</el-descriptions-item>
-      <el-descriptions-item label="分类">{{ displayResourceValue(detail.row.category) }}</el-descriptions-item>
       <el-descriptions-item label="模板内容"><pre class="template-text">{{ detail.row.content || '—' }}</pre></el-descriptions-item>
       <el-descriptions-item label="跳转 URL"><span class="template-text">{{ detail.row.url || '—' }}</span></el-descriptions-item>
       <el-descriptions-item label="参数映射配置"><pre class="template-text">{{ detail.row.paramMapping || '—' }}</pre></el-descriptions-item>
