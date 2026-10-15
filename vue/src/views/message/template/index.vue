@@ -7,7 +7,6 @@
       <div class="filter-bar">
         <el-input :disabled="!canRead" v-model="query.keywords" placeholder="搜索标题、内容或模板 Key" clearable @keyup.enter="search" />
         <el-input :disabled="!canRead" v-model="query.templateKey" placeholder="模板 Key（精确匹配）" clearable @keyup.enter="search" />
-        <el-input :disabled="!canRead" v-model="query.category" placeholder="模板分类（精确匹配）" clearable @keyup.enter="search" />
         <el-select :disabled="!canRead" v-model="query.type" placeholder="全部模板类型" clearable><el-option v-for="option in templateTypes" :key="option.value" :label="option.label" :value="option.value" /></el-select>
         <el-select :disabled="!canRead" v-model="query.status" placeholder="全部状态" clearable><el-option v-for="option in templateStatuses" :key="option.value" :label="option.label" :value="option.value" /></el-select>
         <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
@@ -24,7 +23,6 @@
         <el-table-column prop="title" label="模板标题" min-width="180" show-overflow-tooltip />
         <el-table-column prop="templateKey" label="模板 Key" min-width="180" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" min-width="140"><template #default="scope">{{ displayResourceValue(scope.row.type, {}, templateTypes) }}</template></el-table-column>
-        <el-table-column prop="category" label="分类" min-width="130" show-overflow-tooltip><template #default="scope">{{ displayResourceValue(scope.row.category) }}</template></el-table-column>
         <el-table-column prop="content" label="模板内容" min-width="240" show-overflow-tooltip />
         <el-table-column prop="status" label="状态" min-width="100"><template #default="scope">{{ displayResourceValue(scope.row.status, {}, templateStatuses) }}</template></el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" show-overflow-tooltip />
@@ -67,7 +65,7 @@ const loadError = ref('')
 const rows = ref([])
 const total = ref(0)
 const page = reactive({ current: 1, size: 10 })
-const query = reactive({ keywords: '', templateKey: '', category: '', type: '', status: '' })
+const query = reactive({ keywords: '', templateKey: '', type: '', status: '' })
 const { syncListRoute, changePage, changePageSize } = useListRouteState({
   query, page, reload: load, isLoading: () => loading.value,
   allowedValues: { type: ['', '1', '2', '3', '4'], status: ['', '1', '2'] }
@@ -100,7 +98,7 @@ async function load() {
 }
 
 function search() { page.current = 1; return load() }
-function resetSearch() { Object.assign(query, { keywords: '', templateKey: '', category: '', type: '', status: '' }); return search() }
+function resetSearch() { Object.assign(query, { keywords: '', templateKey: '', type: '', status: '' }); return search() }
 
 async function openTemplate(row, editing) {
   if (!(editing ? canEdit.value : canDetail.value) || openingId.value !== null || busyId.value !== null) return

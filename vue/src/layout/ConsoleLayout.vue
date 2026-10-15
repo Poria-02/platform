@@ -15,7 +15,7 @@
           <span class="sidebar-account__info"><strong>{{ session.displayName }}</strong><small>个人中心</small></span>
         </router-link>
         <button class="sidebar-account__logout" type="button" aria-label="退出登录" title="退出登录" @click="handleCommand('logout')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12" /></svg>
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12" /></svg>
         </button>
       </div>
     </aside>

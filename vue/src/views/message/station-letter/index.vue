@@ -153,8 +153,8 @@ const templateFields = ref([])
 const templateError = ref('')
 let templateSequence = 0
 const templatePreview = computed(() => ({
-  title: String(selectedTemplate.value?.title || '').replace(/\$\{(.+?)\}/g, (_, key) => draft.param[key] || ''),
-  content: String(selectedTemplate.value?.content || '').replace(/\$\{(.+?)\}/g, (_, key) => draft.param[key] || '')
+  title: String(selectedTemplate.value?.title || '').replace(/\$\{(.+?)}/g, (_, key) => draft.param[key] || ''),
+  content: String(selectedTemplate.value?.content || '').replace(/\$\{(.+?)}/g, (_, key) => draft.param[key] || '')
 }))
 async function loadTemplates(keywords = '') {
   const sequence = ++templateSequence
@@ -179,7 +179,7 @@ function selectTemplate(key) {
     const content = JSON.parse(template.content)
     const fields = new Set()
     for (const value of [content.title, content.content, content.params]) {
-      for (const match of String(value || '').matchAll(/\$\{(.+?)\}/g)) fields.add(match[1])
+      for (const match of String(value || '').matchAll(/\$\{(.+?)}/g)) fields.add(match[1])
     }
     templateFields.value = [...fields]
     for (const field of fields) draft.param[field] = ''
