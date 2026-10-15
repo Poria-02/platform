@@ -32,14 +32,13 @@ public class CenterStationInner {
     /**
      * 使用通用模板发送站内信，兼容原待办站内信发送入口
      *
-     * @param model 接收人、模板key及模板参数
+     * @param model 接收人、模板Key及模板参数
      * @return 待办任务ID列表
      */
     @Inner
     @PostMapping({"/sendStationLetter", "/stationLetter"})
-    @Operation(summary = "发送站内信", description = "发送站内信")
+    @Operation(summary = "使用通用模板发送站内信，兼容原待办站内信发送入口", description = "使用通用模板发送站内信，兼容原待办站内信发送入口")
     public R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model) {
         return R.ok(centerStationService.sendStationLetter(model));
     }
-
 }

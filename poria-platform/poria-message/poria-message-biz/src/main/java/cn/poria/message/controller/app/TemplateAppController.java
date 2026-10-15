@@ -30,6 +30,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * App端通用消息模板查询控制层
+ */
 @Slf4j
 @Tag(name = "【App】- 消息模板")
 @RestController
@@ -37,28 +40,33 @@ import java.util.stream.Collectors;
 public class TemplateAppController {
 
     /**
-     * 服务对象
+     * 通用消息模板服务对象
      */
     @Resource
     private MsgTemplateService msgTemplateService;
 
-
-    @Operation(summary = "查询服务通知模版id",description = "查询服务通知模版id")
+    /**
+     * 查询指定小程序的服务通知模板ID
+     *
+     * @param queryModel 小程序AppID及模板Key列表
+     * @return 模板Key与小程序模板ID的对应关系
+     */
     @PostMapping("/ma/list")
+    @Operation(summary = "查询指定小程序的服务通知模板ID", description = "查询指定小程序的服务通知模板ID")
     public R getMaTemplateIds(@RequestBody MaTemplateQueryModel queryModel) {
+        List<MsgTemplate> list = msgTemplateService.list(new LambdaQueryWrapper<MsgTemplate>()
+                .in(MsgTemplate::getTemplateKey, queryModel.getTemplateKey())
+                .eq(MsgTemplate::getType, TemplateType.MA.getCode()));
 
-        List<MsgTemplate> list = msgTemplateService.list(new LambdaQueryWrapper<MsgTemplate>().in(MsgTemplate::getTemplateKey,queryModel.getTemplateKey()).eq(MsgTemplate::getType,TemplateType.MA.getCode()));
-
-        return R.ok(list.stream().filter(msgTemplate ->
-                    StrUtil.contains(msgTemplate.getContent(),queryModel.getAppid())
-                )
-                .collect(Collectors.toMap(msgTemplate -> msgTemplate.getTemplateKey(),msgTemplate -> {
+        return R.ok(list.stream()
+                .filter(msgTemplate -> StrUtil.contains(msgTemplate.getContent(), queryModel.getAppid()))
+                .collect(Collectors.toMap(msgTemplate -> msgTemplate.getTemplateKey(), msgTemplate -> {
                     String templateId = null;
                     JSONArray json = JSONUtil.parseArray(msgTemplate.getContent());
                     for (int i = 0; i < json.size(); i++) {
                         JSONObject temp = json.getJSONObject(i);
-                        if(StrUtil.equals(temp.getStr("appId"),queryModel.getAppid())){
-                            templateId =  temp.getStr("wxTemplateId");
+                        if (StrUtil.equals(temp.getStr("appId"), queryModel.getAppid())) {
+                            templateId = temp.getStr("wxTemplateId");
                             break;
                         }
                     }
@@ -66,11 +74,15 @@ public class TemplateAppController {
                 })));
     }
 
-    @Operation(summary = "分页查询", description = "分页查询")
+    /**
+     * 分页查询通用消息模板
+     *
+     * @param queryModel 分页及筛选条件
+     * @return 消息模板分页数据
+     */
     @GetMapping("/page")
+    @Operation(summary = "分页查询通用消息模板", description = "分页查询通用消息模板")
     public R<IPage<TemplateVo>> selectAll(TemplateQueryModel queryModel) {
         return R.ok(msgTemplateService.page(queryModel));
     }
-
-
 }

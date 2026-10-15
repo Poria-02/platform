@@ -14,26 +14,43 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 管理平台消息发送记录控制层
+ */
 @RestController
 @Tag(name = "【Api】- 消息发送记录log")
 @RequestMapping("/api/log")
 public class LogController {
 
+    /**
+     * 消息发送记录服务对象
+     */
     @Autowired
     private LogService logService;
 
-    @Operation(summary = "短信消息记录",description = "短信发送记录(message_log_sms)")
+    /**
+     * 分页查询短信发送记录
+     *
+     * @param query 分页及筛选条件
+     * @return 短信发送记录分页数据
+     */
     @GetMapping("/sms")
     @PreAuthorize("@pms.hasPermission('message_log_sms')")
-    public R<IPage<MsgSmsLog>> smsLogs (LogQuery query){
+    @Operation(summary = "分页查询短信发送记录", description = "分页查询短信发送记录 (权限：message_log_sms)")
+    public R<IPage<MsgSmsLog>> smsLogs(LogQuery query) {
         return R.ok(logService.selectSmsLogs(query));
     }
 
-    @Operation(summary = "微信模版消息记录",description = "微信模版消息记录(message_log_wx)")
+    /**
+     * 分页查询微信公众号模板消息发送记录
+     *
+     * @param query 分页及筛选条件
+     * @return 微信公众号消息发送记录分页数据
+     */
     @GetMapping("/wxTemplate")
     @PreAuthorize("@pms.hasPermission('message_log_wx')")
-    public R<IPage<MsgWxLog>> wxTemplate (LogQuery query){
+    @Operation(summary = "分页查询微信公众号模板消息发送记录", description = "分页查询微信公众号模板消息发送记录 (权限：message_log_wx)")
+    public R<IPage<MsgWxLog>> wxTemplate(LogQuery query) {
         return R.ok(logService.selectWxTemplate(query));
     }
-
 }

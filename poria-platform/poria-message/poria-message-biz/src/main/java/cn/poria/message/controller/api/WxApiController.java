@@ -13,38 +13,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 管理平台微信公众号消息发送控制层
+ */
 @Tag(name = "【Api】- 微信消息发送")
 @RestController
 @RequestMapping("/api/wx")
 public class WxApiController {
 
+    /**
+     * 微信消息服务对象
+     */
     @Autowired
     private WxService wxService;
 
-
     /**
-     * 发送微信模版消息
-     * @param msgSend
+     * 发送微信公众号模板消息
+     *
+     * @param msgSend 接收人、模板及消息参数
+     * @return 发送结果
      */
-    @Operation(summary = "发送微信模版消息",description = "发送微信模版消息")
     @PostMapping("/sendTemplateMsg")
-    @PreAuthorize("@pms.hasPermission('wx_template_msg_send')" )
-    public R sendTemplateMsg(@RequestBody @Validated WxMsgSend msgSend){
+    @PreAuthorize("@pms.hasPermission('wx_template_msg_send')")
+    @Operation(summary = "发送微信公众号模板消息", description = "发送微信公众号模板消息 (权限：wx_template_msg_send)")
+    public R sendTemplateMsg(@RequestBody @Validated WxMsgSend msgSend) {
         wxService.sendTemplateMsg(msgSend);
         return R.ok();
     }
 
-
     /**
-     * 发送微信模版消息
-     * @param msgSend
+     * 向指定用户关注的所有公众号发送模板消息
+     *
+     * @param msgSend 接收人、模板及消息参数
+     * @return 发送结果
      */
-    @Operation(summary = "发送微信模版消息",description = "发送微信模版消息")
     @PostMapping("/allWx/sendTemplateMsg")
-    @PreAuthorize("@pms.hasPermission('wx_template_msg_send')" )
-    public R sendAllWxTemplateMsg(@RequestBody @Validated WxMsgSend msgSend){
+    @PreAuthorize("@pms.hasPermission('wx_template_msg_send')")
+    @Operation(summary = "向指定用户关注的所有公众号发送模板消息", description = "向指定用户关注的所有公众号发送模板消息 (权限：wx_template_msg_send)")
+    public R sendAllWxTemplateMsg(@RequestBody @Validated WxMsgSend msgSend) {
         wxService.sendAllWxTemplateMsg(msgSend);
         return R.ok();
     }
-
 }

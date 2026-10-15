@@ -1,6 +1,5 @@
 package cn.poria.message.controller.app;
 
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import cn.poria.common.core.util.R;
@@ -18,30 +17,44 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * IM消息模板(MsgImTemplate)表控制层
+ * App端IM消息模板控制层
  *
  * @author wuning
  * @since 2025-05-07 10:47:07
  */
 @Slf4j
 @RestController
-@Tag(name="IM消息模板管理-APP")
+@Tag(name = "IM消息模板管理-APP")
 @RequestMapping("/msg/imTemplate")
 public class MsgImTemplateAppController {
 
+    /**
+     * IM消息模板服务对象
+     */
     @Resource
     private MsgImTemplateService msgImTemplateService;
 
-    @Operation(summary = "分页查询IM消息模板", description = "分页查询IM消息模板")
+    /**
+     * 分页查询IM消息模板
+     *
+     * @param queryModel 分页及筛选条件
+     * @return IM消息模板分页数据
+     */
     @GetMapping("/page")
+    @Operation(summary = "分页查询IM消息模板", description = "分页查询IM消息模板")
     public R selectAll(@ParameterObject IMTemplateQueryModel queryModel) {
         log.info("分页查询IM消息模板:{}", JSONUtil.toJsonStr(queryModel));
         return R.ok(msgImTemplateService.queryPage(queryModel));
     }
 
-
+    /**
+     * 新增IM消息模板
+     *
+     * @param model IM消息模板内容
+     * @return IM消息模板ID
+     */
+    @SysLog("新增IM消息模板")
     @PostMapping
-    @SysLog("新增IM消息模板" )
     @Operation(summary = "新增IM消息模板", description = "新增IM消息模板")
     public R<String> insert(@RequestBody @Validated IMTemplateModel model) {
         log.info("新增IM消息模板:{}", JSONUtil.toJsonStr(model));
@@ -50,9 +63,14 @@ public class MsgImTemplateAppController {
         return R.ok(msgTemplate.getId());
     }
 
-
+    /**
+     * 通过ID删除IM消息模板
+     *
+     * @param id IM消息模板ID
+     * @return 是否删除成功
+     */
+    @SysLog("通过id删除IM消息模板")
     @DeleteMapping("{id}")
-    @SysLog("通过id删除IM消息模板" )
     @Operation(summary = "通过ID删除IM消息模板", description = "通过ID删除IM消息模板")
     public R<Boolean> delete(@PathVariable String id) {
         log.info("通过id删除IM消息模板:{}", id);

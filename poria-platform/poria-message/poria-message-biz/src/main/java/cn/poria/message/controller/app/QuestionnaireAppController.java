@@ -19,61 +19,82 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * App端问卷查询控制层
+ */
 @Slf4j
 @RestController
 @Tag(name = "【App】- 问卷")
 @RequestMapping("/app/questionnaire")
 public class QuestionnaireAppController {
 
+    /**
+     * 问卷服务调用接口
+     */
     @Autowired
     private RemoteTDuckFromApi remoteTDuckFromApi;
 
-
-
-    @Operation(summary = "查询问卷列表",description = "查询问卷列表")
+    /**
+     * 分页查询收集中的问卷
+     *
+     * @param formListModel 分页及筛选条件
+     * @return 问卷分页数据
+     */
     @GetMapping("/list")
-    public R<Page<FormListVO>> getFromList(FormListModel formListModel){
+    @Operation(summary = "分页查询收集中的问卷", description = "分页查询收集中的问卷")
+    public R<Page<FormListVO>> getFromList(FormListModel formListModel) {
         formListModel.setStatus(2);
         return R.ok(remoteTDuckFromApi.list(formListModel, SecurityConstants.FROM_IN).getData());
     }
 
     /**
-     * 获取用户回填信息
-     * @param userFormDataQueryModel
-     * @return
+     * 查询用户的问卷填写信息
+     *
+     * @param userFormDataQueryModel 用户及问卷查询条件
+     * @return 用户问卷填写信息
      */
-    @Operation(summary = "获取用户回填信息",description = "获取用户回填信息")
     @PostMapping("/findData")
-    public R<UserWriteDataVO> findUserWriteData(@RequestBody UserFormDataQueryModel userFormDataQueryModel){
+    @Operation(summary = "查询用户的问卷填写信息", description = "查询用户的问卷填写信息")
+    public R<UserWriteDataVO> findUserWriteData(@RequestBody UserFormDataQueryModel userFormDataQueryModel) {
         return R.ok(remoteTDuckFromApi.findUserWriteData(userFormDataQueryModel, SecurityConstants.FROM_IN).getData());
     }
 
     /**
-     * 查询表单sn流水号
+     * 获取用户问卷流水号
+     *
+     * @param model 用户及问卷信息
+     * @return 问卷流水号获取结果
      */
-    @Operation(summary = "查询表单sn流水号",description = "查询表单sn流水号")
     @PostMapping("/sn")
+    @Operation(summary = "获取用户问卷流水号", description = "获取用户问卷流水号")
     public R<Long> getUserFormSN(@RequestBody UserSendInfoModel model) {
 
-        Result<Long> result =  remoteTDuckFromApi.getFormSN(model, SecurityConstants.FROM_IN);
-        return  result.isSuccess() ? R.ok(result.getData()): R.failed(result.getMsg());
+        Result<Long> result = remoteTDuckFromApi.getFormSN(model, SecurityConstants.FROM_IN);
+        return result.isSuccess() ? R.ok(result.getData()) : R.failed(result.getMsg());
 
     }
 
     /**
-     * 查询患者patientId
+     * 查询问卷关联的患者ID
+     *
+     * @param model 患者ID查询条件
+     * @return 患者ID
      */
-    @Operation(summary = "查询患者patientId",description = "查询患者patientId")
     @PostMapping("/patientId")
-    public R<String> findUserPatientIdFromForm(@RequestBody FormPatientIdQueryModel model){
+    @Operation(summary = "查询问卷关联的患者ID", description = "查询问卷关联的患者ID")
+    public R<String> findUserPatientIdFromForm(@RequestBody FormPatientIdQueryModel model) {
         return R.ok(remoteTDuckFromApi.findPatientId(model, SecurityConstants.FROM_IN).getData());
     }
 
-
+    /**
+     * 查询问卷表单项列表
+     *
+     * @param request 表单项查询条件
+     * @return 表单项列表
+     */
     @GetMapping("/item/list")
-    @Operation(summary = "表单项列表查询",description = "表单项列表查询")
-    public R queryFormItems(QueryFormItemRequest request){
-        return R.ok(remoteTDuckFromApi.queryFormItems(request,SecurityConstants.FROM_IN).getData());
+    @Operation(summary = "查询问卷表单项列表", description = "查询问卷表单项列表")
+    public R queryFormItems(QueryFormItemRequest request) {
+        return R.ok(remoteTDuckFromApi.queryFormItems(request, SecurityConstants.FROM_IN).getData());
     }
-
 }

@@ -25,62 +25,93 @@ import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 服务间问卷查询控制层
+ */
 //@Hidden
 @RestController
 @RequestMapping("/inner/questionnaire")
 public class QuestionnaireInnerController {
 
+    /**
+     * 问卷服务调用接口
+     */
     @Autowired
     private RemoteTDuckFromApi remoteTDuckFromApi;
 
     /**
-     * 查询表单sn流水号
+     * 获取用户问卷流水号
+     *
+     * @param model 用户及问卷信息
+     * @return 问卷流水号
      */
     @Inner
-    @Operation(summary = "查询表单sn流水号",description = "查询表单sn流水号")
     @PostMapping("/sn")
+    @Operation(summary = "获取用户问卷流水号", description = "获取用户问卷流水号")
     public R<Long> getUserFormSN(@RequestBody UserFormSNModel model) {
         UserSendInfoModel snModel = new UserSendInfoModel();
-        BeanUtils.copyProperties(model,snModel);
+        BeanUtils.copyProperties(model, snModel);
         Result<Long> formSN = remoteTDuckFromApi.getFormSN(snModel, SecurityConstants.FROM_IN);
-       if(!formSN.isSuccess()){
-           throw new ServiceException(formSN.getMsg());
-       }
+        if (!formSN.isSuccess()) {
+            throw new ServiceException(formSN.getMsg());
+        }
         return R.ok(formSN.getData());
     }
 
-
+    /**
+     * 查询问卷关联的患者ID
+     *
+     * @param model 患者ID查询条件
+     * @return 患者ID
+     */
     @Inner
-    @Operation(summary = "查询患者patientId",description = "查询患者patientId")
     @PostMapping("/patientId")
-    public R<String> findUserPatientIdFromForm(@RequestBody FormPatientQueryModel model){
+    @Operation(summary = "查询问卷关联的患者ID", description = "查询问卷关联的患者ID")
+    public R<String> findUserPatientIdFromForm(@RequestBody FormPatientQueryModel model) {
         FormPatientIdQueryModel formModel = new FormPatientIdQueryModel();
-        BeanUtils.copyProperties(model,formModel);
+        BeanUtils.copyProperties(model, formModel);
         return R.ok(remoteTDuckFromApi.findPatientId(formModel, SecurityConstants.FROM_IN).getData());
     }
 
+    /**
+     * 查询问卷列表
+     *
+     * @param formListModel 问卷筛选条件
+     * @return 问卷列表
+     */
     @Inner
-    @Operation(summary = "查询问卷列表",description = "查询问卷列表")
     @PostMapping("/list")
-    public R<List<FormListVO>> getFromList(@RequestBody FormListModel formListModel){
+    @Operation(summary = "查询问卷列表", description = "查询问卷列表")
+    public R<List<FormListVO>> getFromList(@RequestBody FormListModel formListModel) {
         formListModel.setSize(999);
         return R.ok(remoteTDuckFromApi.list(formListModel, SecurityConstants.FROM_IN).getData().getRecords());
     }
 
+    /**
+     * 通过表单Key查询表单项列表
+     *
+     * @param formKey 表单Key
+     * @return 表单项列表
+     */
     @Inner
     @GetMapping("/item/list/{formKey}")
-    @Operation(summary = "表单项列表查询",description = "表单项列表查询")
-    public R queryFormItems(@PathVariable @NotBlank(message = "formKey不能为空") String formKey){
+    @Operation(summary = "通过表单Key查询表单项列表", description = "通过表单Key查询表单项列表")
+    public R queryFormItems(@PathVariable @NotBlank(message = "formKey不能为空") String formKey) {
         QueryFormItemRequest request = new QueryFormItemRequest();
         request.setKey(formKey);
-        return R.ok(remoteTDuckFromApi.queryFormItems(request,SecurityConstants.FROM_IN).getData());
+        return R.ok(remoteTDuckFromApi.queryFormItems(request, SecurityConstants.FROM_IN).getData());
     }
 
+    /**
+     * 通过流水号查询问卷填写信息
+     *
+     * @param sn 问卷流水号
+     * @return 问卷填写信息
+     */
     @Inner
     @GetMapping("/form/data/{sn}")
-    @Operation(summary = "查询问卷填写信息",description = "查询问卷填写信息")
-    public R<Map<String, Object>> queryFormDataBySn(@PathVariable @NotBlank(message = "sn不能为空") String sn){
-        return R.ok(remoteTDuckFromApi.queryFormDataBySn(sn,SecurityConstants.FROM_IN).getData());
+    @Operation(summary = "通过流水号查询问卷填写信息", description = "通过流水号查询问卷填写信息")
+    public R<Map<String, Object>> queryFormDataBySn(@PathVariable @NotBlank(message = "sn不能为空") String sn) {
+        return R.ok(remoteTDuckFromApi.queryFormDataBySn(sn, SecurityConstants.FROM_IN).getData());
     }
-
 }

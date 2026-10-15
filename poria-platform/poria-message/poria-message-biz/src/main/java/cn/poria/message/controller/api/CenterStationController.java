@@ -20,15 +20,23 @@ import java.util.List;
 @RequestMapping("/api/station/letter")
 @Tag(name = "【Api】- 站内信")
 public class CenterStationController {
-    
+
+    /**
+     * 站内信服务对象
+     */
     @Resource
     private CenterStationService centerStationService;
 
+    /**
+     * 使用通用模板发送站内信
+     *
+     * @param model 接收人、模板Key及模板参数
+     * @return 待办任务ID列表
+     */
     @PostMapping("/sendStationLetter")
-    @Operation(summary = "新增发送站内信", description = "选择类型2的通用模板，传入接收人ID列表和模板参数，为每个接收人生成类型99的待办任务 (权限：message_station_add)")
     @PreAuthorize("@pms.hasPermission('message_station_add')")
+    @Operation(summary = "使用通用模板发送站内信", description = "选择类型2的通用模板，传入接收人ID列表和模板参数，为每个接收人生成类型99的待办任务 (权限：message_station_add)")
     public R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model) {
         return R.ok(centerStationService.sendStationLetter(model));
     }
-
 }
