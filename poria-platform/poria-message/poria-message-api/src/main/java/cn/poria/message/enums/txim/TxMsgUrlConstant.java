@@ -78,10 +78,4 @@ public interface TxMsgUrlConstant {
 
     //==============================[运营管理]====================================//
 
-    //==============================[多人会议管理]====================================//
-    String ROOM_CREATE = "/room_engine_http_srv/create_room";
-
-    String ROOM_DESTROY = "/room_engine_http_srv/destroy_room";
-
-    String ROOM_GET_INFO = "/room_engine_http_srv/get_room_info";
 }
