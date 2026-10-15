@@ -40,4 +40,9 @@ public class TxIMProperties {
      * 文档：https://cloud.tencent.com/document/product/269/32688#Server
      */
     private String secretKey;
+
+    /**
+     * 腾讯 IM 控制台回调鉴权 Token，需与控制台配置保持一致
+     */
+    private String callbackToken;
 }

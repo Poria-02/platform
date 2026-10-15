@@ -16,12 +16,14 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -108,21 +110,27 @@ public class IMGroupInnerController {
      */
     @Inner
     @PostMapping("/getChatLog")
-    public R<JSONObject> getGroupChatLog(@RequestBody GroupChatLogModel model){
+    public R<JSONObject> getGroupChatLog(@RequestBody @Validated GroupChatLogModel model){
         JSONObject result = JSONUtil.createObj();
         result.set("total",0);
         result.set("history",null);
         result.set("members",null);
+        result.set("nextMsgSeq",null);
 
         JSONArray history = imService.findGroupHistory(model);
         if(!history.isEmpty()){
-            List<GroupHistoryResponse> groupHistoryResponses = history.toList(GroupHistoryResponse.class);
-            if(model.getEndTime() != null && model.getBeginTime() != null){
-                groupHistoryResponses = groupHistoryResponses.stream().filter(e -> e.getMsgTimeStamp() >= model.getBeginTime() && e.getMsgTimeStamp() <= model.getEndTime())
-                        .sorted(Comparator.comparing(GroupHistoryResponse::getMsgTimeStamp,Comparator.reverseOrder())).collect(Collectors.toList());
-            } else {
-                groupHistoryResponses = groupHistoryResponses.stream().sorted(Comparator.comparing(GroupHistoryResponse::getMsgTimeStamp,Comparator.reverseOrder())).collect(Collectors.toList());
+            // 游标按原始消息计算，时间筛选后没有结果时仍可继续查询。
+            Long minMsgSeq = history.stream().map(JSONUtil::parseObj).map(message -> message.getLong("MsgSeq"))
+                    .filter(Objects::nonNull).min(Long::compareTo).orElse(null);
+            if (minMsgSeq != null && minMsgSeq > 1 && (model.getMsgSeq() == null || minMsgSeq <= model.getMsgSeq())) {
+                result.set("nextMsgSeq", minMsgSeq - 1);
             }
+            List<GroupHistoryResponse> groupHistoryResponses = history.toList(GroupHistoryResponse.class);
+            groupHistoryResponses = groupHistoryResponses.stream()
+                    .filter(e -> model.getBeginTime() == null || (e.getMsgTimeStamp() != null && e.getMsgTimeStamp() >= model.getBeginTime()))
+                    .filter(e -> model.getEndTime() == null || (e.getMsgTimeStamp() != null && e.getMsgTimeStamp() <= model.getEndTime()))
+                    .sorted(Comparator.comparing(GroupHistoryResponse::getMsgTimeStamp, Comparator.nullsLast(Comparator.reverseOrder())))
+                    .collect(Collectors.toList());
             result.set("total",groupHistoryResponses.size());
             result.set("history",JSONUtil.parseArray(groupHistoryResponses));
         }

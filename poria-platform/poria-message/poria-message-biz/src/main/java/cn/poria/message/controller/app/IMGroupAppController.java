@@ -3,7 +3,6 @@ package cn.poria.message.controller.app;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.poria.common.core.util.R;
-import cn.poria.common.security.annotation.Inner;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.message.enums.txim.TxMsgUrlConstant;
 import cn.poria.message.service.im.bean.GroupITeamsRespone;
@@ -13,7 +12,6 @@ import cn.poria.message.service.im.tx.request.GroupDetailRequest;
 import cn.poria.message.service.im.tx.request.GroupOwnRequest;
 import cn.poria.message.service.im.tx.response.GroupInfoResponse;
 import cn.poria.message.service.im.tx.response.GroupOwnResponse;
-import cn.poria.message.service.im.tx.service.TxIMAccountService;
 import cn.poria.message.service.im.tx.util.TxIMMsgSendUtil;
 import cn.poria.message.vo.request.im.GroupInfosModel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,17 +38,6 @@ public class IMGroupAppController {
 
     @Autowired
     private TxIMMsgSendUtil txIMMsgSendUtil;
-
-    @Autowired
-    private TxIMAccountService txIMAccountService;
-
-
-    @Inner(false)
-    @GetMapping("/test")
-    public R test(){
-        return R.ok(txIMAccountService.findAccountInfo(Arrays.asList("1525023070306775042","1585561235847716865")));
-    }
-
 
     @Operation(summary = "获取我的群组列表",description = "获取我的群组列表")
     @GetMapping("/iteams")

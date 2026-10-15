@@ -10,9 +10,4 @@ public interface InformMessageConstant {
      */
     Integer INFORM_WX = Integer.valueOf(TemplateType.MA.getCode());
     Integer INFORM_SMS = Integer.valueOf(TemplateType.SMS.getCode());
-
-    /**
-     * 视频录制缓存key
-     */
-    public final static String TRTC_VIDEO = "TRTC_VIDEO:";
 }

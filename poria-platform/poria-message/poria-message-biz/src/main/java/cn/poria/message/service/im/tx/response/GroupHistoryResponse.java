@@ -20,10 +20,10 @@ public class GroupHistoryResponse {
     private Integer msgPriority;
 
     @Alias("MsgRandom")
-    private Integer msgRandom;
+    private Long msgRandom;
 
     @Alias("MsgSeq")
-    private Integer msgSeq;
+    private Long msgSeq;
 
     @Alias("MsgTimeStamp")
     private Integer msgTimeStamp;

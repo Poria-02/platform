@@ -4,7 +4,6 @@ import cn.hutool.json.JSONObject;
 import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.message.vo.request.*;
-import cn.poria.message.vo.request.cs.ContentSecurityModel;
 import cn.poria.message.vo.request.form.FormListModel;
 import cn.poria.message.vo.request.form.FormPatientQueryModel;
 import cn.poria.message.vo.request.im.*;
@@ -12,7 +11,6 @@ import cn.poria.message.vo.request.ma.MaAccountMessageModel;
 import cn.poria.message.vo.request.center.StationLetterModel;
 import cn.poria.message.vo.response.FormListVO;
 import cn.poria.message.vo.response.im.GroupInfoVo;
-import cn.poria.message.vo.response.im.RoomInfoVo;
 import cn.poria.message.vo.response.ma.MaAccountMessageVo;
 import cn.poria.message.vo.response.template.TemplateVo;
 import jakarta.validation.constraints.NotBlank;
@@ -164,9 +162,6 @@ public interface MessageApi {
     @PostMapping("/inner/ma/account/info")
     R<MaAccountMessageVo> findMaAccountInfo(@RequestBody MaAccountMessageModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
-    @GetMapping("/inner/im/nertc/token/{channelName}/{uid}")
-    R<String> nertcToken(@PathVariable("channelName") String channelName,@PathVariable("uid")String uid);
-
     /**
      * 发送微信小程序、短信等通知
      */
@@ -178,23 +173,6 @@ public interface MessageApi {
 
     @PostMapping("/inner/sms/convert/shortUrl")
     R<String> convertToShortUrl(@RequestBody @NotBlank(message = "链接不能为空") String longUrl, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/im/room/create")
-    R createRoom(@RequestBody @Validated CreateRoomModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/im/room/destroy")
-    R destroyRoom(@RequestBody @Validated DestroyRoomModel roomId, @RequestHeader(SecurityConstants.FROM) String from);
-    @GetMapping("/inner/im/room/roomInfo")
-    R<RoomInfoVo> getRoom(@RequestParam String roomId, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/im/video/createCloudRecord")
-    R createCloudRecording(@RequestBody ImCreateCloudRecordModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @DeleteMapping("/inner/im/video/file/{id}")
-    R delRoomRecFile(@PathVariable("id") String id, @RequestHeader(SecurityConstants.FROM) String from);
-
-    @PostMapping("/inner/content/security")
-    R audit(@RequestBody @Validated ContentSecurityModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
     @PostMapping("/inner/im/group/transfer")
     R transferGroup(@RequestBody @Validated TransferGroupModel model, @RequestHeader(SecurityConstants.FROM) String from);

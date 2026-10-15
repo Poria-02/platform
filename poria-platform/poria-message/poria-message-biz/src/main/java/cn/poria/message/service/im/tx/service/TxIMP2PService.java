@@ -3,6 +3,7 @@ package cn.poria.message.service.im.tx.service;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.Assert;
 import cn.poria.common.security.util.SecurityUtils;
 import cn.poria.message.enums.txim.TxMsgUrlConstant;
@@ -20,8 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @Slf4j
@@ -39,7 +42,7 @@ public class TxIMP2PService {
         P2PMsgRequest request = new P2PMsgRequest();
         request.setFromAccount(imMsgSend.getFrom());
         request.setToAccount(imMsgSend.getTo());
-        request.setMsgRandom((new Date()).getTime() / 1000L);
+        request.setMsgRandom(ThreadLocalRandom.current().nextLong(1L << 32));
         request.setMsgBody(Arrays.asList(TxIMMsgWrapUtil.wrapBody(imMsgSend.getBody())));
         request.setOfflinePushInfo(imMsgSend.getPushInfo());
         request.setCloudCustomData(imMsgSend.getCloudCustomData());
@@ -69,6 +72,7 @@ public class TxIMP2PService {
 
 
     public void pushServerMsg(@RequestBody IMPush imPush) {
+        List<String> failedAccounts = new ArrayList<>();
         for (String to : imPush.getTo()) {
             try{
                 IMMsgSend imMsgSend = new IMMsgSend();
@@ -78,7 +82,11 @@ public class TxIMP2PService {
                 this.sendP2PMsg(imMsgSend);
             }catch (Exception e){
                 log.error("推送异常:",e);
+                failedAccounts.add(to);
             }
+        }
+        if (!failedAccounts.isEmpty()) {
+            throw new ServiceException("IM推送失败，接收账号：" + String.join(",", failedAccounts));
         }
     }
 }
