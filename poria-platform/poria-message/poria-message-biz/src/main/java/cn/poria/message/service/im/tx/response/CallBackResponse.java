@@ -1,15 +1,19 @@
 package cn.poria.message.service.im.tx.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class CallBackResponse {
 
-    private String ActionStatus;
+    @JsonProperty("ActionStatus")
+    private String actionStatus;
 
-    private String ErrorInfo;
+    @JsonProperty("ErrorInfo")
+    private String errorInfo;
 
-    private Integer ErrorCode;
+    @JsonProperty("ErrorCode")
+    private Integer errorCode;
 
 
     public static CallBackResponse ok(){

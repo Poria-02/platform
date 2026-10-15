@@ -6,9 +6,9 @@ import cn.poria.message.service.im.bean.GroupOwn;
 import cn.poria.message.service.im.pojo.GroupInfo;
 import cn.poria.message.service.im.tx.bean.AccountInfo;
 import cn.poria.message.service.im.tx.request.GroupOwnRequest;
+import cn.poria.message.service.im.tx.response.CallBackResponse;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.response.im.GroupInfoVo;
-import cn.poria.message.vo.response.im.RoomInfoVo;
 
 import java.util.List;
 import java.util.Map;
@@ -83,13 +83,7 @@ public interface IMService {
     List<GroupMemberDetail> getMemberDetail(String groupId);
 
     //回调处理
-    void callBackMsgResolve(JSONObject body);
-
-    void createRoom(CreateRoomModel model);
-
-    void destroyRoom(DestroyRoomModel roomId);
-
-    RoomInfoVo getRoom(String roomId);
+    CallBackResponse callBackMsgResolve(String appId, String command, String requestTime, String sign, JSONObject body);
 
     void transferGroup(TransferGroupModel model);
 }

@@ -75,18 +75,4 @@ tx:
     secretKey: ${TX_IM_SECRET_KEY:}
     adminAccountName: ${TX_IM_ADMIN_ACCOUNT:administrator}
     singExpireTime: ${TX_IM_SIGN_EXPIRE_TIME:604800}
-  trtc:
-    sdkAppId: ${TX_TRTC_SDK_APP_ID:0}
-    secretId: ${TX_TRTC_SECRET_ID:}
-    secretKey: ${TX_TRTC_SECRET_KEY:}
-    adminAccountName: ${TX_TRTC_ADMIN_ACCOUNT:administrator}
-    singExpireTime: ${TX_TRTC_SIGN_EXPIRE_TIME:604800}
-    callbackUrl: ${TX_TRTC_CALLBACK_URL:}
-  vod:
-    sdkAppId: ${TX_VOD_SDK_APP_ID:0}
-    singExpireTime: ${TX_VOD_SIGN_EXPIRE_TIME:604800}
-ali:
-  asr-apikey: ${ALI_ASR_API_KEY:}
-cs:
-  accessKeyId: ${ALI_CONTENT_ACCESS_KEY_ID:}
-  accessKeySecret: ${ALI_CONTENT_ACCESS_KEY_SECRET:}
+    callbackToken: ${TX_IM_CALLBACK_TOKEN:}

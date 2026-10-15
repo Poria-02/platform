@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -151,33 +151,19 @@ public class TxIMGroupService {
         if(CollUtil.isNotEmpty(imMsgSend.getReceiveMsgAccountIds())){
             request.setTo(imMsgSend.getReceiveMsgAccountIds());
         }
-        request.setRandom((new Date()).getTime() / 1000L);
+        request.setRandom(ThreadLocalRandom.current().nextLong(1L << 32));
         txIMMsgSendUtil.sendPostReq(TxMsgUrlConstant.GROUP_SEND_MSG, txIMProperties.getAdminAccountName(), JSONUtil.toJsonStr(request));
     }
 
 
     public JSONArray findGroupHistory(GroupChatLogModel model){
-        JSONArray vo = JSONUtil.createArray();
-        Long msgReq = null;
-        while (true) {
-            GroupMsgRecordRequest request = new GroupMsgRecordRequest();
-            request.setGroupId(model.getGroupId());
-            request.setReqMsgNumber(20);
-            request.setReqMsgSeq(msgReq);
-            JSONObject response =  txIMMsgSendUtil.sendPostReq(TxMsgUrlConstant.GROUP_MSG_RECORD, txIMProperties.getAdminAccountName(), JSONUtil.toJsonStr(request));
-            JSONArray msgList = response.getJSONArray("RspMsgList");
-            if(null == msgList || msgList.isEmpty()){
-                break;
-            }
-            if(msgList.size() < 20){
-                vo.addAll(msgList);
-                break;
-            }
-            vo.addAll(msgList);
-
-            msgReq = JSONUtil.parseObj(msgList.get(msgList.size() - 1)).getLong("MsgSeq") - 1;
-        }
-        return vo;
+        GroupMsgRecordRequest request = new GroupMsgRecordRequest();
+        request.setGroupId(model.getGroupId());
+        request.setReqMsgNumber(model.getLimit());
+        request.setReqMsgSeq(model.getMsgSeq());
+        JSONObject response = txIMMsgSendUtil.sendPostReq(TxMsgUrlConstant.GROUP_MSG_RECORD, txIMProperties.getAdminAccountName(), JSONUtil.toJsonStr(request));
+        JSONArray msgList = response.getJSONArray("RspMsgList");
+        return msgList == null ? JSONUtil.createArray() : msgList;
     }
 
 

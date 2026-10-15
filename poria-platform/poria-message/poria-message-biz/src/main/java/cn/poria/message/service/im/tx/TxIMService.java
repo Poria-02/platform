@@ -8,17 +8,16 @@ import cn.poria.message.service.im.bean.GroupOwn;
 import cn.poria.message.service.im.pojo.GroupInfo;
 import cn.poria.message.service.im.tx.bean.AccountInfo;
 import cn.poria.message.service.im.tx.response.GroupMemberDetailResponse;
+import cn.poria.message.service.im.tx.response.CallBackResponse;
 import cn.poria.message.service.im.tx.response.GroupOwnResponse;
 import cn.poria.message.service.im.IMService;
 import cn.poria.message.service.im.tx.request.GroupMemberInfoUpdateRequest;
 import cn.poria.message.service.im.tx.request.GroupOwnRequest;
 import cn.poria.message.service.im.tx.request.GroupSystemMsgRequest;
-import cn.poria.message.service.im.tx.response.RoomInfoResponse;
 import cn.poria.message.service.im.tx.service.*;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.response.im.GroupInfoVo;
 import cn.poria.message.vo.response.im.GroupMemberVo;
-import cn.poria.message.vo.response.im.RoomInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,6 @@ public class TxIMService implements IMService {
 
     @Autowired
     private TXMsgCallBackService txMsgCallBackService;
-
-    @Autowired
-    private TxIMRoomService txIMRoomService;
 
     @Override
     public String createAccount(IMRegister imRegister){
@@ -200,29 +196,8 @@ public class TxIMService implements IMService {
     }
 
     @Override
-    public void callBackMsgResolve(JSONObject body) {
-        txMsgCallBackService.callBackMsgResolve(body);
-    }
-
-    @Override
-    public void createRoom(CreateRoomModel model) {
-        txIMRoomService.createRoom(model);
-    }
-
-    @Override
-    public void destroyRoom(DestroyRoomModel roomId) {
-        txIMRoomService.destroyRoom(roomId);
-    }
-
-    @Override
-    public RoomInfoVo getRoom(String roomId) {
-        RoomInfoResponse room = txIMRoomService.getRoom(roomId);
-        if (room != null){
-            RoomInfoVo roomInfoVo = new RoomInfoVo();
-            BeanUtils.copyProperties(room.getRoomInfo(), roomInfoVo);
-            return roomInfoVo;
-        }
-        return null;
+    public CallBackResponse callBackMsgResolve(String appId, String command, String requestTime, String sign, JSONObject body) {
+        return txMsgCallBackService.callBackMsgResolve(appId, command, requestTime, sign, body);
     }
 
     @Override
