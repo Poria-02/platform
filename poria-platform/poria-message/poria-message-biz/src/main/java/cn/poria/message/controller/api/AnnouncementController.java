@@ -1,8 +1,9 @@
 package cn.poria.message.controller.api;
 
 import cn.poria.common.core.util.R;
+import cn.poria.common.core.validate.Create;
+import cn.poria.common.core.validate.Update;
 import cn.poria.message.service.CenterAnnouncementService;
-import cn.poria.message.service.MsgPendingTaskService;
 import cn.poria.message.vo.request.center.CenterDraftModel;
 import cn.poria.message.vo.request.center.CenterQueryModel;
 import cn.poria.message.vo.request.center.CenterSendModel;
@@ -33,9 +34,6 @@ public class AnnouncementController {
     @Resource
     private CenterAnnouncementService centerAnnouncementService;
 
-    @Resource
-    private MsgPendingTaskService msgPendingTaskService;
-
     /**
      * 分页查询公示公告
      *
@@ -43,7 +41,7 @@ public class AnnouncementController {
      * @return 公示公告分页数据
      */
     @GetMapping("/page")
-    @Operation(summary = "分页查询公示公告记录", description = "分页查询公示公告记录")
+    @Operation(summary = "分页查询公示公告记录", description = "按传入的公告状态查询，默认查询已发布的公示公告记录")
     public R<IPage<AnnouncementVo>> page(@Validated CenterQueryModel query) {
         return R.ok(centerAnnouncementService.page(query));
     }
@@ -55,7 +53,7 @@ public class AnnouncementController {
      * @return 公示公告详情
      */
     @GetMapping("/{id}")
-    @Operation(summary = "通过ID查询公示公告记录", description = "通过ID查询公示公告记录")
+    @Operation(summary = "通过ID查询公示公告记录", description = "通过ID查询公示公告详情")
     public R<AnnouncementVo> detail(@PathVariable String id) {
         return R.ok(centerAnnouncementService.detail(id));
     }
@@ -69,51 +67,48 @@ public class AnnouncementController {
     @PostMapping
     @Operation(summary = "新增公示公告", description = "新增公告并保存为草稿 (权限：message_announcement_add)")
     @PreAuthorize("@pms.hasPermission('message_announcement_add')")
-    public R<String> create(@RequestBody @Validated CenterDraftModel draft) {
+    public R<String> create(@RequestBody @Validated(Create.class) CenterDraftModel draft) {
         return R.ok(centerAnnouncementService.create(draft));
     }
 
     /**
      * 修改公示公告内容
      *
-     * @param id    公告ID
-     * @param draft 公示公告内容
+     * @param draft 公告ID及公示公告内容
      * @return 修改结果
      */
-    @PutMapping("/{id}")
+    @PutMapping
     @Operation(summary = "修改公示公告", description = "修改后恢复为草稿，原待办阅读状态保留，重新发送会生成新待办 (权限：message_announcement_edit)")
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
-    public R<Void> update(@PathVariable String id, @RequestBody @Validated CenterDraftModel draft) {
-        centerAnnouncementService.update(id, draft);
+    public R<Void> update(@RequestBody @Validated(Update.class) CenterDraftModel draft) {
+        centerAnnouncementService.update(draft);
         return R.ok();
     }
 
     /**
      * 通过待办功能发送公示公告
      *
-     * @param id 公告ID
-     * @param model 接收人用户ID列表
+     * @param model 公告ID及接收人用户ID列表
      * @return 待办任务ID列表
      */
-    @PostMapping("/{id}/send")
-    @Operation(summary = "发送公示公告", description = "向前端传入的接收人ID列表逐人发送公示公告 (权限：message_announcement_edit)")
-    @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
-    public R<List<String>> send(@PathVariable String id, @RequestBody @Validated CenterSendModel model) {
-        return R.ok(centerAnnouncementService.send(id, model));
+    @PostMapping("/send")
+    @Operation(summary = "发送公示公告", description = "向前端传入的接收人ID列表逐人发送公示公告 (权限：message_announcement_send)")
+    @PreAuthorize("@pms.hasPermission('message_announcement_send')")
+    public R<List<String>> send(@RequestBody @Validated CenterSendModel model) {
+        return R.ok(centerAnnouncementService.send(model));
     }
 
     /**
      * 恢复草稿或撤回公示公告
      *
-     * @param id      公告ID
-     * @param request 状态请求，0-草稿，2-已撤回
+     * @param request 公告ID及状态请求，0-草稿，2-已撤回
      * @return 状态修改结果
      */
-    @PutMapping("/{id}/status")
+    @PutMapping("/status")
     @Operation(summary = "修改公告发布状态", description = "0-恢复草稿，2-撤回；发送公告使用独立发送接口 (权限：message_announcement_edit)")
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
-    public R<Void> status(@PathVariable String id, @RequestBody @Validated CenterStatusModel request) {
-        centerAnnouncementService.status(id, request.getStatus());
+    public R<Void> status(@RequestBody @Validated CenterStatusModel request) {
+        centerAnnouncementService.status(request);
         return R.ok();
     }
 

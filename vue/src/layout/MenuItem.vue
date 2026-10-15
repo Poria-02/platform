@@ -14,14 +14,22 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { isExternal } from '@/core/menu'
 import MenuIcon from '@/ui/MenuIcon.vue'
 
 defineOptions({ name: 'MenuItem' })
 const props = defineProps({ item: { type: Object, required: true }, depth: { type: Number, default: 0 } })
+const route = useRoute()
 const children = computed(() => (props.item.children || []).filter(child => String(child.type) !== '1' && (child.path || child.children?.length)))
 const visible = computed(() => String(props.item.type) !== '1' && (props.item.path || children.value.length))
 const external = computed(() => isExternal(props.item.path))
 const open = ref(false)
+function containsRoute(items, path) {
+  return items.some(item => String(item.type) !== '1' && (item.path === path || containsRoute(item.children || [], path)))
+}
+watch([() => route.fullPath, children], () => {
+  if (containsRoute(children.value, route.path)) open.value = true
+}, { immediate: true })
 </script>

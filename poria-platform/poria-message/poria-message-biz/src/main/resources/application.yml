@@ -17,7 +17,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USERNAME:admin}
     password: ${MYSQL_PASSWORD:zyt20260831aA;}
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:23306}/${MESSAGE_DATABASE:poria_message}?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_HOST:43.136.75.223}:${MYSQL_PORT:23306}/${MESSAGE_DATABASE:poria_message}?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 5
@@ -69,9 +69,6 @@ message:
 
 convert:
   url: ${MESSAGE_CONVERT_URL:}
-netease:
-  appSecret: ${NETEASE_APP_SECRET:}
-  appKey: ${NETEASE_APP_KEY:}
 tx:
   im:
     sdkAppId: ${TX_IM_SDK_APP_ID:0}

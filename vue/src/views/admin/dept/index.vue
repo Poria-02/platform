@@ -4,21 +4,21 @@
       <div class="page-heading__copy"><div class="page-eyebrow">PORIA / 组织与权限</div><h1>部门管理</h1><p>维护组织层级、部门信息及上下级关系。</p></div>
     </header>
     <div class="resource-toolbar">
-      <div v-if="canQuery" class="filter-bar">
-        <el-input v-model="query.name" placeholder="搜索部门名称" clearable @keyup.enter="search" />
-        <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button @click="resetSearch">重置</el-button>
+      <div class="filter-bar">
+        <el-input :disabled="!canQuery" v-model="query.name" placeholder="搜索部门名称" clearable @keyup.enter="search" />
+        <el-button :disabled="!canQuery" type="primary" plain @click="search">查询</el-button>
+        <el-button :disabled="!canQuery" @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
-        <el-button @click="expandAll()">展开全部</el-button><el-button @click="collapseAll()">收起全部</el-button>
-        <el-button v-if="canQuery" @click="load">刷新</el-button>
-        <el-button v-if="canCreate" type="primary" @click="openCreate()">新增部门</el-button>
+        <el-button :disabled="!canQuery" @click="expandAll()">展开全部</el-button><el-button :disabled="!canQuery" @click="collapseAll()">收起全部</el-button>
+        <el-button :disabled="!canQuery" @click="load">刷新</el-button>
+        <el-button :disabled="!canCreate" type="primary" @click="openCreate()">新增部门</el-button>
       </div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canQuery" link type="primary" @click="load">重试</el-button></div>
       <div v-if="dictionaryError" class="resource-error" role="alert"><span>{{ dictionaryError }}</span><el-button link type="primary" @click="loadTypeDictionary">重试</el-button></div>
-      <el-table v-loading="loading" :data="visibleRows" row-key="id" class="data-table" :empty-text="canQuery ? '暂无数据' : '未配置查询部门权限'" style="width:100%">
+      <el-table v-loading="loading" :data="visibleRows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="name" label="部门名称" :min-width="250" show-overflow-tooltip>
           <template #default="scope"><div class="tree-label" :style="{ paddingLeft: `${scope.row.__depth * 18}px` }"><button v-if="scope.row.__hasChildren" class="tree-label__toggle" type="button" :aria-expanded="expandedIds.has(scope.row.id)" @click="toggleNode(scope.row)"><span :class="{ 'tree-label__arrow--open': expandedIds.has(scope.row.id) }">›</span>{{ displayResourceValue(scope.row.name, {}, [], scope.row) }}</button><span v-else class="tree-label__leaf"><span class="tree-label__spacer" />{{ displayResourceValue(scope.row.name, {}, [], scope.row) }}</span></div></template>
         </el-table-column>
@@ -27,9 +27,9 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button v-if="session.hasPermission(permissions.create)" link type="primary" @click="openCreate({ parentId: scope.row.id })">新增下级</el-button>
-            <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
-            <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
+            <el-button :disabled="!canCreate" link type="primary" @click="openCreate({ parentId: scope.row.id })">新增下级</el-button>
+            <el-button :disabled="!canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button :disabled="!canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,20 +44,16 @@ import EditDialog from './EditDialog.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue, optionsForField } from '@/core/resourceValues'
-import { useSession } from '@/core/session'
+import { useResourcePermissions } from '@/core/permissions'
 import * as api from './api'
 import { useRequestController } from '@/core/requestController'
 import { useListRouteState } from '@/core/listRouteState'
 
 const nextListRequest = useRequestController()
 
-const session = useSession()
+const { canRead: canQuery, canCreate, canEdit, canRemove } = useResourcePermissions('dept')
 
 const departments = ref([])
-
-const permissions = { query: 'sys_dept_tree', create: 'sys_dept_add', update: 'sys_dept_edit', remove: 'sys_dept_del' }
-
-const canQuery = computed(() => session.hasPermission(permissions.query))
 
 function parentOptions(deptId) {
   function exclude(nodes) {
@@ -83,12 +79,6 @@ async function listDepartments({ name = '' } = {}, request) {
   }
   return keyword ? filter(departments.value) : departments.value
 }
-
-const canCreate = computed(() => Boolean(api.create) && session.hasPermission(permissions.create))
-
-const canEdit = computed(() => Boolean(api.update) && session.hasPermission(permissions.update))
-
-const canRemove = computed(() => Boolean(api.remove) && session.hasPermission(permissions.remove))
 
 const loading = ref(false)
 const loadError = ref('')

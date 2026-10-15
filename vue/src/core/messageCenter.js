@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useSession } from './session'
+import { getResourcePermissions } from './permissions'
 import * as station from '@/views/message/station-letter/api'
 import * as announcement from '@/views/message/announcement/api'
 
@@ -10,19 +11,10 @@ export const useMessageCenter = defineStore('messageCenter', {
   getters: {
     unread: state => state.stationUnread + state.announcementUnread,
     stationPermissions() {
-      const session = useSession()
-      return {
-        canCreate: session.hasPermission('message_station_add')
-      }
+      return getResourcePermissions('stationLetter')
     },
     announcementPermissions() {
-      const session = useSession()
-      return {
-        canCreate: session.hasPermission('message_announcement_add'),
-        canEdit: session.hasPermission('message_announcement_edit'),
-        canDelete: session.hasPermission('message_announcement_del'),
-        canSend: session.hasPermission('message_announcement_edit')
-      }
+      return getResourcePermissions('announcement')
     }
   },
   actions: {

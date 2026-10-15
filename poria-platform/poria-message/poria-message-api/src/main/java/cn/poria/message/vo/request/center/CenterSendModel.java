@@ -13,6 +13,16 @@ import java.util.List;
 @Data
 public class CenterSendModel {
 
+    /**
+     * 公告ID
+     */
+    @NotBlank(message = "公告ID不能为空")
+    @Schema(description = "公告ID")
+    private String id;
+
+    /**
+     * 接收人用户ID列表
+     */
     @NotEmpty(message = "接收人不能为空")
     @Schema(description = "接收人用户ID列表")
     private List<@NotBlank(message = "接收人用户ID不能为空") String> userIds;

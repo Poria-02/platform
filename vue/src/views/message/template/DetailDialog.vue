@@ -7,7 +7,6 @@
       <el-descriptions-item label="类型">{{ displayResourceValue(detail.row.type, {}, templateTypes) }}</el-descriptions-item>
       <el-descriptions-item label="状态">{{ displayResourceValue(detail.row.status, {}, templateStatuses) }}</el-descriptions-item>
       <el-descriptions-item label="分类">{{ displayResourceValue(detail.row.category) }}</el-descriptions-item>
-      <el-descriptions-item label="短信平台">{{ displayResourceValue(detail.row.platform, {}, smsPlatforms) }}</el-descriptions-item>
       <el-descriptions-item label="模板内容"><pre class="template-text">{{ detail.row.content || '—' }}</pre></el-descriptions-item>
       <el-descriptions-item label="跳转 URL"><span class="template-text">{{ detail.row.url || '—' }}</span></el-descriptions-item>
       <el-descriptions-item label="参数映射配置"><pre class="template-text">{{ detail.row.paramMapping || '—' }}</pre></el-descriptions-item>
@@ -19,7 +18,7 @@
 
 <script setup>
 import { displayResourceValue } from '@/core/resourceValues'
-import { smsPlatforms, templateStatuses, templateTypes } from './options'
+import { templateStatuses, templateTypes } from './options'
 
 defineProps({ detail: { type: Object, required: true } })
 const emit = defineEmits(['close'])

@@ -1,7 +1,10 @@
 package cn.poria.message.vo.request.center;
 
+import cn.poria.common.core.validate.Create;
+import cn.poria.common.core.validate.Update;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -11,6 +14,14 @@ import lombok.Data;
 @Data
 @Schema(description = "站内信及公示公告新增、编辑请求")
 public class CenterDraftModel {
+
+    /**
+     * 公告ID
+     */
+    @Schema(description = "公告ID，修改时必传，新增时不传")
+    @NotBlank(message = "公告ID不能为空", groups = Update.class)
+    @Null(message = "新增公告时无需传入ID", groups = Create.class)
+    private String id;
 
     /**
      * 消息标题

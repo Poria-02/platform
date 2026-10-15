@@ -1,18 +1,18 @@
 <template>
   <el-dialog class="business-dialog" append-to-body :model-value="Boolean(selected)" :title="`字典项 · ${selected?.name || ''}`" width="min(980px, calc(100vw - 24px))" @close="emit('close')">
-    <div v-if="itemParents.length" class="item-location"><el-button link type="primary" @click="itemParents.pop()">返回上级</el-button><span>{{ itemParents.map(item => item.name).join(' / ') }}</span></div>
+    <div v-if="itemParents.length" class="item-location"><el-button :disabled="!itemCanRead" link type="primary" @click="itemParents.pop()">返回上级</el-button><span>{{ itemParents.map(item => item.name).join(' / ') }}</span></div>
     <div v-if="selected" class="resource-page">
 
       <div class="resource-toolbar">
 
         <div class="page-heading__actions">
 
-          <el-button @click="loadItems">刷新</el-button>
-          <el-button v-if="itemCanCreate" type="primary" @click="openCreateItem()">新增字典项</el-button>
+          <el-button :disabled="!itemCanRead" @click="loadItems">刷新</el-button>
+          <el-button :disabled="!itemCanCreate" type="primary" @click="openCreateItem()">新增字典项</el-button>
         </div>
       </div>
       <section class="surface-card">
-        <div v-if="itemLoadError" class="resource-error" role="alert"><span>{{ itemLoadError }}</span><el-button link type="primary" @click="loadItems">重试</el-button></div>
+        <div v-if="itemLoadError" class="resource-error" role="alert"><span>{{ itemLoadError }}</span><el-button :disabled="!itemCanRead" link type="primary" @click="loadItems">重试</el-button></div>
 
         <el-table v-loading="itemLoading" :data="itemRows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
           <el-table-column prop="name" label="名称" :min-width="130" show-overflow-tooltip>
@@ -32,9 +32,9 @@
           </el-table-column>
           <el-table-column label="操作" min-width="190" fixed="right">
             <template #default="scope">
-              <el-button link type="primary" @click="itemParents.push({ id: scope.row.id, name: scope.row.name })">查看子项</el-button>
-              <el-button v-if="itemCanEdit" link type="primary" @click="openEditItem(scope.row)">编辑</el-button>
-              <el-button v-if="itemCanRemove" link type="danger" @click="removeItem(scope.row)">删除</el-button>
+              <el-button :disabled="!itemCanRead" link type="primary" @click="itemParents.push({ id: scope.row.id, name: scope.row.name })">查看子项</el-button>
+              <el-button :disabled="!itemCanEdit" link type="primary" @click="openEditItem(scope.row)">编辑</el-button>
+              <el-button :disabled="!itemCanRemove" link type="danger" @click="removeItem(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -53,7 +53,7 @@ import { displayResourceValue } from '@/core/resourceValues'
 import * as api from './api'
 import { useResourcePermissions } from '@/core/permissions'
 
-const { canCreate: itemCanCreate, canEdit: itemCanEdit, canRemove: itemCanRemove } = useResourcePermissions('treeDictItem')
+const { canRead: itemCanRead, canCreate: itemCanCreate, canEdit: itemCanEdit, canRemove: itemCanRemove } = useResourcePermissions('treeDictItem')
 
 const props = defineProps({
   selected: { type: Object, required: true }
@@ -73,7 +73,7 @@ const itemRows = ref([])
 let itemLoadSequence = 0
 
 async function loadItems() {
-  if (!props.selected) return
+  if (!props.selected || !itemCanRead.value) return
   const sequence = ++itemLoadSequence
   itemLoading.value = true
   try {

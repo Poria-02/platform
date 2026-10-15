@@ -5,16 +5,16 @@
     </header>
     <div class="resource-toolbar">
       <div class="filter-bar">
-        <el-input v-model="query.mobile" placeholder="接收账户（精确匹配）" clearable @keyup.enter="search" />
-        <el-input v-model="query.content" placeholder="搜索消息内容" clearable @keyup.enter="search" />
-        <el-date-picker v-model="dateRange" type="datetimerange" value-format="YYYY-MM-DD HH:mm:ss" start-placeholder="开始时间" end-placeholder="结束时间" range-separator="至" unlink-panels />
-        <el-button type="primary" plain :disabled="!canRead" @click="search">查询</el-button>
+        <el-input :disabled="!canRead" v-model="query.mobile" placeholder="接收账户（精确匹配）" clearable @keyup.enter="search" />
+        <el-input :disabled="!canRead" v-model="query.content" placeholder="搜索消息内容" clearable @keyup.enter="search" />
+        <el-date-picker :disabled="!canRead" v-model="dateRange" type="datetimerange" value-format="YYYY-MM-DD HH:mm:ss" start-placeholder="开始时间" end-placeholder="结束时间" range-separator="至" unlink-panels />
+        <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
         <el-button :disabled="!canRead" @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions"><el-button :disabled="!canRead" @click="load">刷新</el-button></div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button v-if="canRead" link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
       <el-table v-loading="loading" :data="rows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="accountId" label="接收账户" min-width="180" show-overflow-tooltip />
         <el-table-column prop="templateKey" label="模板 Key" min-width="180" show-overflow-tooltip />
@@ -24,9 +24,9 @@
         <el-table-column prop="msgId" label="微信消息 ID" min-width="180" show-overflow-tooltip />
         <el-table-column prop="orgId" label="机构 ID" min-width="140" show-overflow-tooltip />
         <el-table-column prop="createTime" label="发送时间" min-width="180" show-overflow-tooltip />
-        <el-table-column v-if="canRead" label="操作" width="90" fixed="right"><template #default="scope"><el-button link type="primary" @click="showDetail(scope.row)">详情</el-button></template></el-table-column>
+        <el-table-column label="操作" width="90" fixed="right"><template #default="scope"><el-button :disabled="!canRead" link type="primary" @click="showDetail(scope.row)">详情</el-button></template></el-table-column>
       </el-table>
-      <div v-if="total > 0" class="table-footer"><span>共 {{ total }} 条记录</span><el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" /></div>
+      <div v-if="total > 0" class="table-footer"><span>共 {{ total }} 条记录</span><el-pagination :current-page="page.current" :page-size="page.size" :disabled="!canRead || (loading)" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" /></div>
     </section>
     <DetailDialog :detail="detail" kind="wx" @close="detail.open = false" />
   </div>
@@ -61,7 +61,7 @@ let loadSequence = 0
 async function load() {
   const sequence = ++loadSequence
   const request = nextListRequest()
-  if (!canRead.value) { loading.value = false; loadError.value = '当前账号没有微信记录查询权限'; return }
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   const queryError = logQueryError(query)
   if (queryError) { loading.value = false; loadError.value = queryError; return }
   loading.value = true

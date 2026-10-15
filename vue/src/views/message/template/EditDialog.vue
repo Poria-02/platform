@@ -14,7 +14,7 @@
       <el-form-item label="消息跳转 URL" prop="url" class="form-field--wide"><el-input v-model="editor.form.url" placeholder="请输入消息跳转 URL（可选）" /></el-form-item>
       <el-form-item label="参数映射配置" prop="paramMapping" class="form-field--wide"><el-input v-model="editor.form.paramMapping" type="textarea" :rows="3" placeholder="请输入参数映射配置（可选）" /></el-form-item>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button :disabled="!(editor.editing ? canEdit : canCreate)" type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
   </el-dialog>
 </template>
 

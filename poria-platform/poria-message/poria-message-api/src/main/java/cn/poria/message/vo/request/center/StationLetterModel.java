@@ -3,6 +3,7 @@ package cn.poria.message.vo.request.center;
 import cn.poria.message.vo.request.im.IMPush;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +21,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class StationLetterModel {
 
-    @NotBlank(message = "接收人不能为空")
+    @NotEmpty(message = "接收人不能为空")
     @Schema(description = "接收人用户ID列表")
-    private List<String> userIds;
+    private List<@NotBlank(message = "接收人用户ID不能为空") String> userIds;
 
     @Schema(description = "业务ID")
     private String businessId;

@@ -15,7 +15,7 @@
       </el-form-item>
 
     </el-form>
-    <template #footer><el-button :disabled="itemEditor.saving" @click="itemEditor.open = false">取消</el-button><el-button type="primary" v-stable-loading="itemEditor.saving" :loading="itemEditor.saving" @click="saveItem">保存</el-button></template>
+    <template #footer><el-button :disabled="itemEditor.saving" @click="itemEditor.open = false">取消</el-button><el-button :disabled="!(itemEditor.editing ? itemCanEdit : itemCanCreate)" type="primary" v-stable-loading="itemEditor.saving" :loading="itemEditor.saving" @click="saveItem">保存</el-button></template>
   </el-dialog>
 </template>
 

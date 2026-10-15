@@ -6,13 +6,14 @@
     <div class="resource-toolbar">
 
       <div class="page-heading__actions">
-        <el-button v-if="canRefresh" v-stable-loading="refreshing" :loading="refreshing" @click="refresh()">刷新网关路由</el-button>
-        <el-button @click="load">刷新</el-button>
-        <el-button v-if="canCreate" type="primary" @click="openCreate()">新增路由</el-button>
+        <el-button :disabled="!canRefresh" v-stable-loading="refreshing" :loading="refreshing" @click="refresh()">刷新网关路由</el-button>
+        <el-button :disabled="!canRead" @click="load">刷新</el-button>
+        <el-button :disabled="!canCreate || refreshing" type="primary" @click="openCreate()">新增路由</el-button>
       </div>
     </div>
+    <p v-if="needsRefresh" class="route-refresh-hint" role="status">路由配置已变更，请手动点击“刷新网关路由”使配置生效。</p>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
 
       <el-table v-loading="loading" :data="rows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="routeId" label="路由 ID" :min-width="130" show-overflow-tooltip>
@@ -33,14 +34,14 @@
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
 
-            <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
-            <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
+            <el-button :disabled="!canEdit || refreshing || editConfirming" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button :disabled="!canRemove || refreshing" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
     </section>
-    <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" @saved="load" />
+    <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" @saved="handleSaved" />
   </div>
 </template>
 
@@ -55,14 +56,22 @@ import { useResourcePermissions } from '@/core/permissions'
 
 const nextListRequest = useRequestController()
 
-const { canCreate, canEdit, canRemove, canRefresh } = useResourcePermissions('route')
+const { canRead, canCreate, canEdit, canRemove, canRefresh } = useResourcePermissions('route')
 
 const refreshing = ref(false)
+const editConfirming = ref(false)
+const needsRefresh = ref(false)
 
 async function refresh() {
   if (!canRefresh.value || refreshing.value) return
   refreshing.value = true
-  try { await api.refresh(); ElMessage.success('网关路由已刷新'); await load() }
+  try {
+    const result = await api.refresh()
+    if (result === false) { ElMessage.error('网关路由刷新未完成，请重试'); return }
+    needsRefresh.value = false
+    ElMessage.success('网关路由已刷新')
+    await load()
+  }
   catch { /* HTTP 层显示错误 */ }
   finally { refreshing.value = false }
 }
@@ -75,6 +84,7 @@ let loadSequence = 0
 async function load() {
   const sequence = ++loadSequence
   const request = nextListRequest()
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   loading.value = true
   try {
     const params = {  }
@@ -91,12 +101,13 @@ async function load() {
 }
 
 async function remove(row) {
-  if (!canRemove.value) return
+  if (!canRemove.value || refreshing.value) return
   try { await ElMessageBox.confirm("确认删除这条路由吗？", '确认删除', { type: 'warning' }) } catch { return }
   try {
     const result = await api.remove(row.id)
     if (result === false) { ElMessage.error('删除未完成'); return }
-    ElMessage.success('删除成功')
+    needsRefresh.value = true
+    ElMessage.success('删除成功，请手动刷新网关路由后生效')
 
     await load()
 
@@ -105,11 +116,27 @@ async function remove(row) {
 
 onMounted(load)
 
+function handleSaved() {
+  needsRefresh.value = true
+  void load()
+}
+
 const editorRef = ref()
 function openCreate(defaults = {}) {
-  if (canCreate.value) editorRef.value?.openCreate(defaults)
+  if (canCreate.value && !refreshing.value) editorRef.value?.openCreate(defaults)
 }
-function openEdit(row) {
-  if (canEdit.value) return editorRef.value?.openEdit(row)
+async function openEdit(row) {
+  if (!canEdit.value || refreshing.value || editConfirming.value) return
+  editConfirming.value = true
+  try {
+    try {
+      await ElMessageBox.confirm('修改网关路由属于专业运维操作，配置错误可能影响服务访问。请确认目标地址、匹配规则和过滤器配置，保存后需手动刷新网关路由生效。是否继续编辑？', '修改路由提醒', { type: 'warning', confirmButtonText: '继续编辑', cancelButtonText: '取消' })
+    } catch { return }
+    if (canEdit.value && !refreshing.value) await editorRef.value?.openEdit(row)
+  } finally { editConfirming.value = false }
 }
 </script>
+
+<style scoped>
+.route-refresh-hint { margin: 0 0 16px; padding: 12px 16px; border: 1px solid #f0dfb5; border-radius: 4px; background: #fff9eb; color: #8a6525; font-size: 13px; line-height: 1.7; }
+</style>

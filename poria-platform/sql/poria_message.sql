@@ -1,8 +1,11 @@
 -- Poria 消息服务新库初始化，供人工审核后执行；不包含业务数据。
--- 前 7 张表取自 unhm 的建表脚本，并按当前实体补充字段；其余表按实体定义补齐。
+-- 适用数据库：MySQL 8.0+，包含 12 张表，保留迁移表并按当前实体补齐字段。
 -- 此脚本只创建缺失的表，不用于已有数据库的结构升级。
+SET NAMES utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS `poria_message` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `poria_message`;
+
 CREATE TABLE IF NOT EXISTS `msg_email_log`  (
   `id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `business_type` int NOT NULL COMMENT '业务类型，见 BusinessType',
@@ -28,14 +31,14 @@ CREATE TABLE IF NOT EXISTS `msg_pending_task`  (
   `business_id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '业务ID',
   `type` int NOT NULL COMMENT '代办任务类型(字典pending_task_type)',
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '任务跳转路径',
-  `status` int NOT NULL COMMENT '状态，0-未处理，1-已处理',
+  `status` int NOT NULL DEFAULT 0 COMMENT '状态，0-未处理，1-已处理',
   `title` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '任务标题',
   `task_time` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '任务时间',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  `create_by` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
-  `is_delete` int NULL DEFAULT NULL COMMENT '删除标示',
+  `create_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `is_delete` int NOT NULL DEFAULT 0 COMMENT '删除标示 0-未删除，1-已删除',
   `commit_time` datetime NULL DEFAULT NULL COMMENT '完成时间',
-  `content` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '内容',
+  `content` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '内容，兼容最多20000字的公告正文',
   `redirect_type` int NULL DEFAULT NULL COMMENT '0 不跳转 1 h5 2 原生',
   `group_type` int NULL DEFAULT 0 COMMENT '0-单人任务,1-多人任务',
   `level` int NULL DEFAULT 3 COMMENT '优先级 1-5',
@@ -62,13 +65,13 @@ CREATE TABLE IF NOT EXISTS `msg_sms_log`  (
 CREATE TABLE IF NOT EXISTS `msg_template`  (
   `id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'id',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模板标题,用于描述',
-  `template_key` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '模版KEY 模版使用时传入',
+  `template_key` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模版KEY 模版使用时传入',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模板内容,需替换变量写在${}中',
   `create_by` varchar(64) NULL DEFAULT NULL COMMENT 'ID创建人',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  `type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1' COMMENT '模板类型 1-短信模板，2-消息推送模版，3-站内信',
-  `status` int NOT NULL DEFAULT 0 COMMENT '停用标志  1-正常，2-停用',
-  `is_delete` int NULL DEFAULT NULL COMMENT '是否删除0-没删除 1-删除',
+  `type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1' COMMENT '模板类型 1-短信，2-站内信，3-微信公众号，4-小程序',
+  `status` int NOT NULL DEFAULT 1 COMMENT '停用标志  1-正常，2-停用',
+  `is_delete` int NOT NULL DEFAULT 0 COMMENT '是否删除0-没删除 1-删除',
   `tenant_id` int NULL DEFAULT NULL COMMENT '租户ID',
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '消息跳转URL，支持模板变量',
   `platform` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '短信平台 短信消息传入',
@@ -176,3 +179,18 @@ CREATE TABLE IF NOT EXISTS `msg_mission_log` (
   PRIMARY KEY (`id`),
   KEY `idx_to_user_status_type` (`to_user`, `status`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `msg_announcement` (
+  `id` varchar(19) NOT NULL COMMENT '公告ID',
+  `title` varchar(200) NOT NULL COMMENT '公告标题',
+  `content` mediumtext NOT NULL COMMENT '公告正文，最多20000字',
+  `status` int NOT NULL DEFAULT 0 COMMENT '发布状态，0-草稿，1-已发布，2-已撤回',
+  `publisher` varchar(255) DEFAULT NULL COMMENT '发布人名称',
+  `create_by` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `publish_time` datetime DEFAULT NULL COMMENT '发布时间',
+  `is_delete` int NOT NULL DEFAULT 0 COMMENT '逻辑删除标识，0-未删除，1-已删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_status_publish_time` (`is_delete`, `status`, `publish_time`, `create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='公示公告';
