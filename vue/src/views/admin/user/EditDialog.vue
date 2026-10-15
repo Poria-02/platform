@@ -50,7 +50,7 @@
         </Transition>
       </section>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">{{ editor.editing ? (editor.changePassword ? '保存并修改密码' : '保存修改') : '创建用户' }}</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button :disabled="!(editor.editing ? canEdit : canCreate)" type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">{{ editor.editing ? (editor.changePassword ? '保存并修改密码' : '保存修改') : '创建用户' }}</el-button></template>
   </el-dialog>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="console-shell" :class="{ 'sidebar-collapsed': collapsed, 'mobile-open': mobileOpen }">
+  <div class="console-shell" :class="{ 'sidebar-collapsed': collapsed, 'mobile-open': mobileOpen, 'message-workspace': isMessagePage }">
     <Transition name="panel-fade"><div v-if="mobileOpen" class="mobile-scrim" @click="mobileOpen = false" /></Transition>
     <aside class="console-sidebar">
       <router-link class="sidebar-brand" to="/index" @click="mobileOpen = false"><span class="brand-mark" aria-hidden="true">P</span><span class="brand-word">PORIA<small>管理工作台</small></span></router-link>
@@ -95,6 +95,7 @@ const contextMenu = reactive({ open: false, path: '', x: 0, y: 0 })
 const contextMenuRef = ref(null)
 const menuRoots = computed(() => consoleMenus(session.menus))
 const currentTitle = computed(() => route.meta.title || '工作台')
+const isMessagePage = computed(() => ['/message/announcement/index', '/message/station-letter/index'].includes(route.path))
 const initial = computed(() => session.displayName.slice(0, 1).toUpperCase())
 let stopClock
 
@@ -172,6 +173,7 @@ watch(() => session.current?.idleId, () => {
 })
 watch(() => route.fullPath, fullPath => {
   const path = route.path
+  if (isMessagePage.value) collapsed.value = false
   mobileOpen.value = false
   contextMenu.open = false
   const tab = tabs.value.find(tab => tab.path === path)
@@ -182,4 +184,11 @@ watch(() => route.fullPath, fullPath => {
 
 <style scoped>
 .sidebar-menu-error { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; color: #a94637; font-size: 12px; }
+.message-workspace .console-main { display: flex; flex-direction: column; height: 100dvh; }
+.message-workspace .console-header, .message-workspace .workspace-tabs { flex-shrink: 0; }
+.message-workspace .console-content { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; padding-bottom: 28px; }
+.message-workspace :deep(.route-page) { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+@media (max-width: 900px) { .message-workspace .console-content { padding-bottom: 17px; } }
+@media (max-width: 760px) { .message-workspace .console-main { height: auto; min-height: 100dvh; } .message-workspace .console-content { overflow: visible; } }
+@media (min-width: 761px) and (max-height: 600px) { .message-workspace .console-main { min-height: 600px; } }
 </style>

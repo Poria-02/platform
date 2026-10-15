@@ -5,42 +5,41 @@
     </header>
     <div class="resource-toolbar">
       <div class="filter-bar">
-        <el-input v-model="query.keywords" placeholder="搜索标题、内容或模板 Key" clearable @keyup.enter="search" />
-        <el-input v-model="query.templateKey" placeholder="模板 Key（精确匹配）" clearable @keyup.enter="search" />
-        <el-input v-model="query.category" placeholder="模板分类（精确匹配）" clearable @keyup.enter="search" />
-        <el-select v-model="query.type" placeholder="全部模板类型" clearable><el-option v-for="option in templateTypes" :key="option.value" :label="option.label" :value="option.value" /></el-select>
-        <el-select v-model="query.status" placeholder="全部状态" clearable><el-option v-for="option in templateStatuses" :key="option.value" :label="option.label" :value="option.value" /></el-select>
-        <el-button type="primary" plain :disabled="!canRead" @click="search">查询</el-button>
+        <el-input :disabled="!canRead" v-model="query.keywords" placeholder="搜索标题、内容或模板 Key" clearable @keyup.enter="search" />
+        <el-input :disabled="!canRead" v-model="query.templateKey" placeholder="模板 Key（精确匹配）" clearable @keyup.enter="search" />
+        <el-input :disabled="!canRead" v-model="query.category" placeholder="模板分类（精确匹配）" clearable @keyup.enter="search" />
+        <el-select :disabled="!canRead" v-model="query.type" placeholder="全部模板类型" clearable><el-option v-for="option in templateTypes" :key="option.value" :label="option.label" :value="option.value" /></el-select>
+        <el-select :disabled="!canRead" v-model="query.status" placeholder="全部状态" clearable><el-option v-for="option in templateStatuses" :key="option.value" :label="option.label" :value="option.value" /></el-select>
+        <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
         <el-button :disabled="!canRead" @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
         <el-button :disabled="!canRead" @click="load">刷新</el-button>
-        <el-button v-if="canCreate" type="primary" :disabled="openingId !== null || busyId !== null" @click="editorRef?.openCreate()">新增模板</el-button>
+        <el-button type="primary" :disabled="!canCreate || (openingId !== null || busyId !== null)" @click="editorRef?.openCreate()">新增模板</el-button>
       </div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button v-if="canRead" link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
       <el-table v-loading="loading" :data="rows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="title" label="模板标题" min-width="180" show-overflow-tooltip />
         <el-table-column prop="templateKey" label="模板 Key" min-width="180" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" min-width="140"><template #default="scope">{{ displayResourceValue(scope.row.type, {}, templateTypes) }}</template></el-table-column>
         <el-table-column prop="category" label="分类" min-width="130" show-overflow-tooltip><template #default="scope">{{ displayResourceValue(scope.row.category) }}</template></el-table-column>
         <el-table-column prop="content" label="模板内容" min-width="240" show-overflow-tooltip />
-        <el-table-column prop="platform" label="短信平台" min-width="150"><template #default="scope">{{ displayResourceValue(scope.row.platform, {}, smsPlatforms) }}</template></el-table-column>
         <el-table-column prop="status" label="状态" min-width="100"><template #default="scope">{{ displayResourceValue(scope.row.status, {}, templateStatuses) }}</template></el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="180" show-overflow-tooltip />
-        <el-table-column v-if="canDetail || canEdit || canStatus || canRemove" label="操作" min-width="240" fixed="right">
+        <el-table-column label="操作" min-width="240" fixed="right">
           <template #default="scope">
-            <el-button v-if="canDetail" link type="primary" :loading="openingId === scope.row.id" :disabled="openingId !== null || busyId !== null" @click="openTemplate(scope.row, false)">详情</el-button>
-            <el-button v-if="canEdit" link type="primary" :disabled="openingId !== null || busyId !== null" @click="openTemplate(scope.row, true)">编辑</el-button>
-            <el-button v-if="canStatus && [1, 2].includes(Number(scope.row.status))" link type="primary" :loading="busyId === scope.row.id" :disabled="openingId !== null || busyId !== null" @click="changeStatus(scope.row)">{{ Number(scope.row.status) === 1 ? '停用' : '启用' }}</el-button>
-            <el-button v-if="canRemove" link type="danger" :disabled="openingId !== null || busyId !== null" @click="remove(scope.row)">删除</el-button>
+            <el-button link type="primary" :loading="openingId === scope.row.id" :disabled="!canDetail || (openingId !== null || busyId !== null)" @click="openTemplate(scope.row, false)">详情</el-button>
+            <el-button link type="primary" :disabled="!canEdit || (openingId !== null || busyId !== null)" @click="openTemplate(scope.row, true)">编辑</el-button>
+            <el-button v-if="[1, 2].includes(Number(scope.row.status))" link type="primary" :loading="busyId === scope.row.id" :disabled="!canStatus || (openingId !== null || busyId !== null)" @click="changeStatus(scope.row)">{{ Number(scope.row.status) === 1 ? '停用' : '启用' }}</el-button>
+            <el-button link type="danger" :disabled="!canRemove || (openingId !== null || busyId !== null)" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="!canRead || (loading)" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
     <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" @saved="load" />
@@ -57,7 +56,7 @@ import { useListRouteState } from '@/core/listRouteState'
 import { useResourcePermissions } from '@/core/permissions'
 import EditDialog from './EditDialog.vue'
 import DetailDialog from './DetailDialog.vue'
-import { smsPlatforms, templateStatuses, templateTypes } from './options'
+import { templateStatuses, templateTypes } from './options'
 import * as api from './api'
 
 const { canRead, canDetail, canCreate, canEdit, canRemove, canStatus } = useResourcePermissions('messageTemplate')
@@ -81,9 +80,9 @@ let loadSequence = 0
 let disposed = false
 
 async function load() {
-  if (!canRead.value) { loadError.value = '当前账号没有模板查询权限'; return }
   const sequence = ++loadSequence
   const request = nextListRequest()
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   loading.value = true
   loadError.value = ''
   try {

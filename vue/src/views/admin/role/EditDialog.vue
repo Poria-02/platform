@@ -22,7 +22,7 @@
       </el-form-item>
       <p class="scope-hint form-field--wide">用户拥有多个角色时，数据范围合并；任一角色为“全部”时，可访问全部部门数据。</p>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button :disabled="!(editor.editing ? canEdit : canCreate)" type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
   </el-dialog>
 </template>
 

@@ -3,6 +3,7 @@ package cn.poria.message.service;
 import cn.poria.message.vo.request.center.CenterDraftModel;
 import cn.poria.message.vo.request.center.CenterQueryModel;
 import cn.poria.message.vo.request.center.CenterSendModel;
+import cn.poria.message.vo.request.center.CenterStatusModel;
 import cn.poria.message.vo.response.center.AnnouncementVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -40,27 +41,24 @@ public interface CenterAnnouncementService {
     /**
      * 修改公示公告内容
      *
-     * @param id 公告ID
-     * @param draft 公告内容
+     * @param draft 公告ID及公告内容
      */
-    void update(String id, CenterDraftModel draft);
+    void update(CenterDraftModel draft);
 
     /**
      * 通过待办功能发送公示公告
      *
-     * @param id 公告ID
-     * @param model 接收人用户ID列表
+     * @param model 公告ID及接收人用户ID列表
      * @return 待办任务ID列表
      */
-    List<String> send(String id, CenterSendModel model);
+    List<String> send(CenterSendModel model);
 
     /**
      * 恢复草稿或撤回公示公告
      *
-     * @param id 公告ID
-     * @param status 0-草稿，2-已撤回
+     * @param request 公告ID及状态请求，0-草稿，2-已撤回
      */
-    void status(String id, int status);
+    void status(CenterStatusModel request);
 
     /**
      * 删除公示公告记录

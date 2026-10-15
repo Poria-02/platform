@@ -93,7 +93,8 @@ public class MsgPendingTaskServiceImpl extends ServiceImpl<MsgPendingTaskDao, Ms
 	@Override
 	public PendingTaskVo findDetails(String id) {
         MsgPendingTask task = this.getOne(new LambdaQueryWrapper<MsgPendingTask>()
-                .eq(MsgPendingTask::getId, id));
+                .eq(MsgPendingTask::getId, id)
+                .eq(MsgPendingTask::getUserId, SecurityUtils.getSId()));
         if (task == null) {
             return null;
         }

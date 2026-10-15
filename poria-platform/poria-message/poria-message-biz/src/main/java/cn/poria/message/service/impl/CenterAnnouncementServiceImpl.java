@@ -12,6 +12,7 @@ import cn.poria.message.vo.request.PendingTaskModel;
 import cn.poria.message.vo.request.center.CenterDraftModel;
 import cn.poria.message.vo.request.center.CenterQueryModel;
 import cn.poria.message.vo.request.center.CenterSendModel;
+import cn.poria.message.vo.request.center.CenterStatusModel;
 import cn.poria.message.vo.response.center.AnnouncementVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -49,7 +50,7 @@ public class CenterAnnouncementServiceImpl implements CenterAnnouncementService 
     public IPage<AnnouncementVo> page(CenterQueryModel query) {
         return msgAnnouncementDao.selectPage(new Page<>(query.getCurrent(), query.getSize()),
                 new LambdaQueryWrapper<MsgAnnouncement>()
-                        .eq(query.getStatus() != null, MsgAnnouncement::getStatus, query.getStatus())
+                        .eq(MsgAnnouncement::getStatus, query.getStatus())
                         .and(StringUtils.hasText(query.getKeyword()), condition -> condition.like(MsgAnnouncement::getTitle, query.getKeyword())
                                 .or().like(MsgAnnouncement::getContent, query.getKeyword()))
                         .orderByDesc(MsgAnnouncement::getPublishTime).orderByDesc(MsgAnnouncement::getCreateTime).orderByDesc(MsgAnnouncement::getId))
@@ -81,9 +82,9 @@ public class CenterAnnouncementServiceImpl implements CenterAnnouncementService 
     }
 
     @Override
-    public void update(String id, CenterDraftModel draft) {
+    public void update(CenterDraftModel draft) {
         // 编辑后保存为草稿，重新发送时生成新的待办，原待办的阅读状态保留。
-        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, id)
+        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, draft.getId())
                 .set(MsgAnnouncement::getTitle, draft.getTitle()).set(MsgAnnouncement::getContent, draft.getContent())
                 .set(MsgAnnouncement::getStatus, AnnouncementStatus.DRAFT.getCode()).set(MsgAnnouncement::getPublishTime, null)
                 .set(MsgAnnouncement::getUpdateTime, new Date())) == 1, "公告更新失败");
@@ -91,15 +92,15 @@ public class CenterAnnouncementServiceImpl implements CenterAnnouncementService 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> send(String id, CenterSendModel request) {
-        MsgAnnouncement notice = msgAnnouncementDao.selectById(id);
+    public List<String> send(CenterSendModel request) {
+        MsgAnnouncement notice = msgAnnouncementDao.selectById(request.getId());
         Assert.notNull(notice, "公告不存在");
         PendingTaskModel model = new PendingTaskModel();
         model.setType(PendingTaskType.ANNOUNCEMENT);
-        model.setBusinessId(id);
+        model.setBusinessId(request.getId());
         model.setTitle(notice.getTitle());
         model.setContent(notice.getContent());
-        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, id)
+        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, request.getId())
                 .set(MsgAnnouncement::getStatus, AnnouncementStatus.PUBLISHED.getCode())
                 .set(MsgAnnouncement::getPublishTime, new Date()).set(MsgAnnouncement::getUpdateTime, new Date())) == 1, "公告发送失败");
         List<String> ids = new ArrayList<>();
@@ -111,10 +112,10 @@ public class CenterAnnouncementServiceImpl implements CenterAnnouncementService 
     }
 
     @Override
-    public void status(String id, int status) {
-        Assert.isTrue(status == AnnouncementStatus.DRAFT.getCode() || status == AnnouncementStatus.WITHDRAWN.getCode(), "发布公告请使用发送接口");
-        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, id)
-                .set(MsgAnnouncement::getStatus, status).set(MsgAnnouncement::getPublishTime, null)
+    public void status(CenterStatusModel request) {
+        Assert.isTrue(request.getStatus() == AnnouncementStatus.DRAFT.getCode() || request.getStatus() == AnnouncementStatus.WITHDRAWN.getCode(), "发布公告请使用发送接口");
+        Assert.isTrue(msgAnnouncementDao.update(new LambdaUpdateWrapper<MsgAnnouncement>().eq(MsgAnnouncement::getId, request.getId())
+                .set(MsgAnnouncement::getStatus, request.getStatus()).set(MsgAnnouncement::getPublishTime, null)
                 .set(MsgAnnouncement::getUpdateTime, new Date())) == 1, "公告状态更新失败");
     }
 

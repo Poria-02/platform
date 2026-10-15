@@ -5,22 +5,22 @@
     </header>
     <div class="resource-toolbar">
       <div class="filter-bar">
-        <el-input v-model="query.type" placeholder="搜索字典类型" clearable @keyup.enter="search" />
-        <el-select v-model="query.system" placeholder="选择所属系统" clearable><el-option v-for="option in systemChoices" :key="option.value" :label="option.label" :value="option.value" /></el-select>
-        <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button @click="resetSearch">重置</el-button>
+        <el-input :disabled="!canRead" v-model="query.type" placeholder="搜索字典类型" clearable @keyup.enter="search" />
+        <el-select :disabled="!canRead" v-model="query.system" placeholder="选择所属系统" clearable><el-option v-for="option in systemChoices" :key="option.value" :label="option.label" :value="option.value" /></el-select>
+        <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
+        <el-button :disabled="!canRead" @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
-        <input ref="fileInput" type="file" accept=".dict" hidden :disabled="transferBusy" @change="importFile">
-        <el-button v-if="canImport" v-stable-loading="importing" :loading="importing" :disabled="transferBusy" @click="fileInput.click()">导入字典</el-button>
-        <el-button v-if="canExport" v-stable-loading="exporting" :loading="exporting" :disabled="transferBusy" @click="exportFile()">导出全部</el-button>
-        <el-button @click="load">刷新</el-button>
-        <el-button v-if="canCreate" type="primary" @click="openCreate()">新增字典</el-button>
+        <input ref="fileInput" type="file" accept=".dict" hidden :disabled="!canImport || (transferBusy)" @change="importFile">
+        <el-button v-stable-loading="importing" :loading="importing" :disabled="!canImport || (transferBusy)" @click="fileInput.click()">导入字典</el-button>
+        <el-button v-stable-loading="exporting" :loading="exporting" :disabled="!canExport || (transferBusy)" @click="exportFile()">导出全部</el-button>
+        <el-button :disabled="!canRead" @click="load">刷新</el-button>
+        <el-button :disabled="!canCreate" type="primary" @click="openCreate()">新增字典</el-button>
       </div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
-      <div v-if="dictionaryError" class="resource-error" role="alert"><span>{{ dictionaryError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
+      <div v-if="dictionaryError" class="resource-error" role="alert"><span>{{ dictionaryError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
       <el-table v-loading="loading" :data="rows" row-key="id" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="type" label="字典类型" :min-width="130" show-overflow-tooltip>
           <template #default="scope">{{ displayResourceValue(scope.row.type, {}, [], scope.row) }}</template>
@@ -36,15 +36,15 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button v-if="canItems" link type="primary" @click="selected = scope.row">字典项</el-button><el-button v-if="canExport" link type="primary" @click="exportFile([scope.row.type])">导出</el-button>
-            <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
-            <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
+            <el-button :disabled="!canItems" link type="primary" @click="selected = scope.row">字典项</el-button><el-button :disabled="!canExport" link type="primary" @click="exportFile([scope.row.type])">导出</el-button>
+            <el-button :disabled="!canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button :disabled="!canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="!canRead || (loading)" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
     <EditDialog ref="editorRef" :can-create="canCreate" :can-edit="canEdit" :system-choices="systemChoices" @saved="load" />
@@ -67,7 +67,7 @@ import { fetchDictionary } from '@/core/dictionaries'
 
 const nextListRequest = useRequestController()
 
-const { canCreate, canEdit, canRemove, canItems, canImport, canExport } = useResourcePermissions('dict')
+const { canRead, canCreate, canEdit, canRemove, canItems, canImport, canExport } = useResourcePermissions('dict')
 
 const selected = ref(null)
 
@@ -140,6 +140,7 @@ async function loadDictionaries() {
 async function load() {
   const sequence = ++loadSequence
   const request = nextListRequest()
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   loading.value = true
   try {
     const params = await syncListRoute()

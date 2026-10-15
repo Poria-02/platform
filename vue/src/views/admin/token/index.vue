@@ -7,12 +7,12 @@
 
       <div class="page-heading__actions">
 
-        <el-button @click="load">刷新</el-button>
+        <el-button :disabled="!canRead" @click="load">刷新</el-button>
 
       </div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
 
       <el-table v-loading="loading" :data="rows" row-key="accessToken" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="username" label="用户" :min-width="130" show-overflow-tooltip>
@@ -32,14 +32,14 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" @click="showDetail(scope.row)">查看</el-button><el-button v-if="canRemove" link type="danger" v-stable-loading="deletingToken === scope.row.accessToken" :loading="deletingToken === scope.row.accessToken" :disabled="Boolean(deletingToken)" @click="removeToken(scope.row)">删除令牌</el-button>
+            <el-button link type="primary" @click="showDetail(scope.row)">查看</el-button><el-button link type="danger" v-stable-loading="deletingToken === scope.row.accessToken" :loading="deletingToken === scope.row.accessToken" :disabled="!canRemove || (Boolean(deletingToken))" @click="removeToken(scope.row)">删除令牌</el-button>
 
           </template>
         </el-table-column>
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="!canRead || (loading)" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
 
@@ -62,7 +62,7 @@ import { useResourcePermissions } from '@/core/permissions'
 import { useRequestController } from '@/core/requestController'
 import { useListRouteState } from '@/core/listRouteState'
 
-const { canRemove } = useResourcePermissions('token')
+const { canRead, canRemove } = useResourcePermissions('token')
 
 const nextListRequest = useRequestController()
 
@@ -120,6 +120,7 @@ const { syncListRoute, changePage, changePageSize } = useListRouteState({ page, 
 async function load() {
   const sequence = ++loadSequence
   const request = nextListRequest()
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   loading.value = true
   try {
     const params = await syncListRoute()

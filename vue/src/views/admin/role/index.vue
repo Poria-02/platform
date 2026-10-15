@@ -5,19 +5,19 @@
     </header>
     <div class="resource-toolbar">
       <div class="filter-bar">
-        <el-input v-model="query.roleName" placeholder="搜索角色名称" clearable @keyup.enter="search" />
-        <el-input v-model="query.roleCode" placeholder="搜索角色编码" clearable @keyup.enter="search" />
-        <el-button type="primary" plain @click="search">查询</el-button>
-        <el-button @click="resetSearch">重置</el-button>
+        <el-input :disabled="!canRead" v-model="query.roleName" placeholder="搜索角色名称" clearable @keyup.enter="search" />
+        <el-input :disabled="!canRead" v-model="query.roleCode" placeholder="搜索角色编码" clearable @keyup.enter="search" />
+        <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
+        <el-button :disabled="!canRead" @click="resetSearch">重置</el-button>
       </div>
       <div class="page-heading__actions">
 
-        <el-button @click="load">刷新</el-button>
-        <el-button v-if="canCreate" type="primary" @click="openCreate()">新增角色</el-button>
+        <el-button :disabled="!canRead" @click="load">刷新</el-button>
+        <el-button :disabled="!canCreate" type="primary" @click="openCreate()">新增角色</el-button>
       </div>
     </div>
     <section class="surface-card">
-      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button link type="primary" @click="load">重试</el-button></div>
+      <div v-if="loadError" class="resource-error" role="alert"><span>{{ loadError }}</span><el-button :disabled="!canRead" link type="primary" @click="load">重试</el-button></div>
 
       <el-table v-loading="loading" :data="rows" row-key="roleId" class="data-table" empty-text="暂无数据" style="width:100%">
         <el-table-column prop="roleName" label="角色名称" :min-width="130" show-overflow-tooltip>
@@ -37,15 +37,15 @@
         </el-table-column>
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
-            <el-button v-if="canMenus" link type="primary" @click="openMenus(scope.row)">菜单权限</el-button>
-            <el-button v-if="canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
-            <el-button v-if="canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
+            <el-button :disabled="!canMenus" link type="primary" @click="openMenus(scope.row)">菜单权限</el-button>
+            <el-button :disabled="!canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button :disabled="!canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div v-if="total > 0" class="table-footer">
         <span>共 {{ total }} 条记录</span>
-        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="loading" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
+        <el-pagination :current-page="page.current" :page-size="page.size" :disabled="!canRead || (loading)" :page-sizes="[10, 20, 50]" :total="total" layout="sizes, prev, pager, next" @update:page-size="changePageSize" @update:current-page="changePage" />
       </div>
     </section>
     <EditDialog ref="editorRef" :data-scope-options="dataScopeOptions" :scope-option="scopeOption" :departments="departments" :department-error="departmentError" :scope-ids="scopeIds" :load-departments="loadDepartments" :can-create="canCreate" :can-edit="canEdit" :ds-type-choices="dsTypeChoices" @saved="load" />
@@ -66,7 +66,7 @@ import { useResourcePermissions } from '@/core/permissions'
 
 const nextListRequest = useRequestController()
 
-const { canCreate, canEdit, canRemove, canMenus } = useResourcePermissions('role')
+const { canRead, canCreate, canEdit, canRemove, canMenus } = useResourcePermissions('role')
 
 const dataScopeOptions = [
   { label: '全部', value: 0, description: '允许访问全部部门的数据。' },
@@ -114,6 +114,7 @@ const dsTypeChoices = computed(() => dataScopeOptions)
 async function load() {
   const sequence = ++loadSequence
   const request = nextListRequest()
+  if (!canRead.value) { loading.value = false; loadError.value = ''; return }
   loading.value = true
   try {
     const params = await syncListRoute()

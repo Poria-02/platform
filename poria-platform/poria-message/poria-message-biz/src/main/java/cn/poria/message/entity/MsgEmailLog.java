@@ -41,14 +41,10 @@ public class MsgEmailLog {
     @Schema(description = "接收手机号")
     private String receiveEmail;
 
-
-
-
+    @Schema(description = "标题")
     private String title;
 
-
-
-
+    @Schema(description = "内容")
     private String content;
 
     /**

@@ -27,7 +27,7 @@
       </el-form-item>
       <div class="path-hint"><strong>目录映射</strong><p>例如 <code>/admin/menu/index</code> 对应：</p><code>src/views/admin/menu/index.vue</code><br><code>src/views/admin/menu/api.js</code><p>相对路径按父菜单路径展开。按钮类型 1 不生成页面路由。</p><p v-if="editor.form.path && editor.form.path.startsWith('/')">当前路径将查找对应目录下的 <code>index.vue</code> 和 <code>api.js</code></p></div>
     </el-form>
-    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
+    <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button :disabled="!(editor.editing ? canEdit : canCreate)" type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
   </el-dialog>
 </template>
 
