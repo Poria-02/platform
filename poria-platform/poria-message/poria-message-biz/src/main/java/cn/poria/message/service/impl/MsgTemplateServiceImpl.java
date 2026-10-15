@@ -1,6 +1,7 @@
 package cn.poria.message.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.poria.common.core.constant.CacheConstants;
 import cn.poria.common.core.util.Assert;
 import cn.poria.common.core.util.TemplateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -15,9 +16,10 @@ import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.vo.request.template.TemplateModel;
 import cn.poria.message.vo.request.template.TemplateQueryModel;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +35,12 @@ import java.util.Map;
 @Service
 public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTemplate> implements MsgTemplateService {
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    private static final String TEMPLATE_KEY = "MESSAGE_TEMPLATE_";
+    /**
+     * 模板服务代理，内部查询通过代理调用以使缓存注解生效
+     */
+    @Lazy
+    @Resource
+    private MsgTemplateService msgTemplateService;
 
     @Override
     public IPage<TemplateVo> page(TemplateQueryModel queryModel) {
@@ -78,22 +82,23 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
     }
 
     /**
-     * 根据编码查询模版
-     * @param key
-     * @return
+     * 根据模板Key查询消息模板，不缓存不存在的模板
+     *
+     * @param key 模板Key
+     * @return 消息模板详情，不存在时返回null
      */
     @Override
+    @Cacheable(value = CacheConstants.MESSAGE_TEMPLATE, key = "#key", unless = "#result == null")
     public TemplateVo selectByKey(String key) {
 
-        TemplateVo templateVo = (TemplateVo) redisTemplate.opsForValue().get(TEMPLATE_KEY + key);
-        if(templateVo == null){
-            MsgTemplate template = this.getOne(new QueryWrapper<MsgTemplate>().eq("template_key",key));
-            if(template != null){
-                templateVo = new TemplateVo();
-                BeanUtils.copyProperties(template,templateVo);
-                redisTemplate.opsForValue().set(TEMPLATE_KEY + key,templateVo);
-            }
+        MsgTemplate template = this.getOne(new LambdaQueryWrapper<MsgTemplate>()
+                .eq(MsgTemplate::getTemplateKey, key));
+        if (template == null) {
+            return null;
         }
+
+        TemplateVo templateVo = new TemplateVo();
+        BeanUtils.copyProperties(template, templateVo);
         return templateVo;
     }
 
@@ -109,7 +114,6 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
         //查询本地数据先
         MsgTemplate localTemplate = this.getById(model.getId());
         Assert.notNull(localTemplate,"模板不存在");
-        redisTemplate.delete(TEMPLATE_KEY + localTemplate.getTemplateKey());
         //更新模板
         BeanUtils.copyProperties(model,localTemplate);
         this.updateById(localTemplate);
@@ -127,7 +131,7 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
     @Override
     public String getContentByKey(String key, Map<String, String> param) {
 
-        TemplateVo template = selectByKey(key);
+        TemplateVo template = msgTemplateService.selectByKey(key);
 
         Assert.notNull(template,"模版:{}编码不存在",key);
 
@@ -145,9 +149,7 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
     @Transactional
     public void deleteTemplate(Serializable id) {
 
-        MsgTemplate template = this.getById(id);
         this.removeById(id);
-        redisTemplate.delete(TEMPLATE_KEY + template.getTemplateKey());
 
     }
 
@@ -158,10 +160,10 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
      * @param status
      */
     @Override
+    @Transactional
     public void changeStatus(String id, Integer status) {
         MsgTemplate template = this.getById(id);
         Assert.notNull(template,"模版不存在");
-        redisTemplate.delete(TEMPLATE_KEY + template.getTemplateKey());
         template.setStatus(status);
         this.updateById(template);
     }
