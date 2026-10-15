@@ -33,7 +33,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import java.io.PrintWriter;
 
 /**
- * @author shanxincd
  * @date 2019/2/1
  *
  * 客户端异常处理 AuthenticationException 不同细化异常处理

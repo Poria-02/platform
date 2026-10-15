@@ -33,7 +33,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * @author shanxincd
  * @date 2020-03-11
  * <p>
  * 资源服务器对外直接暴露URL,如果设置contex-path 要特殊处理
@@ -42,7 +41,7 @@ import java.util.regex.Pattern;
 @ConfigurationProperties(prefix = "security.oauth2.ignore")
 public class PermitAllUrlProperties implements InitializingBean {
 
-	private static final Pattern PATTERN = Pattern.compile("\\{(.*?)\\}");
+	private static final Pattern PATTERN = Pattern.compile("\\{(.*?)}");
 
 	private static final String[] DEFAULT_IGNORE_URLS = new String[] { "/actuator/**", "/error","/swagger-ui/**", "/v3/api-docs" ,"/plat/login" };
 

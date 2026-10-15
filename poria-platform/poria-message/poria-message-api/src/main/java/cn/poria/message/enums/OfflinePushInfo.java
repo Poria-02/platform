@@ -1,15 +1,13 @@
 package cn.poria.message.enums;
 
 import cn.hutool.core.annotation.Alias;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class OfflinePushInfo {
 
     private int PushFlag = 0 ;

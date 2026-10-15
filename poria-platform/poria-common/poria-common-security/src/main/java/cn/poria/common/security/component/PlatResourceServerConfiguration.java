@@ -31,7 +31,6 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * @author shanxincd
  * @date 2022-06-04
  *
  * 资源服务器认证授权配置

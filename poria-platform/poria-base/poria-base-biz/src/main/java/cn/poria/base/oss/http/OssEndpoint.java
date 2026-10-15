@@ -19,7 +19,6 @@ import java.util.Map;
 /**
  * aws 对外提供服务端点
  *
- * @author shanxincd
  * @author 858695266
  * <p>
  * oss.info

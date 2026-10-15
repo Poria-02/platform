@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 /**
  * 默认的 AnalysisEventListener
  *
- * @author shanxincd
  * @author L.cm
  * @date 2021/4/16
  */

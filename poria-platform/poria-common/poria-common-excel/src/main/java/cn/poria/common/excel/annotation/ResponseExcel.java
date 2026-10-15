@@ -10,7 +10,6 @@ import java.lang.annotation.*;
 /**
  * `@ResponseExcel 注解`
  *
- * @author shanxincd
  */
 @Documented
 @Target(ElementType.METHOD)

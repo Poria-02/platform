@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * @author shanxincd
  * @date 2022/3/29
  * <p>
  * 读取自定义 yaml 文件工厂类

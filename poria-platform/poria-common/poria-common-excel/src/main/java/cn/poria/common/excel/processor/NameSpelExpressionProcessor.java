@@ -10,7 +10,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import java.lang.reflect.Method;
 
 /**
- * @author shanxincd
  * @date 2020/3/29
  */
 public class NameSpelExpressionProcessor implements NameProcessor {

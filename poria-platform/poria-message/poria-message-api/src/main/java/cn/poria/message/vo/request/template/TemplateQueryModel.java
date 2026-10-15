@@ -3,8 +3,10 @@ package cn.poria.message.vo.request.template;
 import cn.poria.common.core.dto.PageSearch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class TemplateQueryModel extends PageSearch {
 
     @Schema(description = "关键字")

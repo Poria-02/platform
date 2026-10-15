@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author shanxincd
  * @date 2020/11/29
  */
 public class DataScopeInnerInterceptor implements DataScopeInterceptor {

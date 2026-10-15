@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * 处理@ResponseExcel 返回值
  *
- * @author shanxincd
  */
 @Slf4j
 @RequiredArgsConstructor

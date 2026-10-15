@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @author shanxincd
  * @author L.cm
  * @date 2020/3/29
  * <p>
@@ -37,7 +36,7 @@ public class SingleSheetWriteHandler extends AbstractSheetWriteHandler {
 	public boolean support(Object obj) {
 		if (obj instanceof List) {
 			List<?> objList = (List<?>) obj;
-			return !objList.isEmpty() && !(objList.get(0) instanceof List);
+			return !objList.isEmpty() && !(objList.getFirst() instanceof List);
 		}
 		else {
 			throw new ExcelException("@ResponseExcel 返回值必须为List类型");
@@ -55,7 +54,7 @@ public class SingleSheetWriteHandler extends AbstractSheetWriteHandler {
 		}
 		else {
 			// 有模板则不指定sheet名
-			Class<?> dataClass = eleList.get(0).getClass();
+			Class<?> dataClass = eleList.getFirst().getClass();
 			sheet = this.sheet(responseExcel.sheets()[0], dataClass, responseExcel.template(),
 					responseExcel.headGenerator());
 		}

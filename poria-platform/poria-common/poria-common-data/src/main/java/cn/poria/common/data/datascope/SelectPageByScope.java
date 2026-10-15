@@ -6,10 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
 
-/**
- * @author shanxincd
- * @date 2020/4/26
- */
 public class SelectPageByScope extends AbstractMethod {
 
 	public SelectPageByScope() {
