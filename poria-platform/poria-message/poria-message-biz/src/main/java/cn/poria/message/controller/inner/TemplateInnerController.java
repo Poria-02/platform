@@ -1,5 +1,7 @@
 package cn.poria.message.controller.inner;
+
 import cn.poria.common.security.annotation.Inner;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import cn.poria.common.core.util.R;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 
+/**
+ * 服务间通用消息模板查询控制层
+ */
 @Slf4j
 @Hidden
 @Tag(name = "消息模板管理")
@@ -18,15 +23,21 @@ import jakarta.annotation.Resource;
 public class TemplateInnerController {
 
     /**
-     * 服务对象
+     * 通用消息模板服务对象
      */
     @Resource
     private MsgTemplateService msgTemplateService;
 
+    /**
+     * 通过模板Key查询通用消息模板
+     *
+     * @param key 模板Key
+     * @return 消息模板详情
+     */
     @Inner
     @GetMapping("/key/{key}")
-    public R<TemplateVo> getTemplateByKey(@PathVariable("key")String key){
+    @Operation(summary = "通过模板Key查询通用消息模板", description = "通过模板Key查询通用消息模板")
+    public R<TemplateVo> getTemplateByKey(@PathVariable("key") String key) {
         return R.ok(msgTemplateService.selectByKey(key));
     }
-
 }

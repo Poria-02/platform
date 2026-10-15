@@ -19,32 +19,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
+/**
+ * App端腾讯云IM账号控制层
+ */
 @Slf4j
 @RestController
 @Tag(name = "【App】- 腾讯账号管理")
 @RequestMapping("/app/im/account")
 public class TxIMAccountAppController {
 
+    /**
+     * IM服务对象
+     */
     @Autowired
     @Qualifier("txIMService")
     private IMService imService;
 
+    /**
+     * 腾讯云IM请求工具
+     */
     @Lazy
     @Autowired
     private TxIMMsgSendUtil txIMMsgSendUtil;
 
-    @Operation(summary = "获取用户登录凭据sig",description = "获取用户登录凭据sig")
+    /**
+     * 获取当前用户的IM登录凭据
+     *
+     * @return IM登录凭据UserSig
+     */
     @GetMapping("/sig")
-    public R<String> getUserSig(){
-        Assert.notBlank(SecurityUtils.getSId(),"未查询到当前账户信息");
+    @Operation(summary = "获取当前用户的IM登录凭据", description = "获取当前用户的IM登录凭据")
+    public R<String> getUserSig() {
+        Assert.notBlank(SecurityUtils.getSId(), "未查询到当前账户信息");
         return R.ok(txIMMsgSendUtil.getSig(SecurityUtils.getSId()));
     }
 
-    @Operation(summary = "注销账号",description = "注销账号")
+    /**
+     * 注销当前用户的IM账号
+     *
+     * @return 注销结果
+     */
     @DeleteMapping()
-    public R deleteAccountIds(){
+    @Operation(summary = "注销当前用户的IM账号", description = "注销当前用户的IM账号")
+    public R deleteAccountIds() {
         imService.deleteAccount(Arrays.asList(SecurityUtils.getSId()));
         return R.ok();
     }
-
 }

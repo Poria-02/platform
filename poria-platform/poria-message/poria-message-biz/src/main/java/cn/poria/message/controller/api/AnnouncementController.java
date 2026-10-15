@@ -65,8 +65,8 @@ public class AnnouncementController {
      * @return 公告ID
      */
     @PostMapping
-    @Operation(summary = "新增公示公告", description = "新增公告并保存为草稿 (权限：message_announcement_add)")
     @PreAuthorize("@pms.hasPermission('message_announcement_add')")
+    @Operation(summary = "新增公示公告", description = "新增公告并保存为草稿 (权限：message_announcement_add)")
     public R<String> create(@RequestBody @Validated(Create.class) CenterDraftModel draft) {
         return R.ok(centerAnnouncementService.create(draft));
     }
@@ -78,8 +78,8 @@ public class AnnouncementController {
      * @return 修改结果
      */
     @PutMapping
-    @Operation(summary = "修改公示公告", description = "修改后恢复为草稿，原待办阅读状态保留，重新发送会生成新待办 (权限：message_announcement_edit)")
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
+    @Operation(summary = "修改公示公告", description = "修改后恢复为草稿，原待办阅读状态保留，重新发送会生成新待办 (权限：message_announcement_edit)")
     public R<Void> update(@RequestBody @Validated(Update.class) CenterDraftModel draft) {
         centerAnnouncementService.update(draft);
         return R.ok();
@@ -92,8 +92,8 @@ public class AnnouncementController {
      * @return 待办任务ID列表
      */
     @PostMapping("/send")
-    @Operation(summary = "发送公示公告", description = "向前端传入的接收人ID列表逐人发送公示公告 (权限：message_announcement_send)")
     @PreAuthorize("@pms.hasPermission('message_announcement_send')")
+    @Operation(summary = "发送公示公告", description = "向前端传入的接收人ID列表逐人发送公示公告 (权限：message_announcement_send)")
     public R<List<String>> send(@RequestBody @Validated CenterSendModel model) {
         return R.ok(centerAnnouncementService.send(model));
     }
@@ -105,8 +105,8 @@ public class AnnouncementController {
      * @return 状态修改结果
      */
     @PutMapping("/status")
-    @Operation(summary = "修改公告发布状态", description = "0-恢复草稿，2-撤回；发送公告使用独立发送接口 (权限：message_announcement_edit)")
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
+    @Operation(summary = "修改公告发布状态", description = "0-恢复草稿，2-撤回；发送公告使用独立发送接口 (权限：message_announcement_edit)")
     public R<Void> status(@RequestBody @Validated CenterStatusModel request) {
         centerAnnouncementService.status(request);
         return R.ok();
@@ -119,8 +119,8 @@ public class AnnouncementController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "通过ID删除公示公告", description = "通过ID删除公示公告记录 (权限：message_announcement_del)")
     @PreAuthorize("@pms.hasPermission('message_announcement_del')")
+    @Operation(summary = "通过ID删除公示公告", description = "通过ID删除公示公告记录 (权限：message_announcement_del)")
     public R<Void> delete(@PathVariable String id) {
         centerAnnouncementService.delete(id);
         return R.ok();

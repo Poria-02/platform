@@ -18,8 +18,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
+
 import java.io.Serializable;
 
+/**
+ * 管理平台通用消息模板控制层
+ */
 @Slf4j
 @Tag(name = "【Api】- 消息模板管理")
 @RestController
@@ -27,91 +31,98 @@ import java.io.Serializable;
 public class TemplateApiController {
 
     /**
-     * 服务对象
+     * 通用消息模板服务对象
      */
     @Resource
     private MsgTemplateService msgTemplateService;
 
     /**
-     * 分页查询所有数据
+     * 分页查询通用消息模板
      *
-     * @param queryModel 查询实体
-     * @return 所有数据
+     * @param queryModel 分页及筛选条件
+     * @return 消息模板分页数据
      */
-    @Operation(summary = "分页查询", description = "分页查询(message_template_page)")
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('message_template_page')")
+    @Operation(summary = "分页查询通用消息模板", description = "分页查询通用消息模板 (权限：message_template_page)")
     public R<IPage<TemplateVo>> selectAll(TemplateQueryModel queryModel) {
         return R.ok(msgTemplateService.page(queryModel));
     }
 
     /**
-     * 通过主键查询单条数据
+     * 通过ID查询通用消息模板详情
      *
-     * @param id 主键
-     * @return 单条数据
+     * @param id 消息模板ID
+     * @return 消息模板详情
      */
-    @Operation(summary = "通过id查询", description = "通过id查询(message_template_get)")
     @GetMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('message_template_get')")
-    public R<TemplateVo>selectOne(@PathVariable Serializable id) {
+    @Operation(summary = "通过ID查询通用消息模板详情", description = "通过ID查询通用消息模板详情 (权限：message_template_get)")
+    public R<TemplateVo> selectOne(@PathVariable Serializable id) {
         MsgTemplate template = msgTemplateService.getById(id);
-        Assert.notNull(template,"模版不存在");
+        Assert.notNull(template, "模版不存在");
 
         TemplateVo templateVo = new TemplateVo();
-        BeanUtils.copyProperties(template,templateVo);
+        BeanUtils.copyProperties(template, templateVo);
         return R.ok(templateVo);
     }
 
     /**
-     * 新增消息模板
-     * @param model 消息模板
-     * @return R
+     * 新增通用消息模板
+     *
+     * @param model 消息模板内容
+     * @return 新增结果
      */
+    @SysLog("新增消息模板")
     @PostMapping
-    @SysLog("新增消息模板" )
-    @Operation(summary = "新增消息模板", description = "新增消息模板(权限：message_template_add)")
-    @PreAuthorize("@pms.hasPermission('message_template_add')" )
+    @PreAuthorize("@pms.hasPermission('message_template_add')")
+    @Operation(summary = "新增通用消息模板", description = "新增通用消息模板 (权限：message_template_add)")
     public R insert(@RequestBody @Validated TemplateModel model) {
         msgTemplateService.addTemplate(model);
         return R.ok();
     }
 
     /**
-     * 修改数据
+     * 修改通用消息模板
      *
-     * @param model 实体对象
+     * @param model 消息模板ID及模板内容
      * @return 修改结果
      */
+    @SysLog("修改消息模板")
     @PutMapping
-    @SysLog("修改消息模板" )
-    @Operation(summary = "修改消息模板", description = "修改消息模板 (权限：message_template_edit)")
-    @PreAuthorize("@pms.hasPermission('message_template_edit')" )
+    @PreAuthorize("@pms.hasPermission('message_template_edit')")
+    @Operation(summary = "修改通用消息模板", description = "修改通用消息模板 (权限：message_template_edit)")
     public R update(@RequestBody @Validated TemplateModel model) {
         msgTemplateService.updateTemplate(model);
         return R.ok();
     }
 
-
-    @SysLog("启用停用" )
-    @Operation(summary = "启用、停用", description = "启用、停用 (权限：message_template_status)")
-    @PreAuthorize("@pms.hasPermission('message_template_status')" )
+    /**
+     * 启用或停用通用消息模板
+     *
+     * @param id 消息模板ID
+     * @param status 模板状态
+     * @return 状态修改结果
+     */
+    @SysLog("启用停用")
     @PostMapping("/changeStatus/{id}/{status}")
-    public R changeStatus(@PathVariable("id")String id,@PathVariable("status")Integer status) {
-        msgTemplateService.changeStatus(id,status);
+    @PreAuthorize("@pms.hasPermission('message_template_status')")
+    @Operation(summary = "启用或停用通用消息模板", description = "启用或停用通用消息模板 (权限：message_template_status)")
+    public R changeStatus(@PathVariable("id") String id, @PathVariable("status") Integer status) {
+        msgTemplateService.changeStatus(id, status);
         return R.ok();
     }
 
     /**
-     * 删除数据
+     * 通过ID删除通用消息模板
      *
-     * @param id 主键结合
+     * @param id 消息模板ID
      * @return 删除结果
      */
+    @SysLog("通过id删除消息模板")
     @DeleteMapping("{id}")
-    @SysLog("通过id删除消息模板" )
-    @Operation(summary = "通过ID删除消息模板", description = "通过ID删除消息模板 (权限：message_template_del)")
-    @PreAuthorize("@pms.hasPermission('message_template_del')" )
+    @PreAuthorize("@pms.hasPermission('message_template_del')")
+    @Operation(summary = "通过ID删除通用消息模板", description = "通过ID删除通用消息模板 (权限：message_template_del)")
     public R delete(@PathVariable String id) {
         msgTemplateService.deleteTemplate(id);
         return R.ok();

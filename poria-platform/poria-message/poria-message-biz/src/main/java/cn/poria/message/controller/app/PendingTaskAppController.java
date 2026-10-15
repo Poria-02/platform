@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 
 /**
- * 代办任务(MsgPendingTask)表控制层
+ * App端待办任务控制层
  *
  * @author makejava
  * @since 2020-07-13 15:54:27
@@ -25,44 +25,70 @@ import jakarta.annotation.Resource;
 @RequestMapping("/app/pending/task")
 public class PendingTaskAppController {
 
+    /**
+     * 待办任务服务对象
+     */
     @Resource
     private MsgPendingTaskService msgPendingTaskService;
 
     /**
-     * 查询用户代办列表
-     * @param req
-     * @return
+     * 分页查询当前用户的待办列表
+     *
+     * @param req 分页及筛选条件
+     * @return 待办任务分页数据
      */
-    @Operation(summary = "查询代办列表",description = "查询当前用户的待办")
     @GetMapping("/user/page")
-    public R<IPage<PendingTaskVo>> userPendingTask(@Validated PendingTaskQueryModel req){
+    @Operation(summary = "分页查询当前用户的待办列表", description = "分页查询当前用户的待办列表")
+    public R<IPage<PendingTaskVo>> userPendingTask(@Validated PendingTaskQueryModel req) {
         return R.ok(msgPendingTaskService.userPendingTask(req));
     }
 
+    /**
+     * 完成当前用户的待办任务
+     *
+     * @param id 待办任务ID
+     * @return 完成结果
+     */
     @PutMapping("/{id}")
-    @Operation(summary = "完成待办任务", description = "完成待办任务")
+    @Operation(summary = "完成当前用户的待办任务", description = "完成当前用户的待办任务")
     public R update(@PathVariable("id") @Validated String id) {
         msgPendingTaskService.commitPendingTask(id);
         return R.ok();
     }
 
-    @Operation(summary = "未完成数量", description = "查询当前用户指定类型的未完成数量")
+    /**
+     * 查询当前用户的未完成待办数量
+     *
+     * @param type 待办类型，98-公告，99-站内信，不传则统计全部类型
+     * @return 未完成数量
+     */
     @GetMapping("/unDone/count")
-    public R<Integer> unDoneCount(@RequestParam(required = false) Integer type){
+    @Operation(summary = "查询当前用户的未完成待办数量", description = "查询当前用户的未完成待办数量")
+    public R<Integer> unDoneCount(@RequestParam(required = false) Integer type) {
         return R.ok(msgPendingTaskService.unDoneCount(type));
     }
 
-	@GetMapping("/{pid}")
-	@Operation(summary = "根据id查询详情", description = "根据id查询详情")
-	public R<PendingTaskVo> findUser(@PathVariable("pid") @Validated String pid) {
-		return R.ok(msgPendingTaskService.findDetails(pid));
-	}
+    /**
+     * 通过ID查询当前用户的待办详情
+     *
+     * @param pid 待办任务ID
+     * @return 待办任务详情
+     */
+    @GetMapping("/{pid}")
+    @Operation(summary = "通过ID查询当前用户的待办详情", description = "通过ID查询当前用户的待办详情")
+    public R<PendingTaskVo> findUser(@PathVariable("pid") @Validated String pid) {
+        return R.ok(msgPendingTaskService.findDetails(pid));
+    }
 
+    /**
+     * 一键已读当前用户的公告和站内信
+     *
+     * @return 完成结果
+     */
     @PostMapping("/allToRead")
-    @Operation(summary = "一键已读公告和站内信", description = "无需传参，将当前用户未读的公告（98）和站内信（99）全部标记为已读")
+    @Operation(summary = "一键已读当前用户的公告和站内信", description = "无需传参，将当前用户未读的公告（98）和站内信（99）全部标记为已读")
     public R setAllToReadPendingTask() {
         msgPendingTaskService.setAllToReadPendingTask();
         return R.ok();
     }
-
 }

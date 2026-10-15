@@ -12,6 +12,7 @@ import cn.poria.message.service.im.tx.bean.AccountInfo;
 import cn.poria.message.service.im.tx.response.GroupHistoryResponse;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.response.im.GroupInfoVo;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,99 +27,135 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * 服务间IM群组管理控制层
+ */
 @Slf4j
 @Hidden
 @RestController
 @RequestMapping("/inner/im/group")
 public class IMGroupInnerController {
 
+    /**
+     * IM服务对象
+     */
     @Autowired
     @Qualifier("txIMService")
     private IMService imService;
 
     /**
-     * 创建群
+     * 创建IM群组
+     *
+     * @param model 群组名称、群主及成员信息
+     * @return 群组ID
      */
     @Inner
     @PostMapping("/create")
-    public R<String> createIMGroup(@RequestBody CreateGroupModel model){
+    @Operation(summary = "创建IM群组", description = "创建IM群组")
+    public R<String> createIMGroup(@RequestBody CreateGroupModel model) {
         return R.ok(imService.createGroup(model));
     }
 
     /**
      * 添加群成员
+     *
+     * @param model 群组及待添加成员信息
+     * @return 添加结果
      */
     @Inner
     @PostMapping("/member/add")
-    public R addGroupMember(@RequestBody AddGroupPersonModel model){
+    @Operation(summary = "添加群成员", description = "添加群成员")
+    public R addGroupMember(@RequestBody AddGroupPersonModel model) {
         imService.addGroupMember(model);
         return R.ok();
     }
 
     /**
-     * 添加带扩展信息群成员
-     * @param model
-     * @return
+     * 添加带扩展信息的群成员
+     *
+     * @param model 群组及带扩展信息的成员列表
+     * @return 添加结果
      */
     @Inner
     @PostMapping("/memberExt/add")
-    public R addGroupMemberExt(@RequestBody AddMemberExtModel model){
+    @Operation(summary = "添加带扩展信息的群成员", description = "添加带扩展信息的群成员")
+    public R addGroupMemberExt(@RequestBody AddMemberExtModel model) {
         imService.addGroupMemberExt(model);
         return R.ok();
     }
 
     /**
-     * 踢人
+     * 移除群成员
+     *
+     * @param model 群组及待移除成员信息
+     * @return 移除结果
      */
     @Inner
     @DeleteMapping("/remove/member")
-    public R removeGroupMember(@RequestBody DelGroupMemberModel model){
+    @Operation(summary = "移除群成员", description = "移除群成员")
+    public R removeGroupMember(@RequestBody DelGroupMemberModel model) {
         imService.removeGroupMember(model);
         return R.ok();
     }
 
     /**
-     * 解散群
+     * 解散群组
+     *
+     * @param model 待解散的群组信息
+     * @return 解散结果
      */
     @Inner
     @DeleteMapping("/destroy")
-    public R destroyGroup(@RequestBody DestroyGroupModel model){
+    @Operation(summary = "解散群组", description = "解散群组")
+    public R destroyGroup(@RequestBody DestroyGroupModel model) {
         imService.destroyGroup(model);
         return R.ok();
     }
 
     /**
-     * 查询多个群信息
+     * 批量查询群组信息
+     *
+     * @param groupIds 群组ID列表
+     * @return 群组信息列表
      */
     @Inner
     @GetMapping("/query")
-    public R query(@RequestParam("groupIds") List<String> groupIds){
+    @Operation(summary = "批量查询群组信息", description = "批量查询群组信息")
+    public R query(@RequestParam("groupIds") List<String> groupIds) {
         return R.ok(imService.listGroupInfo(groupIds));
     }
 
     /**
-     * 查询群详情
+     * 查询群组详情
+     *
+     * @param groupId 群组ID
+     * @return 群组详情
      */
     @Inner
     @GetMapping("/detail")
-    public R<GroupInfoVo> query(@RequestParam("groupId") String groupId){
+    @Operation(summary = "查询群组详情", description = "查询群组详情")
+    public R<GroupInfoVo> query(@RequestParam("groupId") String groupId) {
         return R.ok(imService.info(groupId));
     }
 
-    /***
-     * 获取群聊天记录
+    /**
+     * 按游标查询群聊天记录
+     *
+     * @param model 群组、消息序号、查询条数及时间筛选条件
+     * @return 本批消息数量、聊天记录、成员信息及下一页游标
      */
     @Inner
     @PostMapping("/getChatLog")
-    public R<JSONObject> getGroupChatLog(@RequestBody @Validated GroupChatLogModel model){
+    @Operation(summary = "按游标查询群聊天记录", description = "按游标查询群聊天记录")
+    public R<JSONObject> getGroupChatLog(@RequestBody @Validated GroupChatLogModel model) {
         JSONObject result = JSONUtil.createObj();
-        result.set("total",0);
-        result.set("history",null);
-        result.set("members",null);
-        result.set("nextMsgSeq",null);
+        result.set("total", 0);
+        result.set("history", null);
+        result.set("members", null);
+        result.set("nextMsgSeq", null);
 
         JSONArray history = imService.findGroupHistory(model);
-        if(!history.isEmpty()){
+        if (!history.isEmpty()) {
             // 游标按原始消息计算，时间筛选后没有结果时仍可继续查询。
             Long minMsgSeq = history.stream().map(JSONUtil::parseObj).map(message -> message.getLong("MsgSeq"))
                     .filter(Objects::nonNull).min(Long::compareTo).orElse(null);
@@ -131,53 +168,64 @@ public class IMGroupInnerController {
                     .filter(e -> model.getEndTime() == null || (e.getMsgTimeStamp() != null && e.getMsgTimeStamp() <= model.getEndTime()))
                     .sorted(Comparator.comparing(GroupHistoryResponse::getMsgTimeStamp, Comparator.nullsLast(Comparator.reverseOrder())))
                     .collect(Collectors.toList());
-            result.set("total",groupHistoryResponses.size());
-            result.set("history",JSONUtil.parseArray(groupHistoryResponses));
+            result.set("total", groupHistoryResponses.size());
+            result.set("history", JSONUtil.parseArray(groupHistoryResponses));
         }
 
         List<GroupMemberDetail> members = imService.getMemberDetail(model.getGroupId());
-        if(CollUtil.isNotEmpty(members)){
-            Map<String,String> memberMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(members)) {
+            Map<String, String> memberMap = new HashMap<>();
             for (GroupMemberDetail member : members) {
-                memberMap.put(member.getAccountId(), StrUtil.isBlank(member.getNickName())? "" : member.getNickName());
+                memberMap.put(member.getAccountId(), StrUtil.isBlank(member.getNickName()) ? "" : member.getNickName());
             }
-            result.set("members",memberMap);
+            result.set("members", memberMap);
 
             Map<String, AccountInfo> accountInfo = imService.findAccountInfo(members.stream().map(GroupMemberDetail::getAccountId).collect(Collectors.toList()));
-            result.set("accountInfos",accountInfo);
+            result.set("accountInfos", accountInfo);
         }
 
         return R.ok(result);
     }
 
     /**
-     * 更新群员昵称
+     * 修改群成员昵称
+     *
+     * @param model 群组、成员账号及新昵称
+     * @return 修改结果
      */
     @Inner
     @PutMapping("/member/nickName")
-    public R updateMemberNickName(@RequestBody GroupMemberNickModel model){
+    @Operation(summary = "修改群成员昵称", description = "修改群成员昵称")
+    public R updateMemberNickName(@RequestBody GroupMemberNickModel model) {
         log.info("修改群成员资料：{}", JSONUtil.toJsonStr(model));
         imService.updateGroupMemberInfo(model);
         return R.ok();
     }
 
-
     /**
-     * 更新群名称
+     * 修改群组名称
+     *
+     * @param model 群组ID及新名称
+     * @return 修改结果
      */
     @Inner
     @PutMapping("/name")
-    public R updateGroupName(@RequestBody GroupNameModifyModel model){
+    @Operation(summary = "修改群组名称", description = "修改群组名称")
+    public R updateGroupName(@RequestBody GroupNameModifyModel model) {
         imService.updateGroupInfo(model);
         return R.ok();
     }
 
     /**
      * 转让群主
+     *
+     * @param model 群组及新群主信息
+     * @return 转让结果
      */
     @Inner
     @PostMapping("/transfer")
-    public R transferGroup(@RequestBody TransferGroupModel model){
+    @Operation(summary = "转让群主", description = "转让群主")
+    public R transferGroup(@RequestBody TransferGroupModel model) {
         log.info("群主转让：{}", JSONUtil.toJsonStr(model));
         imService.transferGroup(model);
         return R.ok();
