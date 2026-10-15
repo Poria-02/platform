@@ -15,6 +15,8 @@ import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,10 +42,10 @@ public class AliSmsSendServiceImpl implements SmsService {
     private String secretKey;
 
 
-    @Autowired
+    @Resource
     private MsgTemplateService msgTemplateService;
 
-    @Autowired
+    @Resource
     private MsgSmsLogService smsLogService;
 
 

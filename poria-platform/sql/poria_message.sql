@@ -77,7 +77,9 @@ CREATE TABLE IF NOT EXISTS `msg_template`  (
   `platform` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '短信平台 短信消息传入',
   `category` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '模版分类',
   `param_mapping` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '参数映射配置',
-  PRIMARY KEY (`id`) USING BTREE
+  `active_template_key` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci GENERATED ALWAYS AS (CASE WHEN `is_delete` = 0 THEN `template_key` ELSE NULL END) VIRTUAL COMMENT '未删除模板KEY，用于唯一约束',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uk_active_template_key` (`active_template_key`)
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '消息模板' ROW_FORMAT = DYNAMIC;
 
 CREATE TABLE IF NOT EXISTS `msg_wx_log`  (

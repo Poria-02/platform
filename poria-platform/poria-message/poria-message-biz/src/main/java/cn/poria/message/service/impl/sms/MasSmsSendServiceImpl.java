@@ -12,6 +12,7 @@ import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.service.SmsService;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,10 +49,10 @@ public class MasSmsSendServiceImpl implements SmsService {
     @Value("${message.mas.url}")
     private String url;
 
-    @Autowired
+    @Resource
     private MsgTemplateService templateService;
 
-    @Autowired
+    @Resource
     private MsgSmsLogService smsLogService;
 
 

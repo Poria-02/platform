@@ -10,6 +10,7 @@ import cn.poria.message.service.MsgTemplateService;
 import cn.poria.message.service.SmsService;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,10 @@ public class EsurfingSmsSendServiceImpl implements SmsService {
   @Value("${message.esurfing.plat.moUrl}")
   private String moUrl;
 
-  @Autowired
+  @Resource
   private MsgTemplateService templateService;
 
-  @Autowired
+  @Resource
   private MsgSmsLogService smsLogService;
 
 

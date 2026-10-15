@@ -14,6 +14,7 @@ import cn.poria.message.service.SmsService;
 import cn.poria.message.util.CheckSumBuilder;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,10 @@ import java.util.regex.Pattern;
 @ConditionalOnProperty("message.ntes.appKey")
 public class WyyxSmsSendServiceImpl implements SmsService {
 
-    @Autowired
+    @Resource
     private MsgTemplateService templateService;
 
-    @Autowired
+    @Resource
     private MsgSmsLogService logService;
 
     @Value("${message.ntes.url}")
