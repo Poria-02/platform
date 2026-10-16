@@ -28,42 +28,21 @@ import java.util.List;
 @Tag(name = "【Api】- 公示公告")
 public class AnnouncementController {
 
-    /**
-     * 公示公告服务对象
-     */
     @Resource
     private CenterAnnouncementService centerAnnouncementService;
 
-    /**
-     * 分页查询公示公告
-     *
-     * @param query 查询条件
-     * @return 公示公告分页数据
-     */
     @GetMapping("/page")
     @Operation(summary = "分页查询公示公告记录", description = "按传入的公告状态查询，默认查询已发布的公示公告记录")
     public R<IPage<AnnouncementVo>> page(@Validated CenterQueryModel query) {
         return R.ok(centerAnnouncementService.page(query));
     }
 
-    /**
-     * 通过ID查询公示公告详情
-     *
-     * @param id 公告ID
-     * @return 公示公告详情
-     */
     @GetMapping("/{id}")
     @Operation(summary = "通过ID查询公示公告记录", description = "通过ID查询公示公告详情")
     public R<AnnouncementVo> detail(@PathVariable String id) {
         return R.ok(centerAnnouncementService.detail(id));
     }
 
-    /**
-     * 新增公示公告草稿
-     *
-     * @param draft 公示公告内容
-     * @return 公告ID
-     */
     @PostMapping
     @PreAuthorize("@pms.hasPermission('message_announcement_add')")
     @Operation(summary = "新增公示公告", description = "新增公告并保存为草稿 (权限：message_announcement_add)")
@@ -71,12 +50,6 @@ public class AnnouncementController {
         return R.ok(centerAnnouncementService.create(draft));
     }
 
-    /**
-     * 修改公示公告内容
-     *
-     * @param draft 公告ID及公示公告内容
-     * @return 修改结果
-     */
     @PutMapping
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
     @Operation(summary = "修改公示公告", description = "修改后恢复为草稿，原待办阅读状态保留，重新发送会生成新待办 (权限：message_announcement_edit)")
@@ -85,12 +58,6 @@ public class AnnouncementController {
         return R.ok();
     }
 
-    /**
-     * 通过待办功能发送公示公告
-     *
-     * @param model 公告ID及接收人用户ID列表
-     * @return 待办任务ID列表
-     */
     @PostMapping("/send")
     @PreAuthorize("@pms.hasPermission('message_announcement_send')")
     @Operation(summary = "发送公示公告", description = "向前端传入的接收人ID列表逐人发送公示公告 (权限：message_announcement_send)")
@@ -98,12 +65,6 @@ public class AnnouncementController {
         return R.ok(centerAnnouncementService.send(model));
     }
 
-    /**
-     * 恢复草稿或撤回公示公告
-     *
-     * @param request 公告ID及状态请求，0-草稿，2-已撤回
-     * @return 状态修改结果
-     */
     @PutMapping("/status")
     @PreAuthorize("@pms.hasPermission('message_announcement_edit')")
     @Operation(summary = "修改公告发布状态", description = "0-恢复草稿，2-撤回；发送公告使用独立发送接口 (权限：message_announcement_edit)")
@@ -112,12 +73,6 @@ public class AnnouncementController {
         return R.ok();
     }
 
-    /**
-     * 通过ID删除公示公告
-     *
-     * @param id 公告ID
-     * @return 删除结果
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('message_announcement_del')")
     @Operation(summary = "通过ID删除公示公告", description = "通过ID删除公示公告记录 (权限：message_announcement_del)")

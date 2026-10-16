@@ -37,10 +37,10 @@ public interface MsgTemplateService extends IService<MsgTemplate> {
     TemplateVo selectByKey(String code);
 
     /**
-     * 查询指定小程序已启用的订阅消息模板ID
+     * 查询指定微信小程序已启用的订阅消息模板ID
      *
-     * @param queryModel 小程序AppId及模板Key列表
-     * @return 模板Key与小程序模板ID的对应关系
+     * @param queryModel 微信小程序AppId及订阅消息模板Key列表
+     * @return 模板Key与微信小程序订阅消息模板ID的对应关系
      */
     Map<String, String> getMaTemplateIds(MaTemplateQueryModel queryModel);
 

@@ -24,18 +24,9 @@ import jakarta.annotation.Resource;
 @RequestMapping("/inner/pending/task")
 public class PendingTaskInnerController {
 
-    /**
-     * 待办任务服务对象
-     */
     @Resource
     private MsgPendingTaskService msgPendingTaskService;
 
-    /**
-     * 新增待办任务
-     *
-     * @param msgPendingTask 待办任务内容
-     * @return 新增结果
-     */
     @Inner
     @PostMapping
     @Operation(summary = "新增待办任务", description = "新增待办任务")
@@ -44,12 +35,6 @@ public class PendingTaskInnerController {
         return R.ok();
     }
 
-    /**
-     * 完成待办任务
-     *
-     * @param id 待办任务ID
-     * @return 完成结果
-     */
     @Inner
     @PutMapping("/{id}")
     @Operation(summary = "完成待办任务", description = "完成待办任务")

@@ -35,23 +35,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/app/im/group")
 public class IMGroupAppController {
 
-    /**
-     * 腾讯云IM配置
-     */
     @Autowired
     private TxIMProperties txIMProperties;
 
-    /**
-     * 腾讯云IM请求工具
-     */
     @Autowired
     private TxIMMsgSendUtil txIMMsgSendUtil;
 
-    /**
-     * 查询当前用户加入的群组
-     *
-     * @return 群组数量及群组列表
-     */
     @GetMapping("/iteams")
     @Operation(summary = "查询当前用户加入的群组", description = "查询当前用户加入的群组")
     public R iteams() {
@@ -78,12 +67,6 @@ public class IMGroupAppController {
         return R.ok(vo);
     }
 
-    /**
-     * 批量查询群组信息
-     *
-     * @param model 群组ID列表
-     * @return 群组信息列表
-     */
     @PostMapping("/infos")
     @Operation(summary = "批量查询群组信息", description = "批量查询群组信息")
     public R<List<GroupInfoResponse>> query(@RequestBody GroupInfosModel model) {

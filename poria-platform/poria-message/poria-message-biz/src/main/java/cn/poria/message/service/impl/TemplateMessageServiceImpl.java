@@ -44,7 +44,7 @@ public class TemplateMessageServiceImpl implements TemplateMessageService {
     private final List<TemplateMessageSender> senders;
 
     /**
-     * 通用模板配置服务
+     * 消息模板配置服务
      */
     @Resource
     private MsgTemplateService templateService;
@@ -98,6 +98,7 @@ public class TemplateMessageServiceImpl implements TemplateMessageService {
             R<SocialDetailsVo> accountResult = remoteSocialDetailsService.account(query, SecurityConstants.FROM_IN);
             Assert.notNull(accountResult, "UPMS未返回第三方账号查询结果");
             Assert.isTrue(accountResult.isSuccess(), "第三方账号查询失败：{}", StrUtil.blankToDefault(accountResult.getMsg(), "UPMS返回失败"));
+
             SocialDetailsVo account = Assert.notNull(accountResult.getData(), "UPMS未返回第三方账号信息");
             Assert.isTrue(channelType.equals(account.getType()) && StrUtil.isNotBlank(account.getAppId()), "第三方账号类型或AppId不匹配");
             Assert.isTrue(StrUtil.isBlank(query.getAppId()) || query.getAppId().equals(account.getAppId()), "第三方账号AppId与模板绑定不匹配");
