@@ -32,8 +32,8 @@
     <el-dialog v-model="editorOpen" title="发布站内信" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :close-on-press-escape="!saving && !recipientsLoading" :before-close="closeEditor">
       <el-form ref="editorForm" :model="draft" :rules="rules" :disabled="saving" label-position="top">
         <el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="draft.userIds" :disabled="saving" @loading="recipientsLoading = $event" /></el-form-item>
-        <el-form-item label="站内信通用模板" prop="templateKey"><el-select v-model="draft.templateKey" filterable remote clearable :remote-method="loadTemplates" :loading="templatesLoading" placeholder="搜索模板名称或key" style="width:100%" @change="selectTemplate"><el-option v-for="template in templates" :key="template.templateKey" :label="(template.title || '站内信模板') + '（' + template.templateKey + '）'" :value="template.templateKey" /></el-select></el-form-item>
-        <p class="message-editor-hint">请先在通用模板管理配置并启用类型为“站内信”的模板。</p>
+        <el-form-item label="站内信模板" prop="templateKey"><el-select v-model="draft.templateKey" filterable remote clearable :remote-method="loadTemplates" :loading="templatesLoading" placeholder="搜索模板名称或key" style="width:100%" @change="selectTemplate"><el-option v-for="template in templates" :key="template.templateKey" :label="(template.title || '站内信模板') + '（' + template.templateKey + '）'" :value="template.templateKey" /></el-select></el-form-item>
+        <p class="message-editor-hint">请先在消息模板管理配置并启用站内信模板。</p>
         <div v-if="templateError" class="resource-error" role="alert">{{ templateError }}<el-button v-if="!draft.templateKey" link @click="loadTemplates()">重试</el-button></div>
         <el-form-item v-for="field in templateFields" :key="field" :label="field" :prop="['param', field]" :rules="[{ required: true, whitespace: true, message: '请填写 ' + field, trigger: 'blur' }]"><el-input v-model="draft.param[field]" :placeholder="'填写模板参数 ' + field" /></el-form-item>
         <div v-if="selectedTemplate" class="message-template-preview"><span>内容预览</span><strong>{{ templatePreview.title }}</strong><p>{{ templatePreview.content }}</p></div>
@@ -165,7 +165,7 @@ async function loadTemplates(keywords = '') {
     const page = await templateList({ current: 1, size: 20, keywords, type: '2', status: '1' })
     if (sequence !== templateSequence) return
     templates.value = page?.records || []
-    if (!templates.value.length) templateError.value = '没有匹配的已启用站内信模板，请先在通用模板管理配置。'
+    if (!templates.value.length) templateError.value = '没有匹配的已启用站内信模板，请先在消息模板管理配置。'
   } catch (cause) { if (sequence === templateSequence) templateError.value = cause.message || '模板加载失败' }
   finally { if (sequence === templateSequence) templatesLoading.value = false }
 }
@@ -185,7 +185,7 @@ function selectTemplate(key) {
     templateFields.value = [...fields]
     for (const field of fields) draft.param[field] = ''
     selectedTemplate.value = content
-  } catch { templateError.value = '模板内容格式有误，请在通用模板管理调整。' }
+  } catch { templateError.value = '站内信模板内容格式有误，请在消息模板管理调整。' }
 }
 function publish() {
   if (!permissions.value.canCreate) return

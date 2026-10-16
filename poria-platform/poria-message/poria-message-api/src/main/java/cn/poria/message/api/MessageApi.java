@@ -76,7 +76,7 @@ public interface MessageApi {
     R completePendingTask(@PathVariable("id") @Validated String id);
 
     /**
-     * 使用通用模板发送站内信
+     * 使用站内信模板发送站内信
      *
      * @param model 接收人、模板Key及模板参数
      * @param from 内部调用来源标识
@@ -86,7 +86,7 @@ public interface MessageApi {
     R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
-     * 通过模板Key查询通用消息模板
+     * 通过模板Key查询消息模板
      *
      * @param key 模板Key
      * @param from 内部调用来源标识

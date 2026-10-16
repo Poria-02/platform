@@ -28,18 +28,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/msg/imTemplate")
 public class MsgImTemplateAppController {
 
-    /**
-     * IM消息模板服务对象
-     */
     @Resource
     private MsgImTemplateService msgImTemplateService;
 
-    /**
-     * 分页查询IM消息模板
-     *
-     * @param queryModel 分页及筛选条件
-     * @return IM消息模板分页数据
-     */
     @GetMapping("/page")
     @Operation(summary = "分页查询IM消息模板", description = "分页查询IM消息模板")
     public R selectAll(@ParameterObject IMTemplateQueryModel queryModel) {
@@ -47,12 +38,6 @@ public class MsgImTemplateAppController {
         return R.ok(msgImTemplateService.queryPage(queryModel));
     }
 
-    /**
-     * 新增IM消息模板
-     *
-     * @param model IM消息模板内容
-     * @return IM消息模板ID
-     */
     @SysLog("新增IM消息模板")
     @PostMapping
     @Operation(summary = "新增IM消息模板", description = "新增IM消息模板")
@@ -63,12 +48,6 @@ public class MsgImTemplateAppController {
         return R.ok(msgTemplate.getId());
     }
 
-    /**
-     * 通过ID删除IM消息模板
-     *
-     * @param id IM消息模板ID
-     * @return 是否删除成功
-     */
     @SysLog("通过id删除IM消息模板")
     @DeleteMapping("{id}")
     @Operation(summary = "通过ID删除IM消息模板", description = "通过ID删除IM消息模板")

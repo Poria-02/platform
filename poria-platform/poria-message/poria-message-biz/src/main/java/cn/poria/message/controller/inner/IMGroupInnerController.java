@@ -36,19 +36,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/inner/im/group")
 public class IMGroupInnerController {
 
-    /**
-     * IM服务对象
-     */
     @Autowired
     @Qualifier("txIMService")
     private IMService imService;
 
-    /**
-     * 创建IM群组
-     *
-     * @param model 群组名称、群主及成员信息
-     * @return 群组ID
-     */
     @Inner
     @PostMapping("/create")
     @Operation(summary = "创建IM群组", description = "创建IM群组")
@@ -56,12 +47,6 @@ public class IMGroupInnerController {
         return R.ok(imService.createGroup(model));
     }
 
-    /**
-     * 添加群成员
-     *
-     * @param model 群组及待添加成员信息
-     * @return 添加结果
-     */
     @Inner
     @PostMapping("/member/add")
     @Operation(summary = "添加群成员", description = "添加群成员")
@@ -70,12 +55,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 添加带扩展信息的群成员
-     *
-     * @param model 群组及带扩展信息的成员列表
-     * @return 添加结果
-     */
     @Inner
     @PostMapping("/memberExt/add")
     @Operation(summary = "添加带扩展信息的群成员", description = "添加带扩展信息的群成员")
@@ -84,12 +63,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 移除群成员
-     *
-     * @param model 群组及待移除成员信息
-     * @return 移除结果
-     */
     @Inner
     @DeleteMapping("/remove/member")
     @Operation(summary = "移除群成员", description = "移除群成员")
@@ -98,12 +71,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 解散群组
-     *
-     * @param model 待解散的群组信息
-     * @return 解散结果
-     */
     @Inner
     @DeleteMapping("/destroy")
     @Operation(summary = "解散群组", description = "解散群组")
@@ -112,12 +79,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 批量查询群组信息
-     *
-     * @param groupIds 群组ID列表
-     * @return 群组信息列表
-     */
     @Inner
     @GetMapping("/query")
     @Operation(summary = "批量查询群组信息", description = "批量查询群组信息")
@@ -125,12 +86,6 @@ public class IMGroupInnerController {
         return R.ok(imService.listGroupInfo(groupIds));
     }
 
-    /**
-     * 查询群组详情
-     *
-     * @param groupId 群组ID
-     * @return 群组详情
-     */
     @Inner
     @GetMapping("/detail")
     @Operation(summary = "查询群组详情", description = "查询群组详情")
@@ -138,12 +93,6 @@ public class IMGroupInnerController {
         return R.ok(imService.info(groupId));
     }
 
-    /**
-     * 按游标查询群聊天记录
-     *
-     * @param model 群组、消息序号、查询条数及时间筛选条件
-     * @return 本批消息数量、聊天记录、成员信息及下一页游标
-     */
     @Inner
     @PostMapping("/getChatLog")
     @Operation(summary = "按游标查询群聊天记录", description = "按游标查询群聊天记录")
@@ -187,12 +136,6 @@ public class IMGroupInnerController {
         return R.ok(result);
     }
 
-    /**
-     * 修改群成员昵称
-     *
-     * @param model 群组、成员账号及新昵称
-     * @return 修改结果
-     */
     @Inner
     @PutMapping("/member/nickName")
     @Operation(summary = "修改群成员昵称", description = "修改群成员昵称")
@@ -202,12 +145,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 修改群组名称
-     *
-     * @param model 群组ID及新名称
-     * @return 修改结果
-     */
     @Inner
     @PutMapping("/name")
     @Operation(summary = "修改群组名称", description = "修改群组名称")
@@ -216,12 +153,6 @@ public class IMGroupInnerController {
         return R.ok();
     }
 
-    /**
-     * 转让群主
-     *
-     * @param model 群组及新群主信息
-     * @return 转让结果
-     */
     @Inner
     @PostMapping("/transfer")
     @Operation(summary = "转让群主", description = "转让群主")

@@ -4,13 +4,12 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.poria.common.core.util.Assert;
-import cn.poria.common.security.annotation.Inner;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import cn.poria.common.core.util.R;
-import io.swagger.v3.oas.annotations.Hidden;
+import cn.poria.common.security.annotation.Inner;
 import cn.poria.message.service.SmsServiceManager;
 import cn.poria.message.vo.request.SmsSend;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Hidden
 public class SmsInnerController {
 
-    /**
-     * 短信发送服务对象
-     */
     @Autowired
     private SmsServiceManager smsServiceManager;
 
-    /**
-     * 短链接转换服务地址
-     */
     @Value("${convert.url}")
     private String convertUrl;
 
-    /**
-     * 发送通用短信
-     *
-     * @param req 接收手机号、模板及短信参数
-     * @return 发送结果
-     */
     @Inner
     @PostMapping("/send")
     @Operation(summary = "发送通用短信", description = "发送通用短信")
@@ -56,12 +43,6 @@ public class SmsInnerController {
         return R.ok();
     }
 
-    /**
-     * 将长链接转换为短链接
-     *
-     * @param longUrl 待转换的长链接
-     * @return 转换后的短链接
-     */
     @Inner
     @PostMapping("/convert/shortUrl")
     @Operation(summary = "将长链接转换为短链接", description = "将长链接转换为短链接")
