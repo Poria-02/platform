@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { watch } from 'vue'
 import { login, logout, refreshTokens } from '@/views/login/api'
 import { fetchMenus } from './menu'
-import { clearSession, readSession, saveSession, tokenDetails } from './token'
+import { clearMenuCache, clearSession, readMenuCache, readSession, saveMenuCache, saveSession, tokenDetails } from './token'
 import { createTokenRefresher } from './refresh'
 import { invalidateDictionaries } from './dictionaries'
 
@@ -34,8 +34,11 @@ export const useSession = defineStore('session', {
         lastActivityAt: Date.now()
       }
       saveSession(this.current)
+      clearMenuCache()
+      this.menus = []
       this.menusReady = false
       this.menuError = ''
+      this.menusLoading = null
     },
     async ensureAccessToken(options) {
       if (!refreshers.has(this)) {
@@ -64,16 +67,29 @@ export const useSession = defineStore('session', {
         await router.replace('/login')
       }
     },
-    async ensureMenus() {
+    async ensureMenus({ force = false } = {}) {
       const sessionId = this.current?.idleId
       if (!sessionId) return []
-      if (this.menusReady) return this.menus
+      if (force) {
+        clearMenuCache()
+        this.menusReady = false
+      } else {
+        if (this.menusReady) return this.menus
+        const cached = readMenuCache(this.current)
+        if (cached !== null) {
+          this.menus = cached
+          this.menusReady = true
+          this.menuError = ''
+          return cached
+        }
+      }
       if (!this.menusLoading) {
         const operation = fetchMenus().then(menus => {
           if (this.current?.idleId !== sessionId) return []
           this.menus = menus
           this.menusReady = true
           this.menuError = ''
+          saveMenuCache(sessionId, menus)
           return menus
         }).catch(error => {
           if (this.current?.idleId !== sessionId) return []

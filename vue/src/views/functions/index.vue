@@ -143,9 +143,8 @@ async function refreshMenus() {
   const sessionId = session.current?.idleId
   if (refreshing.value || !sessionId) return
   refreshing.value = true
-  session.menusReady = false
   try {
-    const menus = await session.ensureMenus()
+    const menus = await session.ensureMenus({ force: true })
     if (session.current?.idleId !== sessionId) return
     clearMenuRoutes()
     installMenuRoutes(menus)
