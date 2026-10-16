@@ -9,7 +9,7 @@
       <aside class="message-list-pane">
         <div class="message-list-heading"><div><strong>{{ managing ? '公告记录' : '我的公告' }}</strong><small>共 {{ total }} 条</small></div><el-button v-if="!managing" link :disabled="busy || loading" @click="readAll">全部已读</el-button></div>
         <div class="message-search"><el-input v-model="keyword" clearable :maxlength="managing ? 100 : 20" placeholder="搜索标题或内容" @keyup.enter="search" @clear="search" /><el-button @click="search">搜索</el-button></div>
-        <div v-if="managing" class="message-filters"><el-select v-model="noticeStatus" @change="search"><el-option label="已发布" :value="1" /><el-option :disabled="!permissions.canViewDrafts" label="草稿" :value="0" /></el-select></div>
+        <div v-if="managing" class="message-filters"><el-select v-model="noticeStatus" @change="search"><el-option label="已发布" :value="1" /><el-option :disabled="!permissions.canViewDrafts" label="草稿" :value="0" /><el-option label="已撤回" :value="2" /></el-select></div>
         <div v-else class="message-filter-read"><el-checkbox v-model="onlyUnread" @change="search">只看未读</el-checkbox></div>
         <div v-loading="loading" class="message-list" :aria-busy="loading">
           <button v-for="item in rows" :key="item.id" type="button" class="message-list-item" :class="{ selected: selected?.id === item.id, unread: !managing && item.status === 0 }" @click="selectMessage(item.id)">
@@ -129,6 +129,7 @@ async function openMessage(id) {
     if (!record && message.status === 0) { await api.read(id); message.status = 1 }
     if (sequence !== detailSequence) return
     rows.value = rows.value.map(row => row.id === id ? { ...row, ...message } : row)
+    if (!record && onlyUnread.value) await load()
     void center.refresh()
   } catch (cause) { if (sequence === detailSequence) error.value = cause.message || '详情加载失败' }
   finally { if (sequence === detailSequence) detailLoading.value = false }

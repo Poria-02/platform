@@ -36,6 +36,7 @@ public class IMMsgTypeFile implements IMMsgBody {
 
     @Schema(description = "图片下载地址 目前取值为2")
     @Alias("Download_Flag")
+    @Builder.Default
     private Integer downloadFlag =  2;
 
 
