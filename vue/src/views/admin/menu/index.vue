@@ -77,9 +77,8 @@ const session = useSession()
 const menuTypes = [{ label: '菜单', value: '0' }, { label: '按钮', value: '1' }]
 
 async function refreshMenus() {
-  session.menusReady = false
   try {
-    const menus = await session.ensureMenus()
+    const menus = await session.ensureMenus({ force: true })
     clearMenuRoutes()
     installMenuRoutes(menus)
   } catch { /* 当前页面已显示保存结果，导航将在下次加载时重试。 */ }

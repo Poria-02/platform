@@ -1,18 +1,24 @@
 package cn.poria.message.service;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import cn.poria.common.core.exception.ServiceException;
 import cn.poria.common.core.util.Assert;
+import cn.poria.common.core.util.R;
+import cn.poria.message.entity.MsgSmsLog;
 import cn.poria.message.enums.TemplateType;
 import cn.poria.message.util.TemplateParamUtil;
 import cn.poria.message.vo.request.SmsSend;
 import cn.poria.message.vo.response.template.TemplateVo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +30,12 @@ public class SmsServiceManager {
 
     @Resource
     private MsgTemplateService templateService;
+
+    /**
+     * 短信发送日志服务对象
+     */
+    @Resource
+    private MsgSmsLogService smsLogService;
 
     private final List<SmsService> smsServiceList;
 
@@ -57,13 +69,94 @@ public class SmsServiceManager {
 
         for (SmsService smsService : smsServiceList) {
             if (smsService.supports(template.getPlatform())) {
-                smsService.sendSms(req, template);
+                sendAndSaveLogs(smsService, req, template);
                 return;
             }
         }
         throw new ServiceException("未找到短信平台[" + template.getPlatform() + "]");
     }
 
+    /**
+     * 获取通道发送结果后，按手机号集中保存日志
+     *
+     * @param smsService 已匹配的短信通道
+     * @param req 短信发送参数
+     * @param template 通用短信模板
+     */
+    private void sendAndSaveLogs(SmsService smsService, SmsSend req, TemplateVo template) {
+        String content = templateService.getContentByKey(req.getKey(), req.getParam());
+        String params = JSONUtil.toJsonStr(req.getParam());
+        List<MsgSmsLog> logs = new ArrayList<>();
+        List<String> failedPhones = new ArrayList<>();
+
+        if (smsService.supportsBatch()) {
+            R<String> result = sendWithResult(smsService, req, content);
+            for (String phone : req.getPhones().split(",")) {
+                logs.add(createLog(phone, req, template, content, params, result));
+                if (!result.isSuccess()) {
+                    failedPhones.add(phone);
+                }
+            }
+        } else {
+            for (String phone : req.getPhones().split(",")) {
+                SmsSend singleReq = new SmsSend();
+                BeanUtils.copyProperties(req, singleReq);
+                singleReq.setPhones(phone);
+                R<String> result = sendWithResult(smsService, singleReq, content);
+                logs.add(createLog(phone, req, template, content, params, result));
+                if (!result.isSuccess()) {
+                    failedPhones.add(phone);
+                }
+            }
+        }
+
+        smsLogService.saveLogs(logs);
+        if (!failedPhones.isEmpty()) {
+            throw new ServiceException("短信发送失败，手机号：" + String.join(",", failedPhones));
+        }
+    }
+
+    /**
+     * 将通道异常统一转换为失败结果，供日志及调用方使用
+     *
+     * @param smsService 短信通道
+     * @param req 短信发送参数
+     * @param content 已渲染的短信内容或平台模板编码
+     * @return 标准发送结果
+     */
+    private R<String> sendWithResult(SmsService smsService, SmsSend req, String content) {
+        try {
+            R<String> result = smsService.sendSms(req, content);
+            return result != null ? result : R.failed("短信通道未返回发送结果");
+        } catch (Exception e) {
+            log.error("短信通道发送异常", e);
+            return R.failed(StrUtil.blankToDefault(e.getMessage(), "短信通道发送异常"));
+        }
+    }
+
+    /**
+     * 构造单个手机号的发送日志
+     *
+     * @param phone 接收手机号
+     * @param req 短信发送参数
+     * @param template 通用短信模板
+     * @param content 已渲染的短信内容或平台模板编码
+     * @param params 发送参数快照
+     * @param result 通道发送结果
+     * @return 短信发送日志
+     */
+    private MsgSmsLog createLog(String phone, SmsSend req, TemplateVo template, String content, String params, R<String> result) {
+        MsgSmsLog smsLog = new MsgSmsLog();
+        smsLog.setContent(content);
+        smsLog.setPhone(phone);
+        smsLog.setTemplateKey(req.getKey());
+        smsLog.setPlatform(template.getPlatform());
+        smsLog.setResult(result.getData() != null ? result.getData() : result.getMsg());
+        smsLog.setParams(params);
+        smsLog.setCreateTime(new Date());
+        smsLog.setStatus(result.isSuccess() ? 1 : 2);
+        return smsLog;
+    }
 
     /**
      * 限流操作

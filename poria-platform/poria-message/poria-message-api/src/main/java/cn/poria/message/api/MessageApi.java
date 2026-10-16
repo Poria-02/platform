@@ -4,12 +4,9 @@ import cn.hutool.json.JSONObject;
 import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.message.vo.request.*;
-import cn.poria.message.vo.request.form.FormListModel;
-import cn.poria.message.vo.request.form.FormPatientQueryModel;
 import cn.poria.message.vo.request.im.*;
 import cn.poria.message.vo.request.ma.MaAccountMessageModel;
 import cn.poria.message.vo.request.center.StationLetterModel;
-import cn.poria.message.vo.response.FormListVO;
 import cn.poria.message.vo.response.im.GroupInfoVo;
 import cn.poria.message.vo.response.ma.MaAccountMessageVo;
 import cn.poria.message.vo.response.template.TemplateVo;
@@ -18,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 消息服务内部调用契约
@@ -230,46 +226,6 @@ public interface MessageApi {
     R<GroupInfoVo> query(@RequestParam("groupId") String groupId, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
-     * 获取用户问卷流水号
-     *
-     * @param model 用户及问卷信息
-     * @param from 内部调用来源标识
-     * @return 问卷流水号
-     */
-    @PostMapping("/inner/questionnaire/sn")
-    R<Long> getUserFormSN(@RequestBody UserFormSNModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 查询问卷列表
-     *
-     * @param formListModel 问卷筛选条件
-     * @param from 内部调用来源标识
-     * @return 问卷列表
-     */
-    @PostMapping("/inner/questionnaire/list")
-    R<List<FormListVO>> getFromList(@RequestBody FormListModel formListModel, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 通过流水号查询问卷填写信息
-     *
-     * @param sn 问卷流水号
-     * @param from 内部调用来源标识
-     * @return 问卷填写信息
-     */
-    @GetMapping("/inner/questionnaire/form/data/{sn}")
-    R<Map<String, Object>> queryFormDataBySn(@PathVariable("sn") String sn, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 查询问卷关联的患者ID
-     *
-     * @param model 患者ID查询条件
-     * @param from 内部调用来源标识
-     * @return 患者ID
-     */
-    @PostMapping("/inner/questionnaire/patientId")
-    R<String> findUserPatientIdFromForm(@RequestBody FormPatientQueryModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
      * 发送微信小程序订阅消息
      *
      * @param msgSend 接收人、模板及消息参数
@@ -288,16 +244,6 @@ public interface MessageApi {
      */
     @PostMapping("/inner/ma/account/info")
     R<MaAccountMessageVo> findMaAccountInfo(@RequestBody MaAccountMessageModel model, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 通过表单Key查询表单项列表
-     *
-     * @param formKey 表单Key
-     * @param from 内部调用来源标识
-     * @return 表单项列表
-     */
-    @GetMapping("/inner/questionnaire/item/list/{formKey}")
-    R queryFormItems(@PathVariable("formKey") String formKey, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
      * 将长链接转换为短链接
