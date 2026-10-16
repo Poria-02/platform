@@ -27,4 +27,3 @@ public class BannerVo {
     private Date createTime;
 
 }
-

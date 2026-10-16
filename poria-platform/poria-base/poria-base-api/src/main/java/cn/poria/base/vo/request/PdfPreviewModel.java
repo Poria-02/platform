@@ -10,4 +10,3 @@ public class PdfPreviewModel {
     private String url;
 
 }
-

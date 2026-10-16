@@ -43,7 +43,7 @@ public class BaseBannerItemServiceImpl extends ServiceImpl<BaseBannerItemDao, Ba
      */
     @Override
     public void removeByBannerId(String id) {
-        this.remove(new LambdaQueryWrapper<BaseBannerItem>().eq(BaseBannerItem::getBannerId,id));
+        this.remove(new LambdaQueryWrapper<BaseBannerItem>().eq(BaseBannerItem::getBannerId, id));
     }
 
     /**
@@ -56,7 +56,7 @@ public class BaseBannerItemServiceImpl extends ServiceImpl<BaseBannerItemDao, Ba
     public void saveBannerItem(BannerItemModel model) {
 
         BaseBannerItem bannerItem = new BaseBannerItem();
-        BeanUtils.copyProperties(model,bannerItem);
+        BeanUtils.copyProperties(model, bannerItem);
         bannerItem.setId(null);
         this.save(bannerItem);
     }
@@ -70,8 +70,8 @@ public class BaseBannerItemServiceImpl extends ServiceImpl<BaseBannerItemDao, Ba
     @CacheEvict(value = CacheConstants.BANNER_ITEM, allEntries = true)
     public void updateBannerItem(BannerItemModel model) {
         BaseBannerItem bannerItem = this.getById(model.getId());
-        Assert.notNull(bannerItem,"广告项不存在");
-        BeanUtils.copyProperties(model,bannerItem);
+        Assert.notNull(bannerItem, "广告项不存在");
+        BeanUtils.copyProperties(model, bannerItem);
         this.updateById(bannerItem);
 
     }
@@ -86,20 +86,19 @@ public class BaseBannerItemServiceImpl extends ServiceImpl<BaseBannerItemDao, Ba
     public List<AppBannerItemVo> getBannerItem(String code) {
 
         BaseBanner banner = bannerService.selectByCode(code);
-        Assert.notNull(banner,"广告位不存在");
-
+        Assert.notNull(banner, "广告位不存在");
 
         LambdaQueryWrapper<BaseBannerItem> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(BaseBannerItem::getBannerId,banner.getId());
-        queryWrapper.eq(BaseBannerItem::getStatus,1);
+        queryWrapper.eq(BaseBannerItem::getBannerId, banner.getId());
+        queryWrapper.eq(BaseBannerItem::getStatus, 1);
         Date now = new Date();
-        queryWrapper.gt(BaseBannerItem::getEndDate,now);
-        queryWrapper.lt(BaseBannerItem::getBeginDate,now);
+        queryWrapper.gt(BaseBannerItem::getEndDate, now);
+        queryWrapper.lt(BaseBannerItem::getBeginDate, now);
         List<BaseBannerItem> list = this.list(queryWrapper);
-        if(CollectionUtil.isEmpty(list)){
+        if (CollectionUtil.isEmpty(list)) {
             return Collections.EMPTY_LIST;
         }
-        return list.stream().map(bannerItem->{
+        return list.stream().map(bannerItem -> {
             AppBannerItemVo vo = new AppBannerItemVo();
             vo.setContent(bannerItem.getContent());
             vo.setBannerItemType(bannerItem.getBannerItemType());

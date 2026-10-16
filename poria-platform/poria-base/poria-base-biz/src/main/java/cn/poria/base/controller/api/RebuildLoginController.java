@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class RebuildLoginController {
 
-
     @Value("${rebuild.appid}")
     private String appId;
     @Value("${rebuild.appSecret}")
@@ -43,24 +42,23 @@ public class RebuildLoginController {
 
     /**
      * 重建登录
+     *
+     * @return 登录接口返回内容
      */
-    @Operation(summary = "生成签名")
     @PostMapping("/sgin")
+    @Operation(summary = "生成签名", description = "生成签名")
     public R<String> sgin() {
-        String sign = sign(null,"MD5");
+        String sign = sign(null, "MD5");
         HttpRequest request = HttpRequest.get(this.url + "/gw/api/login-token?" + sign);
         HttpResponse execute = request.execute();
         return R.ok(execute.body());
     }
 
-
-    
-
     /**
      * 签名（MD5）
      *
-     * @param reqParams
-     * @return
+     * @param reqParams 参与签名的业务参数
+     * @return 包含签名参数的请求字符串
      * @see #sign(Map, String)
      */
     public String sign(Map<String, Object> reqParams) {
@@ -70,9 +68,9 @@ public class RebuildLoginController {
     /**
      * 签名
      *
-     * @param reqParams
-     * @param signType
-     * @return
+     * @param reqParams 参与签名的业务参数
+     * @param signType 签名算法类型
+     * @return 包含签名参数的请求字符串
      */
     public String sign(Map<String, Object> reqParams, String signType) {
         Map<String, Object> sortMap = new TreeMap<>();
@@ -82,7 +80,7 @@ public class RebuildLoginController {
         sortMap.put("user", this.user);
         sortMap.put("password", this.password);
         sortMap.put("appid", this.appId);
-        sortMap.put("timestamp", System.currentTimeMillis() / 1000);  // in sec
+        sortMap.put("timestamp", System.currentTimeMillis() / 1000); // in sec
         sortMap.put("sign_type", signType);
 
         StringBuilder sign = new StringBuilder();
@@ -108,4 +106,3 @@ public class RebuildLoginController {
     }
 
 }
-

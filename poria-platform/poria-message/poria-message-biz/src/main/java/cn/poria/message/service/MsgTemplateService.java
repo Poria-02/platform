@@ -1,6 +1,7 @@
 package cn.poria.message.service;
 
 import cn.poria.message.entity.MsgTemplate;
+import cn.poria.message.vo.request.ma.MaTemplateQueryModel;
 import cn.poria.message.vo.request.template.TemplateModel;
 import cn.poria.message.vo.request.template.TemplateQueryModel;
 import cn.poria.message.vo.response.template.TemplateVo;
@@ -34,6 +35,14 @@ public interface MsgTemplateService extends IService<MsgTemplate> {
      * @return
      */
     TemplateVo selectByKey(String code);
+
+    /**
+     * 查询指定小程序已启用的订阅消息模板ID
+     *
+     * @param queryModel 小程序AppId及模板Key列表
+     * @return 模板Key与小程序模板ID的对应关系
+     */
+    Map<String, String> getMaTemplateIds(MaTemplateQueryModel queryModel);
 
     /**
      * 修改模板

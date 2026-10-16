@@ -10,14 +10,14 @@ import lombok.Data;
 public class BannerModel {
 
     @Schema(description = "主键")
-    @NotBlank(message = "id不能为空",groups = Update.class)
+    @NotBlank(message = "id不能为空", groups = Update.class)
     private String id;
 
-    @NotBlank(message = "标题不能为空",groups = Create.class)
+    @NotBlank(message = "标题不能为空", groups = Create.class)
     @Schema(description = "标题长度200")
     private String title;
 
-    @NotBlank(message = "code不能为空",groups = Create.class)
+    @NotBlank(message = "code不能为空", groups = Create.class)
     @Schema(description = "code 长度20")
     private String code;
 
@@ -27,6 +27,4 @@ public class BannerModel {
     @Schema(description = "状态1-启用，2-停用")
     private Integer status;
 
-
 }
-

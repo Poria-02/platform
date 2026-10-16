@@ -9,6 +9,7 @@ public interface AudioConverter {
 
     /**
      * 转换音频格式
+     *
      * @param sourceFile 源文件
      * @param targetFile 目标文件
      * @return 转换是否成功
@@ -17,15 +18,16 @@ public interface AudioConverter {
 
     /**
      * 转换音频格式到MP3
+     *
      * @param serialBlob 源文件
      * @param fileName 文件名
      * @return 转换后的MP3文件
      */
     File convertToMp3(SerialBlob serialBlob, String fileName, String suffix);
 
-
     /**
      * 转换音频格式到MP3
+     *
      * @param file 源文件
      * @param fileName 文件名
      * @return 转换后的MP3文件
@@ -34,6 +36,7 @@ public interface AudioConverter {
 
     /**
      * 检查是否支持该格式
+     *
      * @param format 文件格式
      * @return 是否支持
      */

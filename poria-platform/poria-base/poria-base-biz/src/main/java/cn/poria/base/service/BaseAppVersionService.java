@@ -16,18 +16,21 @@ public interface BaseAppVersionService extends IService<BaseAppVersion> {
 
     /**
      * 新增
+     *
      * @param appVersionModel
      */
     void saveAppVersion(BaseAppVersionModel appVersionModel);
 
     /**
      * 更新
+     *
      * @param appVersionModel
      */
     void updateAppVersion(BaseAppVersionModel appVersionModel);
 
     /**
      * 校验app版本
+     *
      * @param appName
      * @param appOs
      * @param version
@@ -36,6 +39,7 @@ public interface BaseAppVersionService extends IService<BaseAppVersion> {
 
     /**
      * 查询单个
+     *
      * @param id
      * @return
      */

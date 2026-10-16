@@ -10,6 +10,7 @@ import cn.poria.upms.service.SysUserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +23,14 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "用户内部接口")
 public class SysUserInnerController {
 
+    @Resource
     private final SysUserService userService;
 
     @Inner
     @GetMapping({"/info/{username}", "/info/{username}/{userType}"})
     public R info(@PathVariable String username, @PathVariable(required = false) String userType) {
         SysUser user = this.userService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername, username));
-        return user == null ? R.failed( null, String.format("用户信息为空 %s", username)) : R.ok(this.userService.findUserInfo(user, userType));
+        return user == null ? R.failed(null, String.format("用户信息为空 %s", username)) : R.ok(this.userService.findUserInfo(user, userType));
     }
 
     @Inner

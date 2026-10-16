@@ -7,11 +7,9 @@ import lombok.Data;
 public class FileSignatureModel {
 
     @Schema(description = "类型 public/private")
-    public String type ;
+    public String type;
 
     @Schema(description = "上传目录")
     public String path;
 
-
 }
-

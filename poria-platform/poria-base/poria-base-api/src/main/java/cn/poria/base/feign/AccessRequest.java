@@ -16,4 +16,3 @@ public class AccessRequest {
     @Schema(description = "对象名称，可以为全路径")
     private String objName;
 }
-

@@ -1,6 +1,5 @@
 package cn.poria.base.service;
 
-
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
@@ -94,7 +93,6 @@ public class UploadService {
             }
             fileName = path + "/" + simpleUUID + ".mp3";
 
-
             FileInputStream fileInputStream = new FileInputStream(targetfile);
             if (targetfile.exists()) {
                 targetfile.delete();
@@ -151,7 +149,6 @@ public class UploadService {
         } else {
             template.putObject(privateBucket, fileName, file.getInputStream(), file.getSize(), file.getContentType());
         }
-
 
         BaseFile baseFile = baseFileService.saveBaseFile(file, fileName, privateBucket, FileTypeConstant.PRIVATE);
 
@@ -256,4 +253,3 @@ public class UploadService {
         }
     }
 }
-

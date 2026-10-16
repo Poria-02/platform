@@ -1,6 +1,5 @@
 package cn.poria.base.config;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,6 @@ public class FfmpegAudioConverter implements AudioConverter {
     @Value("${audio.convert.ffmpeg.temp-path}")
     private String tempPath;
 
-
     @Override
     public boolean convert(File sourceFile, File targetFile, String suffix) {
 
@@ -40,10 +38,9 @@ public class FfmpegAudioConverter implements AudioConverter {
             return false;
         }
 
-
         try {
             ProcessBuilder processBuilder = switch (suffix) {
-                case "awb","amr" -> new ProcessBuilder(
+                case "awb", "amr" -> new ProcessBuilder(
                         ffmpegPath,
                         "-f", "amr",
                         "-i", sourceFile.getAbsolutePath(),
@@ -51,7 +48,7 @@ public class FfmpegAudioConverter implements AudioConverter {
                         "-y", // 覆盖输出文件
                         targetFile.getAbsolutePath()
                 );
-                default  -> new ProcessBuilder(
+                default -> new ProcessBuilder(
                         ffmpegPath,
                         "-i", sourceFile.getAbsolutePath(),
                         "-codec:a", "libmp3lame",// 编码器

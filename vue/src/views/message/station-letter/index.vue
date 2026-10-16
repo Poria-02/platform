@@ -29,8 +29,8 @@
         <div v-else class="message-detail-empty"><MenuIcon name="message" /><strong>选择一封站内信</strong><span>消息正文会显示在这里。</span></div>
       </article>
     </section>
-    <el-dialog v-model="editorOpen" title="发布站内信" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :before-close="closeEditor">
-      <el-form ref="editorForm" :model="draft" :rules="rules" label-position="top">
+    <el-dialog v-model="editorOpen" title="发布站内信" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :close-on-press-escape="!saving && !recipientsLoading" :before-close="closeEditor">
+      <el-form ref="editorForm" :model="draft" :rules="rules" :disabled="saving" label-position="top">
         <el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="draft.userIds" :disabled="saving" @loading="recipientsLoading = $event" /></el-form-item>
         <el-form-item label="站内信通用模板" prop="templateKey"><el-select v-model="draft.templateKey" filterable remote clearable :remote-method="loadTemplates" :loading="templatesLoading" placeholder="搜索模板名称或key" style="width:100%" @change="selectTemplate"><el-option v-for="template in templates" :key="template.templateKey" :label="(template.title || '站内信模板') + '（' + template.templateKey + '）'" :value="template.templateKey" /></el-select></el-form-item>
         <p class="message-editor-hint">请先在通用模板管理配置并启用类型为“站内信”的模板。</p>
@@ -122,6 +122,7 @@ async function openMessage(id) {
     if (message.status === 0) { await api.read(id); message.status = 1 }
     if (sequence !== detailSequence) return
     rows.value = rows.value.map(row => row.id === id ? { ...row, ...message } : row)
+    if (onlyUnread.value) await load()
     void center.refresh()
   } catch (cause) { if (sequence === detailSequence) error.value = cause.message || '详情加载失败' }
   finally { if (sequence === detailSequence) detailLoading.value = false }
@@ -197,9 +198,10 @@ function publish() {
 }
 function closeEditor(done) { if (!saving.value && !recipientsLoading.value) done() }
 async function save() {
-  if (!permissions.value.canCreate || !selectedTemplate.value || saving.value || recipientsLoading.value || !await editorForm.value.validate().catch(() => false)) return
+  if (!permissions.value.canCreate || !selectedTemplate.value || saving.value || recipientsLoading.value) return
   saving.value = true
   try {
+    if (!await editorForm.value.validate().catch(() => false)) return
     const result = await api.create({ userIds: [...draft.userIds], templateKey: draft.templateKey, param: { ...draft.param } })
     if (!result?.length) throw new Error('模板已停用，消息未发送')
     editorOpen.value = false

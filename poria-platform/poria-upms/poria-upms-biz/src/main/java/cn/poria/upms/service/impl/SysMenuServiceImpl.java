@@ -8,7 +8,6 @@ import cn.poria.upms.api.dto.MenuTree;
 import cn.poria.upms.api.entity.SysMenu;
 import cn.poria.upms.api.entity.SysRoleMenu;
 
-
 import cn.poria.upms.api.util.TreeUtil;
 import cn.poria.upms.api.vo.response.menu.MenuVO;
 import cn.poria.upms.mapper.SysMenuMapper;
@@ -86,7 +85,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     private Predicate<MenuVO> menuTypePredicate(String type) {
-        return (vo) -> {
+        return(vo) -> {
             if (MenuTypeEnum.TOP_MENU.getDescription().equals(type)) {
                 return MenuTypeEnum.TOP_MENU.getType().equals(vo.getType());
             } else {

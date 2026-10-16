@@ -13,4 +13,3 @@ public class Page {
     private Integer size = 10;
 
 }
-

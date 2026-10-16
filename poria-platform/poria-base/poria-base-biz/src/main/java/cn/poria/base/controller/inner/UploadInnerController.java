@@ -29,11 +29,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * 服务间文件上传及对象存储控制层
+ */
 @Hidden
 @RestController
 @RequestMapping("/inner/upload")
 public class UploadInnerController {
-
 
     @Autowired
     private UploadService uploadService;
@@ -50,10 +52,16 @@ public class UploadInnerController {
     @Autowired
     private BaseFileService baseFileService;
 
+    /**
+     * 上传Base64编码的公有文件
+     *
+     * @param fileUploadModel 文件内容、名称和存储目录
+     * @return 公有文件访问地址
+     */
     @SneakyThrows
     @Inner
-    @Operation(summary = "公共-上传文件")
     @PostMapping("/open_upload")
+    @Operation(summary = "公共-上传文件", description = "公共-上传文件")
     public R<String> openUpload(@RequestBody FileUploadModel fileUploadModel) {
 
         byte[] imageByte = Base64.decode(fileUploadModel.getFile());
@@ -83,10 +91,16 @@ public class UploadInnerController {
 //                .upload());
     }
 
+    /**
+     * 上传Base64编码的私有文件
+     *
+     * @param fileUploadModel 文件内容、名称和存储目录
+     * @return 私有文件标识
+     */
     @SneakyThrows
     @Inner
-    @Operation(summary = "私有-上传文件")
     @PostMapping("/pri_upload")
+    @Operation(summary = "私有-上传文件", description = "私有-上传文件")
     public R<String> priUpload(@RequestBody FileUploadModel fileUploadModel) throws IOException {
 
         byte[] imageByte = Base64.decode(fileUploadModel.getFile());
@@ -111,17 +125,32 @@ public class UploadInnerController {
         return R.ok(baseFile.getId());
     }
 
-
+    /**
+     * 获取私有文件访问链接
+     *
+     * @param priUrl 私有文件标识
+     * @return 临时访问链接
+     */
     @Inner
-    @Operation(summary = "获取私有文件访问链接", description = "获取私有文件访问链接")
     @GetMapping("/presigned/url/{priUrl}")
+    @Operation(summary = "获取私有文件访问链接", description = "获取私有文件访问链接")
     public R<String> getPresignedUrl(@PathVariable("priUrl") @Parameter(name = "私有路径") String priUrl) {
         return R.ok(uploadService.getPresignedUrl(priUrl));
     }
 
+    /**
+     * 将远程文件转存为私有文件
+     *
+     * @param fileUrl 远程文件地址
+     * @param path 对象存储目录
+     * @param name 可选文件后缀
+     * @param type 可选文件内容类型
+     * @return 转存后的私有文件标识
+     */
     @SneakyThrows
     @Inner
     @PostMapping("/private/transfer")
+    @Operation(summary = "将远程文件转存为私有文件", description = "将远程文件转存为私有文件")
     public R<String> privateTransferFile(@RequestParam("url") String fileUrl,
                                          @RequestParam("path") String path,
                                          @RequestParam(value = "name", required = false) String name,
@@ -135,7 +164,7 @@ public class UploadInnerController {
         //name -- 问卷后缀名  不指定文件后缀名传null
         if (StrUtil.isNotBlank(name)) {
             fileName = path + "/" + IdUtil.fastSimpleUUID() + "." + name;
-            if (AssetFileTypeUtil.fileType(name)){
+            if (AssetFileTypeUtil.fileType(name)) {
                 throw new ServiceException("上传失败,不支持该文件类型上传");
             }
         } else {
@@ -154,19 +183,31 @@ public class UploadInnerController {
 
     }
 
+    /**
+     * 保存私有文件记录
+     *
+     * @param fileUploadModel 文件名称及相关信息
+     * @return 私有文件标识
+     */
     @SneakyThrows
     @Inner(value = false)
-    @Operation(summary = "私有-上传文件")
     @PostMapping("/execl/pri_upload")
+    @Operation(summary = "私有-上传文件", description = "私有-上传文件")
     public R<String> execlPriUpload(@RequestBody FileUploadModel fileUploadModel) {
         BaseFile baseFile = baseFileService.saveBase64File(fileUploadModel.getFileName(), privateBucket, FileTypeConstant.PRIVATE);
         return R.ok(baseFile.getId());
     }
 
+    /**
+     * 删除公有文件
+     *
+     * @param url 公有文件访问地址
+     * @return 删除结果
+     */
     @SneakyThrows
     @Inner
-    @Operation(summary = "删除公有文件")
     @GetMapping("/remove/public")
+    @Operation(summary = "删除公有文件", description = "删除公有文件")
     public R removePublic(@RequestParam("url") String url) {
         URL urls = URLUtil.toUrlForHttp(url);
         String path = urls.getPath();
@@ -177,14 +218,19 @@ public class UploadInnerController {
         return R.ok();
     }
 
+    /**
+     * 删除私有文件
+     *
+     * @param priUrl 私有文件标识
+     * @return 删除结果
+     */
     @SneakyThrows
     @Inner
-    @Operation(summary = "删除私有文件")
     @GetMapping("/remove/private/{priUrl}")
+    @Operation(summary = "删除私有文件", description = "删除私有文件")
     public R removePrivate(@PathVariable String priUrl) {
         BaseFile baseFile = baseFileService.getById(priUrl);
         template.removeObject(privateBucket, baseFile.getFileName());
         return R.ok();
     }
 }
-

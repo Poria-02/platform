@@ -10,4 +10,3 @@ public interface FileTypeConstant {
     String PRIVATE = "2";
 
 }
-

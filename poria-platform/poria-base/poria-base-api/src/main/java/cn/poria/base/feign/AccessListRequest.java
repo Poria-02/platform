@@ -18,4 +18,3 @@ public class AccessListRequest {
     @Schema(description = "对象名称，可以为全路径")
     private List<String> objNames;
 }
-
