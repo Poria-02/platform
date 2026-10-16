@@ -19,7 +19,7 @@ import java.util.List;
  * 服务间站内信模板发送控制层
  */
 @RestController
-@RequestMapping({"/inner/station/letter", "/inner/pending/task"})
+@RequestMapping("/inner/pending/task")
 @Tag(name = "【Inner】- 站内信")
 public class CenterStationInner {
 
@@ -30,14 +30,14 @@ public class CenterStationInner {
     private CenterStationService centerStationService;
 
     /**
-     * 使用通用模板发送站内信，兼容原待办站内信发送入口
+     * 使用通用模板发送站内信
      *
      * @param model 接收人、模板Key及模板参数
      * @return 待办任务ID列表
      */
     @Inner
-    @PostMapping({"/sendStationLetter", "/stationLetter"})
-    @Operation(summary = "使用通用模板发送站内信，兼容原待办站内信发送入口", description = "使用通用模板发送站内信，兼容原待办站内信发送入口")
+    @PostMapping("/stationLetter")
+    @Operation(summary = "使用通用模板发送站内信", description = "使用通用模板发送站内信")
     public R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model) {
         return R.ok(centerStationService.sendStationLetter(model));
     }

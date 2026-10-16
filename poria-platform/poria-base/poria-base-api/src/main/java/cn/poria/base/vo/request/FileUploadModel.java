@@ -34,7 +34,6 @@ public class FileUploadModel {
 
     Boolean randomName = true;
 
-
     public FileUploadModel(String file, String fileName, String path, String contextType) {
         this.file = file;
         this.fileName = fileName;
@@ -42,7 +41,4 @@ public class FileUploadModel {
         this.contextType = contextType;
     }
 
-
-
 }
-

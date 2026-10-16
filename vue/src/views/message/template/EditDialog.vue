@@ -11,7 +11,7 @@
         <el-input v-model="editor.form.content" type="textarea" :rows="8" placeholder="请输入模板内容" @update:model-value="clearFieldError('content')" />
         <p class="template-hint">{{ contentHint }}</p>
       </el-form-item>
-      <el-form-item label="消息跳转 URL" prop="url" class="form-field--wide"><el-input v-model="editor.form.url" placeholder="请输入消息跳转 URL（可选）" /></el-form-item>
+      <el-form-item :label="editor.form.type === '4' ? '小程序跳转页面' : '消息跳转 URL'" prop="url" class="form-field--wide"><el-input v-model="editor.form.url" :placeholder="editor.form.type === '4' ? '例如 pages/order/detail?id=${orderId}（可选）' : '请输入消息跳转 URL（可选）'" /></el-form-item>
       <el-form-item label="参数映射配置" prop="paramMapping" class="form-field--wide"><el-input v-model="editor.form.paramMapping" type="textarea" :rows="3" placeholder="请输入参数映射配置（可选）" /></el-form-item>
     </el-form>
     <template #footer><el-button :disabled="editor.saving" @click="editor.open = false">取消</el-button><el-button :disabled="!(editor.editing ? canEdit : canCreate)" type="primary" v-stable-loading="editor.saving" :loading="editor.saving" @click="save">保存</el-button></template>
@@ -32,7 +32,7 @@ const contentHint = computed(() => ({
   '1': '填写短信正文或短信平台的模板编码。',
   '2': '填写 JSON 对象，包含 title、content；type 为跳转类型，params 为跳转参数。',
   '3': '填写 JSON 对象，维护公众号 App ID 与模板 ID 的对应关系。',
-  '4': '填写小程序订阅配置 JSON，保持当前小程序使用的配置格式。'
+  '4': '填写 JSON 数组；每项包含 appId、wxTemplateId、config，config 使用 key/valueKey 映射模板字段与业务参数。AppId 暂未接入时可留空，接入后需与小程序账号配置一致。'
 })[editor.form.type])
 const formRules = computed(() => ({
   title: [{ required: true, whitespace: true, message: '请填写模板标题', trigger: 'blur' }],

@@ -5,16 +5,16 @@ import cn.poria.common.core.constant.SecurityConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.message.vo.request.*;
 import cn.poria.message.vo.request.im.*;
-import cn.poria.message.vo.request.ma.MaAccountMessageModel;
+import cn.poria.message.vo.request.template.TemplateMessageSendModel;
 import cn.poria.message.vo.request.center.StationLetterModel;
 import cn.poria.message.vo.response.im.GroupInfoVo;
-import cn.poria.message.vo.response.ma.MaAccountMessageVo;
 import cn.poria.message.vo.response.template.TemplateVo;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 消息服务内部调用契约
@@ -27,6 +27,26 @@ public interface MessageApi {
     String SERVICE_ID = "poria-message-biz";
 
     /**
+     * 按来源统一发送模板消息
+     *
+     * @param model 来源、模板Key、接收账号及业务参数
+     * @param from 内部调用来源标识
+     * @return 平台消息标识
+     */
+    @PostMapping("/inner/template/send")
+    R<String> sendTemplateMessage(@RequestBody @Validated TemplateMessageSendModel model, @RequestHeader(SecurityConstants.FROM) String from);
+
+    /**
+     * 从当前渠道绑定的多个应用分别向同一用户发送模板消息
+     *
+     * @param model 来源、模板Key、接收账号及业务参数
+     * @param from 内部调用来源标识
+     * @return 各AppId的发送结果
+     */
+    @PostMapping("/inner/template/sendAll")
+    R<Map<String, R<String>>> sendAllTemplateMessages(@RequestBody @Validated TemplateMessageSendModel model, @RequestHeader(SecurityConstants.FROM) String from);
+
+    /**
      * 发送通用短信
      *
      * @param req 接收手机号、模板及短信参数
@@ -35,16 +55,6 @@ public interface MessageApi {
      */
     @PostMapping("/inner/sms/send")
     R sendSms(@RequestBody @Validated SmsSend req, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 发送微信公众号模板消息
-     *
-     * @param msgSend 接收人、模板及消息参数
-     * @param from 内部调用来源标识
-     * @return 发送结果
-     */
-    @PostMapping("/inner/wx/sendTemplateMsg")
-    R sendWxTemplateMsg(@RequestBody @Validated WxMsgSend msgSend, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
      * 新增待办任务
@@ -72,7 +82,7 @@ public interface MessageApi {
      * @param from 内部调用来源标识
      * @return 待办任务ID列表
      */
-    @PostMapping("/inner/station/letter/sendStationLetter")
+    @PostMapping("/inner/pending/task/stationLetter")
     R<List<String>> sendStationLetter(@RequestBody @Validated StationLetterModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
@@ -224,26 +234,6 @@ public interface MessageApi {
      */
     @GetMapping("/inner/im/group/detail")
     R<GroupInfoVo> query(@RequestParam("groupId") String groupId, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 发送微信小程序订阅消息
-     *
-     * @param msgSend 接收人、模板及消息参数
-     * @param from 内部调用来源标识
-     * @return 发送结果
-     */
-    @PostMapping("/inner/ma/sendMaSubScribeMsg")
-    R sendMaSubScribeMsg(@RequestBody @Validated WxMsgSend msgSend, @RequestHeader(SecurityConstants.FROM) String from);
-
-    /**
-     * 根据筛选条件查询小程序账号
-     *
-     * @param model 组织ID及小程序AppID等筛选条件
-     * @param from 内部调用来源标识
-     * @return 小程序账号信息
-     */
-    @PostMapping("/inner/ma/account/info")
-    R<MaAccountMessageVo> findMaAccountInfo(@RequestBody MaAccountMessageModel model, @RequestHeader(SecurityConstants.FROM) String from);
 
     /**
      * 将长链接转换为短链接

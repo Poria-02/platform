@@ -1,6 +1,7 @@
 package cn.poria.message.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import cn.poria.common.core.util.Assert;
 import cn.poria.message.dao.MsgWxLogDao;
 import cn.poria.message.entity.MsgWxLog;
 import cn.poria.message.service.MsgWxLogService;
@@ -20,6 +21,6 @@ public class MsgWxLogServiceImpl extends ServiceImpl<MsgWxLogDao, MsgWxLog> impl
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void saveLogs(MsgWxLog wxLog) {
-        this.save(wxLog);
+        Assert.isTrue(this.save(wxLog), "微信消息发送日志保存失败");
     }
 }

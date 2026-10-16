@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class BannerQueryModel extends Page {
 
     @Schema(description = "标题长度200")
@@ -16,4 +16,3 @@ public class BannerQueryModel extends Page {
     private Integer status;
 
 }
-

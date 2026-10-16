@@ -16,10 +16,9 @@ public class CheckVersionVo {
     private String url;
 
     @Schema(description = "提示语列表")
-    private List<Map<String,String>> prompts;
+    private List<Map<String, String>> prompts;
 
     @Schema(description = "最新版本号")
     private String version;
 
 }
-

@@ -19,20 +19,19 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({ OssProperties.class })
 public class OssAutoConfiguration {
 
-	private final OssProperties properties;
+    private final OssProperties properties;
 
-	@Bean
-	@ConditionalOnMissingBean(OssTemplate.class)
-	@ConditionalOnProperty(name = "oss.enable", havingValue = "true", matchIfMissing = true)
-	public OssTemplate ossTemplate() {
-		return new OssTemplate(properties);
-	}
+    @Bean
+    @ConditionalOnMissingBean(OssTemplate.class)
+    @ConditionalOnProperty(name = "oss.enable", havingValue = "true", matchIfMissing = true)
+    public OssTemplate ossTemplate() {
+        return new OssTemplate(properties);
+    }
 
-	@Bean
-	@ConditionalOnProperty(name = "oss.info", havingValue = "true")
-	public OssEndpoint ossEndpoint(OssTemplate template) {
-		return new OssEndpoint(template);
-	}
+    @Bean
+    @ConditionalOnProperty(name = "oss.info", havingValue = "true")
+    public OssEndpoint ossEndpoint(OssTemplate template) {
+        return new OssEndpoint(template);
+    }
 
 }
-

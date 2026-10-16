@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "remoteDictService",url = ServiceNameConstants.UPMS_SERVICE)
+@FeignClient(name = "remoteDictService", url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteDictService {
     @GetMapping({"/treedict/item/parent/{dictCode}/{value}"})
     R<TreeDictItemVo> getParentDictItem(@PathVariable("dictCode") String dictCode, @PathVariable("value") String value, @RequestHeader("from") String from);

@@ -17,13 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class BaseFileServiceImpl extends ServiceImpl<BaseFileDao, BaseFile> implements BaseFileService {
 
     @Override
-    public BaseFile saveBaseFile(MultipartFile file, String fileName,String bucketName,String type) {
+    public BaseFile saveBaseFile(MultipartFile file, String fileName, String bucketName, String type) {
 
         BaseFile baseFile = new BaseFile();
         baseFile.setBucketName(bucketName);
         baseFile.setFileName(fileName);
-        baseFile.setOriginal(file ==null? "" : file.getOriginalFilename());
-        baseFile.setFileSize(file ==null? 0 : file.getSize());
+        baseFile.setOriginal(file == null? "" : file.getOriginalFilename());
+        baseFile.setFileSize(file == null? 0 : file.getSize());
         baseFile.setType(type);
         this.save(baseFile);
         return baseFile;
@@ -39,4 +39,3 @@ public class BaseFileServiceImpl extends ServiceImpl<BaseFileDao, BaseFile> impl
         return baseFile;
     }
 }
-

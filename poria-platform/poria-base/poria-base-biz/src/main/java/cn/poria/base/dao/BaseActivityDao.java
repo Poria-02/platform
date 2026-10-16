@@ -14,5 +14,3 @@ import org.apache.ibatis.annotations.Mapper;
 public interface BaseActivityDao extends BaseMapper<BaseActivity> {
 
 }
-
-

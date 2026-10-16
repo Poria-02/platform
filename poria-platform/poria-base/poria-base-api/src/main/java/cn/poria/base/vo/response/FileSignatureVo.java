@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FileSignatureVo {
 
-
     private String file;
 
     private String content;
 
 }
-

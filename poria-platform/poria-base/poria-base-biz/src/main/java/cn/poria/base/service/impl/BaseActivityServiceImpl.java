@@ -46,9 +46,9 @@ public class BaseActivityServiceImpl extends ServiceImpl<BaseActivityDao, BaseAc
         List<BaseActivity> baseActivity = this.list(new LambdaQueryWrapper<BaseActivity>()
                 .eq(BaseActivity::getName, baseActivityModel.getName())
         );
-        if(!baseActivity.isEmpty()){
+        if (!baseActivity.isEmpty()) {
             throw new ServiceException("名称已存在");
-        }else{
+        } else {
             BaseActivity baseActivity1 = new BaseActivity();
             BeanUtils.copyProperties(baseActivityModel, baseActivity1);
             this.save(baseActivity1);
@@ -65,9 +65,9 @@ public class BaseActivityServiceImpl extends ServiceImpl<BaseActivityDao, BaseAc
                 .eq(BaseActivity::getName, baseActivityModel.getName())
                 .ne(BaseActivity::getId, baseActivityModel.getId())
         );
-        if(!baseActivity.isEmpty()){
+        if (!baseActivity.isEmpty()) {
             throw new ServiceException("名称已存在");
-        }else{
+        } else {
             BaseActivity baseActivity1 = new BaseActivity();
             BeanUtils.copyProperties(baseActivityModel, baseActivity1);
             this.updateById(baseActivity1);
@@ -75,5 +75,3 @@ public class BaseActivityServiceImpl extends ServiceImpl<BaseActivityDao, BaseAc
 
     }
 }
-
-

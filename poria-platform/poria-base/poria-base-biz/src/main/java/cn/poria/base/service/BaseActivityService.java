@@ -20,5 +20,3 @@ public interface BaseActivityService extends IService<BaseActivity> {
 
     void updateByIdActivity(BaseActivityModel baseActivityModel);
 }
-
-

@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,8 +29,10 @@ import java.util.stream.Collectors;
 @Tag(name = "分级字典项内部接口")
 public class SysTreeDictItemInnerController {
 
+    @Resource
     private final SysTreeDictService treeDictService;
 
+    @Resource
     private final SysTreeDictItemService treeDictItemService;
 
     @Inner(false)

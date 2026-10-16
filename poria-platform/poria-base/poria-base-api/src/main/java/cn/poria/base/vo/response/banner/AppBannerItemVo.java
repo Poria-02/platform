@@ -8,7 +8,6 @@ import java.io.Serializable;
 @Data
 public class AppBannerItemVo implements Serializable {
 
-
     @Schema(description = "内容 5000")
     private String content;
 
@@ -18,7 +17,6 @@ public class AppBannerItemVo implements Serializable {
     @Schema(description = "标题 200")
     private String title;
 
-
     @Schema(description = "是否需要登录1-需要，2-不需要")
     private Integer needLogin;
 
@@ -26,4 +24,3 @@ public class AppBannerItemVo implements Serializable {
     private String bannerItemType;
 
 }
-

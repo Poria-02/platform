@@ -1,16 +1,13 @@
 package cn.poria.base.vo.request.banner;
 
-
 import cn.poria.base.vo.request.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class BaseActivityModel  extends Page {
-
 
     @Schema(description = "id")
     private String id;
@@ -39,7 +36,4 @@ public class BaseActivityModel  extends Page {
     @Schema(description = "备注")
     private String remarks;
 
-
-
 }
-

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /** 普通字典和分级字典共用的文件格式处理。 */
 public final class DictFileUtil {
@@ -37,7 +38,7 @@ public final class DictFileUtil {
         }
         try {
             List<T> values = JSON.parseArray(content, type);
-            if (values == null || values.stream().anyMatch(value -> value == null)) {
+            if (values == null || values.stream().anyMatch(Objects::isNull)) {
                 throw new ServiceException("字典文件不能包含空字典");
             }
             return values;

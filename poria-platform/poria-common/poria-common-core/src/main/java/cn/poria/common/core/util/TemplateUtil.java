@@ -23,27 +23,7 @@ public class TemplateUtil {
      */
     public static String process(String template,Map<String,String> param){
 
-        if(StrUtil.isBlank(template)){
-            return null;
-        }
-
-        if(param == null || CollectionUtils.isEmpty(param)){
-            return template;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(template);
-        while (matcher.find()) {
-            String name = matcher.group(1);
-            String value = param.get(name);
-            if (value == null) {
-                value = "";
-            }
-            matcher.appendReplacement(sb,value);
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return process(template, REGEX, param);
     }
 
 	/**
@@ -75,7 +55,7 @@ public class TemplateUtil {
 			if (value == null) {
 				value = "";
 			}
-			matcher.appendReplacement(sb,value);
+			matcher.appendReplacement(sb,Matcher.quoteReplacement(value));
 		}
 		matcher.appendTail(sb);
 		return sb.toString();

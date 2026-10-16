@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2020-09-02 21:21:52
  */
 @RestController
-@Tag(name="banner管理(pc端)")
+@Tag(name = "banner管理(pc端)")
 @RequestMapping("/api/banner")
 public class BannerApiController {
 
@@ -40,89 +40,135 @@ public class BannerApiController {
     @Resource
     private BaseBannerItemService baseBannerItemService;
 
-
-    @Operation(summary = "分页查询", description = "分页查询(base_banner_page)")
+    /**
+     * 分页查询轮播图
+     *
+     * @param query 分页及轮播图筛选条件
+     * @return 轮播图分页数据
+     */
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('base_banner_page')")
+    @Operation(summary = "分页查询", description = "分页查询 (权限：base_banner_page)")
     public R<IPage<BannerVo>> bannerPage(BannerQueryModel query) {
 
         return R.ok(baseBannerService.bannerPage(query));
     }
 
-
-    @Operation(summary = "通过id查询", description = "通过id查询(base_banner_get)")
+    /**
+     * 查询轮播图详情
+     *
+     * @param id 轮播图ID
+     * @return 轮播图详情
+     */
     @GetMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('base_banner_get')")
+    @Operation(summary = "通过id查询", description = "通过id查询 (权限：base_banner_get)")
     public R selectBannerById(@PathVariable String id) {
         return R.ok(baseBannerService.getById(id));
     }
 
-
+    /**
+     * 新增轮播图
+     *
+     * @param model 轮播图配置
+     * @return 新增结果
+     */
+    @SysLog("新增banner主表")
     @PostMapping
-    @SysLog("新增banner主表" )
-    @Operation(summary = "新增banner主表", description = "新增banner主表 权限：base_banner_add")
-    @PreAuthorize("@pms.hasPermission('base_banner_add')" )
+    @PreAuthorize("@pms.hasPermission('base_banner_add')")
+    @Operation(summary = "新增banner主表", description = "新增banner主表 (权限：base_banner_add)")
     public R saveBanner(@RequestBody @Validated(Create.class) BannerModel model) {
         baseBannerService.saveBanner(model);
         return R.ok();
     }
 
-
+    /**
+     * 修改轮播图
+     *
+     * @param model 轮播图配置
+     * @return 修改结果
+     */
+    @SysLog("修改banner主表")
     @PutMapping
-    @SysLog("修改banner主表" )
-    @Operation(summary = "修改banner主表", description = "修改banner主表 权限：base_banner_edit")
-    @PreAuthorize("@pms.hasPermission('base_banner_edit')" )
+    @PreAuthorize("@pms.hasPermission('base_banner_edit')")
+    @Operation(summary = "修改banner主表", description = "修改banner主表 (权限：base_banner_edit)")
     public R updateBanner(@RequestBody @Validated(Update.class) BannerModel model) {
         baseBannerService.updateBanner(model);
         return R.ok();
     }
 
-
+    /**
+     * 删除轮播图及其关联项
+     *
+     * @param id 轮播图ID
+     * @return 删除结果
+     */
+    @SysLog("通过id删除banner主表")
     @DeleteMapping("{id}")
-    @SysLog("通过id删除banner主表" )
-    @Operation(summary = "通过ID删除banner主表", description = "通过ID删除banner主表 权限：base_banner_del")
-    @PreAuthorize("@pms.hasPermission('base_banner_del')" )
+    @PreAuthorize("@pms.hasPermission('base_banner_del')")
+    @Operation(summary = "通过ID删除banner主表", description = "通过ID删除banner主表 (权限：base_banner_del)")
     public R deleteBannerById(@PathVariable String id) {
         baseBannerService.removeBanner(id);
         return R.ok();
     }
 
-
-    @Operation(summary = "banner项分页查询", description = "banner项分页查询(base_banner_itemPage)")
+    /**
+     * 分页查询指定轮播图的展示项
+     *
+     * @param page 分页条件
+     * @param bannerId 轮播图ID
+     * @return 轮播图项分页数据
+     */
     @GetMapping("/item/page/{bannerId}")
     @PreAuthorize("@pms.hasPermission('base_banner_itemPage')")
-    public R selectAll(Page page ,@PathVariable("bannerId") String bannerId) {
-        return R.ok(baseBannerItemService.page(page,new LambdaQueryWrapper<BaseBannerItem>().eq(BaseBannerItem::getBannerId,bannerId)));
+    @Operation(summary = "banner项分页查询", description = "banner项分页查询 (权限：base_banner_itemPage)")
+    public R selectAll(Page page, @PathVariable("bannerId") String bannerId) {
+        return R.ok(baseBannerItemService.page(page, new LambdaQueryWrapper<BaseBannerItem>().eq(BaseBannerItem::getBannerId, bannerId)));
     }
 
+    /**
+     * 新增轮播图展示项
+     *
+     * @param model 轮播图项配置
+     * @return 新增结果
+     */
+    @SysLog("新增banner项")
     @PostMapping("/item")
-    @SysLog("新增banner项" )
-    @Operation(summary = "新增banner项", description = "新增banner项 权限：base_bannerItem_add")
-    @PreAuthorize("@pms.hasPermission('base_bannerItem_add')" )
+    @PreAuthorize("@pms.hasPermission('base_bannerItem_add')")
+    @Operation(summary = "新增banner项", description = "新增banner项 (权限：base_bannerItem_add)")
     public R insertBannerItem(@RequestBody @Validated(Create.class) BannerItemModel model) {
         baseBannerItemService.saveBannerItem(model);
         return R.ok();
     }
 
-
+    /**
+     * 修改轮播图展示项
+     *
+     * @param model 轮播图项配置
+     * @return 修改结果
+     */
+    @SysLog("修改banner项")
     @PutMapping("/item")
-    @SysLog("修改banner项" )
-    @Operation(summary = "修改banner项", description = "修改banner项 权限：base_bannerItem_edit")
-    @PreAuthorize("@pms.hasPermission('base_bannerItem_edit')" )
+    @PreAuthorize("@pms.hasPermission('base_bannerItem_edit')")
+    @Operation(summary = "修改banner项", description = "修改banner项 (权限：base_bannerItem_edit)")
     public R updateBannerItem(@RequestBody @Validated(Update.class) BannerItemModel model) {
         baseBannerItemService.updateBannerItem(model);
         return R.ok();
     }
 
-
-    @DeleteMapping("/item/{id}")
-    @SysLog("通过id删除banner项" )
-    @Operation(summary = "通过ID删除banner项", description = "通过ID删除banner项 权限:base_bannerItem_del")
-    @PreAuthorize("@pms.hasPermission('base_bannerItem_del')" )
+    /**
+     * 删除轮播图展示项
+     *
+     * @param id 轮播图项ID
+     * @return 删除结果
+     */
+    @SysLog("通过id删除banner项")
     @CacheEvict(value = CacheConstants.BANNER_ITEM, allEntries = true)
+    @DeleteMapping("/item/{id}")
+    @PreAuthorize("@pms.hasPermission('base_bannerItem_del')")
+    @Operation(summary = "通过ID删除banner项", description = "通过ID删除banner项 (权限：base_bannerItem_del)")
     public R deleteBannerItemById(@PathVariable String id) {
         baseBannerItemService.removeById(id);
         return R.ok();
     }
 }
-

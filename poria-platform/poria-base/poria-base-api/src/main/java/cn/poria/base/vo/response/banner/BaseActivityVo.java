@@ -1,6 +1,5 @@
 package cn.poria.base.vo.response.banner;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -8,7 +7,6 @@ import java.util.Date;
 
 @Data
 public class BaseActivityVo {
-
 
     @Schema(description = "id")
     private String id;
@@ -37,17 +35,10 @@ public class BaseActivityVo {
     @Schema(description = "跳转按钮文字")
     private String buttonScript;
 
-
     @Schema(description = "创建时间")
     private Date createTime;
 
     @Schema(description = "修改时间")
     private Date updateTime;
 
-
-
-
-
-
 }
-

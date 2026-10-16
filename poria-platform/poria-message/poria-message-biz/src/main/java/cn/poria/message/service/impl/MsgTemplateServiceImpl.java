@@ -1,6 +1,8 @@
 package cn.poria.message.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.poria.common.core.constant.CacheConstants;
 import cn.poria.common.core.util.Assert;
 import cn.poria.common.core.util.TemplateUtil;
@@ -12,7 +14,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.poria.message.dao.MsgTemplateDao;
 import cn.poria.message.entity.MsgTemplate;
+import cn.poria.message.enums.TemplateType;
 import cn.poria.message.service.MsgTemplateService;
+import cn.poria.message.util.MaTemplateUtil;
+import cn.poria.message.vo.request.ma.MaTemplateQueryModel;
 import cn.poria.message.vo.request.template.TemplateModel;
 import cn.poria.message.vo.request.template.TemplateQueryModel;
 import cn.poria.message.vo.response.template.TemplateVo;
@@ -24,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -100,6 +107,26 @@ public class MsgTemplateServiceImpl extends ServiceImpl<MsgTemplateDao, MsgTempl
         TemplateVo templateVo = new TemplateVo();
         BeanUtils.copyProperties(template, templateVo);
         return templateVo;
+    }
+
+    @Override
+    public Map<String, String> getMaTemplateIds(MaTemplateQueryModel queryModel) {
+        Map<String, String> templateIds = new LinkedHashMap<>();
+        if (StrUtil.isBlank(queryModel.getAppid()) || CollectionUtil.isEmpty(queryModel.getTemplateKey())) {
+            return templateIds;
+        }
+
+        List<MsgTemplate> templates = this.list(new LambdaQueryWrapper<MsgTemplate>()
+                .in(MsgTemplate::getTemplateKey, queryModel.getTemplateKey())
+                .eq(MsgTemplate::getType, TemplateType.MA.getCode())
+                .eq(MsgTemplate::getStatus, 1));
+        for (MsgTemplate template : templates) {
+            JSONObject config = MaTemplateUtil.getConfig(template.getContent(), queryModel.getAppid());
+            if (config != null && StrUtil.isNotBlank(config.getStr("wxTemplateId"))) {
+                templateIds.put(template.getTemplateKey(), config.getStr("wxTemplateId"));
+            }
+        }
+        return templateIds;
     }
 
 

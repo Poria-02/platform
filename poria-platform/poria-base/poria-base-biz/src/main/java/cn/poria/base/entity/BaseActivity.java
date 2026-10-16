@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-
 /**
  * (BaseActivity)表实体类
  *
@@ -17,7 +16,7 @@ import lombok.Data;
 public class BaseActivity {
 
     /**
-     *id
+     * id
      */
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description = "id")
@@ -63,11 +62,9 @@ public class BaseActivity {
     @Schema(description = "修改人")
     private String updateBy;
 
-    @TableLogic(value = "0",delval = "1")
+    @TableLogic(value = "0", delval = "1")
     @TableField(fill = FieldFill.INSERT)
     @Schema(description = "0-未删除，1-已删除")
     private Integer isDelete;
 
 }
-
-

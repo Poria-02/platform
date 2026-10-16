@@ -11,9 +11,9 @@ import java.util.List;
 
 @FeignClient(name = "remoteClientDetailsService", url = ServiceNameConstants.UPMS_SERVICE)
 public interface RemoteClientDetailsService {
-    @GetMapping(value = {"/client/getClientDetailsById/{clientId}"},headers = {"from=Y"})
+    @GetMapping(value = {"/client/getClientDetailsById/{clientId}"}, headers = {"from=Y"})
     R<SysOauthClientDetails> getClientDetailsById(@PathVariable("clientId") String clientId);
 
-    @GetMapping(value = {"/client/list"},headers = {"from=Y"})
+    @GetMapping(value = {"/client/list"}, headers = {"from=Y"})
     R<List<SysOauthClientDetails>> listClientDetails();
 }

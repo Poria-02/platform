@@ -17,4 +17,3 @@ public interface AppUpdateTypeConstant {
      */
     String WEAK_PROMPT = "3";
 }
-

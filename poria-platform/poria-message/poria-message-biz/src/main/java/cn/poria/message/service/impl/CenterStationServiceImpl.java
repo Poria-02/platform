@@ -48,7 +48,7 @@ public class CenterStationServiceImpl implements CenterStationService {
         TemplateVo templateVo = msgTemplateService.selectByKey(model.getTemplateKey());
         Assert.notNull(templateVo, "模版不存在");
         Assert.isTrue(TemplateType.STATION.getCode().equals(templateVo.getType()), "模板类型必须为站内信");
-        if (templateVo.getStatus() != 1) {
+        if (!Integer.valueOf(1).equals(templateVo.getStatus())) {
             return null;
         }
 

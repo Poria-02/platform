@@ -17,24 +17,28 @@ public interface BaseBannerItemService extends IService<BaseBannerItem> {
 
     /**
      * 根据bannerId删除
+     *
      * @param id
      */
     void removeByBannerId(String id);
 
     /**
      * 保存banner项
+     *
      * @param model
      */
     void saveBannerItem(BannerItemModel model);
 
     /**
      * 编辑banner项
+     *
      * @param model
      */
     void updateBannerItem(BannerItemModel model);
 
     /**
      * 查询广告项列表
+     *
      * @param code
      * @return
      */

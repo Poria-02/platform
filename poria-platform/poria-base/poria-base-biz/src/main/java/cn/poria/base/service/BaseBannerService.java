@@ -17,24 +17,26 @@ public interface BaseBannerService extends IService<BaseBanner> {
 
     /**
      * 新增
+     *
      * @param model
      */
     void saveBanner(BannerModel model);
 
     /**
      * 编辑
+     *
      * @param model
      */
     void updateBanner(BannerModel model);
 
     /**
      * 删除
+     *
      * @param id
      */
     void removeBanner(String id);
 
     BaseBanner selectByCode(String code);
-
 
     IPage<BannerVo> bannerPage(BannerQueryModel query);
 }

@@ -6,6 +6,7 @@ import cn.poria.upms.api.entity.SysOauthClientDetails;
 import cn.poria.upms.service.SysOauthClientDetailsService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "终端内部接口")
 public class SysClientInnerController {
 
+    @Resource
     private final SysOauthClientDetailsService clientDetailsService;
 
     @Inner

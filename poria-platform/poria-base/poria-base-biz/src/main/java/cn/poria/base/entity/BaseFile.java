@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.util.Date;
 
-
 /**
  * 文件管理表(BaseFile)表实体类
  *

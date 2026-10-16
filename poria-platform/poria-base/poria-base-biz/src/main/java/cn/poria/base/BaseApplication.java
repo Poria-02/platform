@@ -33,4 +33,3 @@ public class BaseApplication {
                 InetAddress.getLocalHost().getHostAddress(), env.getProperty("server.port"));
     }
 }
-

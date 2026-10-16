@@ -16,4 +16,3 @@ public interface BaseFileService extends IService<BaseFile> {
 
     BaseFile saveBase64File(String fileName, String bucketName, String type);
 }
-

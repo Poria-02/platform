@@ -35,18 +35,17 @@ public class BaseBannerServiceImpl extends ServiceImpl<BaseBannerDao, BaseBanner
     @Autowired
     private BaseBannerItemService bannerItemService;
 
-
     @Override
     public IPage<BannerVo> bannerPage(BannerQueryModel query) {
-        Page page = new Page(query.getCurrent(),query.getSize());
+        Page page = new Page(query.getCurrent(), query.getSize());
         page.addOrder(OrderItem.desc("create_time"));
 
         LambdaQueryWrapper<BaseBanner> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.like(StrUtil.isNotBlank(query.getTitle()),BaseBanner::getTitle,query.getTitle());
-        queryWrapper.eq(query.getStatus()!=null,BaseBanner::getStatus,query.getStatus());
-        return this.page(page,queryWrapper).convert(banner->{
+        queryWrapper.like(StrUtil.isNotBlank(query.getTitle()), BaseBanner::getTitle, query.getTitle());
+        queryWrapper.eq(query.getStatus() != null, BaseBanner::getStatus, query.getStatus());
+        return this.page(page, queryWrapper).convert(banner -> {
             BannerVo vo = new BannerVo();
-            BeanUtils.copyProperties(banner,vo);
+            BeanUtils.copyProperties(banner, vo);
             return vo;
         });
     }
@@ -60,10 +59,10 @@ public class BaseBannerServiceImpl extends ServiceImpl<BaseBannerDao, BaseBanner
     @Transactional
     public void saveBanner(BannerModel model) {
 
-        Assert.isNull(selectByCode(model.getCode()),"code:{}已存在",model.getCode());
+        Assert.isNull(selectByCode(model.getCode()), "code:{}已存在", model.getCode());
 
         BaseBanner banner = new BaseBanner();
-        BeanUtils.copyProperties(model,banner);
+        BeanUtils.copyProperties(model, banner);
 
         this.save(banner);
     }
@@ -78,13 +77,13 @@ public class BaseBannerServiceImpl extends ServiceImpl<BaseBannerDao, BaseBanner
     @CacheEvict(value = CacheConstants.BANNER_ITEM, allEntries = true)
     public void updateBanner(BannerModel model) {
         BaseBanner banner = this.getById(model.getId());
-        Assert.notNull(banner,"banner不存在");
+        Assert.notNull(banner, "banner不存在");
 
-        if(!StrUtil.equals(model.getCode(),banner.getCode())){
-            Assert.isNull(selectByCode(model.getCode()),"code:{}已存在",model.getCode());
+        if (!StrUtil.equals(model.getCode(), banner.getCode())) {
+            Assert.isNull(selectByCode(model.getCode()), "code:{}已存在", model.getCode());
         }
 
-        BeanUtils.copyProperties(model,banner);
+        BeanUtils.copyProperties(model, banner);
         this.updateById(banner);
 
     }
@@ -104,6 +103,6 @@ public class BaseBannerServiceImpl extends ServiceImpl<BaseBannerDao, BaseBanner
 
     @Override
     public BaseBanner selectByCode(String code) {
-        return this.getOne(new LambdaQueryWrapper<BaseBanner>().eq(BaseBanner::getCode,code));
+        return this.getOne(new LambdaQueryWrapper<BaseBanner>().eq(BaseBanner::getCode, code));
     }
 }

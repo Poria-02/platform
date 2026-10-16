@@ -31,4 +31,3 @@ public interface FileContentType {
     String IMAGE_GIF = "image/gif";
 
 }
-
