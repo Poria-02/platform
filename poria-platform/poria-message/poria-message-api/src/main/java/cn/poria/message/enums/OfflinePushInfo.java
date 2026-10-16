@@ -10,6 +10,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = false)
 public class OfflinePushInfo {
 
+    @Builder.Default
     private int PushFlag = 0 ;
 
     @Alias("Desc")

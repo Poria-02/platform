@@ -19,5 +19,6 @@ public class MemberExt {
     private Map<String, String> ext;
 
     @Schema(description = "角色")
+    @Builder.Default
     private String role = "Member";
 }

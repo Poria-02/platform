@@ -42,6 +42,7 @@ public class IMMsgTypeVideo implements IMMsgBody {
 
     @Schema(description = "视频下载方式标记 目前只能为2")
     @Alias("VideoDownloadFlag")
+    @Builder.Default
     private Integer videoDownloadFlag = 2;
 
     @Schema(description = "视频缩略图下载地址")
@@ -70,6 +71,7 @@ public class IMMsgTypeVideo implements IMMsgBody {
 
     @Schema(description = "视频缩略图下载方式标记 目前只能为2")
     @Alias("ThumbDownloadFlag")
+    @Builder.Default
     private Integer thumbDownloadFlag = 2;
 
 

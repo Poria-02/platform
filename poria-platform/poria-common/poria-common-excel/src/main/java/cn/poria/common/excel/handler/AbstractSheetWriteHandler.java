@@ -77,7 +77,7 @@ public abstract class AbstractSheetWriteHandler implements SheetWriteHandler, Ap
     }
 
     @Override
-    @SneakyThrows(UnsupportedEncodingException.class)
+    @SneakyThrows(ExcelException.class)
     public void export(Object o, HttpServletResponse response, ResponseExcel responseExcel) {
         check(responseExcel);
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
