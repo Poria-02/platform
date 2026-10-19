@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="editor.open" class="business-dialog" :title="editor.editing ? '编辑模板' : '新增模板'" width="min(760px, calc(100vw - 32px))" append-to-body :show-close="!editor.saving" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving">
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" :disabled="editor.saving" label-position="top" class="editor-form">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" :disabled="editor.saving" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="模板标题" prop="title"><el-input v-model="editor.form.title" placeholder="请输入模板标题" @update:model-value="clearFieldError('title')" /></el-form-item>
       <el-form-item label="模板 Key" prop="templateKey"><el-input v-model="editor.form.templateKey" placeholder="请输入唯一的模板 Key" @update:model-value="clearFieldError('templateKey')" /></el-form-item>
       <el-form-item label="模板类型" prop="type"><el-select v-model="editor.form.type" style="width:100%" @change="clearFieldError('content')"><el-option v-for="option in templateTypes" :key="option.value" :label="option.label" :value="option.value" /></el-select></el-form-item>
@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { computed, nextTick, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { smsPlatforms, templateStatuses, templateTypes, validateTemplateContent } from './options'
@@ -77,7 +78,7 @@ async function save() {
     emit('saved')
   } catch (error) {
     // 保存失败时保留当前填写内容。
-    ElMessage.error(error?.response?.data?.msg || error.message || '模板保存失败')
+    showRequestError(error, '模板保存失败')
   } finally { editor.saving = false }
 }
 

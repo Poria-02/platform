@@ -35,6 +35,20 @@ export async function login(credentials) {
   })
 }
 
+export async function updateExpiredPassword({ username, password, newpassword1 }) {
+  const encodeKey = import.meta.env.VITE_AUTH_ENCODE_KEY || 'Poriabanxiaqiu02'
+  const encrypted = await Promise.all([
+    encryptForAuth(username.trim(), encodeKey),
+    encryptForAuth(password, encodeKey),
+    encryptForAuth(newpassword1, encodeKey)
+  ])
+  return http.put('/upms/user/pwd/update', {
+    username: encrypted[0],
+    password: encrypted[1],
+    newpassword1: encrypted[2]
+  }, { skipToken: true, skipAuthRedirect: true, silent: true })
+}
+
 export function refreshTokens(refreshToken) {
   return http.post('/auth/plat/login', new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken }), {
     headers: { Authorization: clientAuthorization(), 'Content-Type': 'application/x-www-form-urlencoded' },

@@ -7,7 +7,7 @@
       <section class="login-card" aria-labelledby="login-title">
         <h2 id="login-title">登录工作台</h2>
         <p class="login-intro">请输入平台账号，继续你的工作。</p>
-        <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @keyup.enter="submit">
+        <el-form ref="formRef" :model="form" :rules="rules" :disabled="submitting" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" @keyup.enter="submit">
           <el-form-item label="用户名" prop="username">
             <el-input v-model="form.username" name="username" size="large" autocomplete="username" placeholder="请输入用户名" />
           </el-form-item>
@@ -32,20 +32,24 @@
       <span class="footer-tagline">LESS, BUT BETTER.</span>
       <small class="login-copyright">© 2026 Poria Platform</small>
     </footer>
+    <ExpiredPasswordDialog ref="passwordDialog" @saved="passwordChanged" />
   </div>
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useSession } from '@/core/session'
 import { captcha } from './api'
+import ExpiredPasswordDialog from './ExpiredPasswordDialog.vue'
 
 const session = useSession()
 const route = useRoute()
 const router = useRouter()
 const formRef = ref()
+const passwordDialog = ref()
 const form = reactive({ username: '', password: '', verifyCode: '', randomStr: '' })
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -86,16 +90,29 @@ async function submit() {
     const redirect = String(route.query.redirect || '')
     await router.replace(redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/index')
   } catch (error) {
-    ElMessage.error(error?.message || '登录失败')
+    if (error.code === 602) {
+      passwordDialog.value.open(form.username.trim())
+      form.password = ''
+    } else {
+      showRequestError(error, '登录失败')
+    }
     await refreshCaptcha()
   } finally {
     submitting.value = false
   }
 }
 
+async function passwordChanged(username) {
+  form.username = username
+  form.password = ''
+  formRef.value?.clearValidate()
+  await refreshCaptcha()
+}
+
 onMounted(refreshCaptcha)
 onBeforeUnmount(() => {
   captchaRequest?.abort()
+  form.password = ''
   if (captchaUrl.value) URL.revokeObjectURL(captchaUrl.value)
 })
 </script>

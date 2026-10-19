@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { displayResourceValue } from '@/core/resourceValues'
@@ -93,7 +94,7 @@ async function load() {
     const lastPage = Math.max(1, Math.ceil(total.value / page.size))
     if (page.current > lastPage) { page.current = lastPage; await load() }
   } catch (error) {
-    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '消息服务暂不可用，请稍后重试' : error?.response?.data?.msg || error.message || '模板加载失败'
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error.message || '模板加载失败'
   } finally { if (sequence === loadSequence) loading.value = false }
 }
 
@@ -110,7 +111,7 @@ async function openTemplate(row, editing) {
     if (editing) editorRef.value?.openEdit(data)
     else { detail.row = data; detail.open = true }
   } catch (error) {
-    if (!disposed && error?.code !== 'ERR_CANCELED') ElMessage.error(error?.response?.data?.msg || error.message || '模板详情加载失败')
+    if (!disposed && error?.code !== 'ERR_CANCELED') showRequestError(error, '模板详情加载失败')
   } finally { if (!disposed) openingId.value = null }
 }
 
@@ -123,7 +124,7 @@ async function changeStatus(row) {
     if (result === false) { ElMessage.error('状态修改未完成'); return }
     ElMessage.success(status === 1 ? '模板已启用' : '模板已停用')
     await load()
-  } catch (error) { if (!disposed) ElMessage.error(error?.response?.data?.msg || error.message || '状态修改失败') }
+  } catch (error) { if (!disposed) showRequestError(error, '状态修改失败') }
   finally { if (!disposed) busyId.value = null }
 }
 
@@ -139,7 +140,7 @@ async function remove(row) {
     ElMessage.success('删除成功')
     if (rows.value.length === 1 && page.current > 1) page.current--
     await load()
-  } catch (error) { if (!disposed) ElMessage.error(error?.response?.data?.msg || error.message || '删除失败') }
+  } catch (error) { if (!disposed) showRequestError(error, '删除失败') }
   finally { if (!disposed) busyId.value = null }
 }
 

@@ -76,7 +76,7 @@ async function load() {
     const lastPage = Math.max(1, Math.ceil(total.value / page.size))
     if (page.current > lastPage) { page.current = lastPage; await load() }
   } catch (error) {
-    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '消息服务暂不可用，请稍后重试' : error?.response?.data?.msg || error.message || '短信记录加载失败'
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error.message || '短信记录加载失败'
   } finally { if (sequence === loadSequence) loading.value = false }
 }
 function search() { page.current = 1; return load() }

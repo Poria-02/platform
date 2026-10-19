@@ -50,7 +50,7 @@ async function load() {
     const api = active.value === 'announcement' ? announcement : station
     const page = await api.list({ current: 1, size: 8 })
     if (current === sequence && session.current?.idleId === sessionId) rows.value = page?.records || []
-  } catch (cause) { if (current === sequence) error.value = cause?.response?.status === 503 ? '消息服务暂不可用' : cause.message || '消息加载失败' }
+  } catch (cause) { if (current === sequence) error.value = cause.message || '消息加载失败' }
   finally { if (current === sequence) loading.value = false }
 }
 function refresh() { void center.refresh(); void load() }

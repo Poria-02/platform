@@ -12,6 +12,7 @@ import cn.poria.message.vo.response.center.AnnouncementVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,15 @@ public class AnnouncementController {
     private CenterAnnouncementService centerAnnouncementService;
 
     @GetMapping("/page")
-    @Operation(summary = "分页查询公示公告记录", description = "按传入的公告状态查询，默认查询已发布的公示公告记录")
+    @PreAuthorize("#query.status == 1 || @pms.hasPermission('message_announcement_draft')")
+    @Operation(summary = "分页查询公示公告记录", description = "默认查询已发布的公示公告记录，草稿及已撤回公告需 message_announcement_draft 权限")
     public R<IPage<AnnouncementVo>> page(@Validated CenterQueryModel query) {
         return R.ok(centerAnnouncementService.page(query));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "通过ID查询公示公告记录", description = "通过ID查询公示公告详情")
+    @PostAuthorize("returnObject.data.status == 1 || @pms.hasPermission('message_announcement_draft')")
+    @Operation(summary = "通过ID查询公示公告记录", description = "通过ID查询公示公告详情，草稿及已撤回公告需 message_announcement_draft 权限")
     public R<AnnouncementVo> detail(@PathVariable String id) {
         return R.ok(centerAnnouncementService.detail(id));
     }

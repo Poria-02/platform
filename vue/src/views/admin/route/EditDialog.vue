@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" :show-close="!editor.saving" v-model="editor.open" :title="editor.editing ? '编辑路由' : '新增路由'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :disabled="editor.saving" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :disabled="editor.saving" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="路由 ID" prop="routeId">
         <el-input v-model="editor.form.routeId" placeholder="请输入路由 ID" @update:model-value="clearFieldError('routeId')" />
       </el-form-item>

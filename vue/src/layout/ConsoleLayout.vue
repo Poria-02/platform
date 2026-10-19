@@ -25,7 +25,7 @@
         <div class="header-location"><span>工作空间</span><span class="breadcrumb-sep">/</span><strong>{{ currentTitle }}</strong></div>
         <MessagePanel />
       </header>
-      <div class="workspace-tabs" role="tablist" aria-label="已打开页面">
+      <div ref="tabsRef" class="workspace-tabs" role="tablist" aria-label="已打开页面">
         <div v-for="tab in tabs" :key="tab.path" class="workspace-tab" :class="{ 'workspace-tab--active': route.path === tab.path }" role="tab" tabindex="0" :aria-selected="route.path === tab.path" @click="openTab(tab.path)" @contextmenu.prevent="openContextMenu($event, tab.path)" @keydown.enter="openTab(tab.path)" @keydown.space.prevent="openTab(tab.path)">
           <span class="workspace-tab__dot" /><span class="workspace-tab__title">{{ tab.title }}</span>
           <button v-if="tab.path !== '/index'" class="workspace-tab__close" type="button" :aria-label="`关闭${tab.title}`" @click.stop="closeTab(tab.path)" @keydown.enter.stop @keydown.space.stop>×</button>
@@ -45,6 +45,7 @@
       <Transition name="panel-fade">
         <div v-if="contextMenu.open" ref="contextMenuRef" class="workspace-tab-menu" role="menu" aria-label="标签页操作" :style="{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }" @contextmenu.prevent>
           <button type="button" role="menuitem" :disabled="contextMenu.path === '/index'" @click="closeContextTab">关闭页面</button>
+          <button type="button" role="menuitem" :disabled="!tabs.some(tab => tab.path !== '/index' && tab.path !== contextMenu.path)" @click="closeOtherTabs">关闭其他</button>
           <button type="button" role="menuitem" :disabled="tabs.length === 1" @click="closeAllTabs">关闭所有页面</button>
         </div>
       </Transition>
@@ -71,6 +72,7 @@ const session = useSession()
 const collapsed = ref(false)
 const mobileOpen = ref(false)
 const tabs = ref([{ path: '/index', fullPath: '/index', title: '工作台' }])
+const tabsRef = ref(null)
 const retryingMenus = ref(false)
 const pageWrappers = new Map()
 const pageName = path => `Page_${Array.from(path, character => character.codePointAt(0).toString(16)).join('_')}`
@@ -150,6 +152,16 @@ function closeContextTab() {
   contextMenu.open = false
   closeTab(path)
 }
+async function closeOtherTabs() {
+  const path = contextMenu.path
+  const target = tabs.value.find(tab => tab.path === path)
+  contextMenu.open = false
+  if (!target) return
+  if (route.path !== path) await router.push(target.fullPath || path)
+  if (route.path !== path) return
+  tabs.value = tabs.value.filter(tab => tab.path === '/index' || tab.path === path)
+  for (const key of pageWrappers.keys()) if (key !== '/index' && key !== path) pageWrappers.delete(key)
+}
 async function closeAllTabs() {
   contextMenu.open = false
   if (route.path !== '/index') await router.push('/index')
@@ -180,6 +192,10 @@ watch(() => route.fullPath, fullPath => {
   if (tab) tab.fullPath = fullPath
   else tabs.value.push({ path, fullPath, title: String(route.meta.title || '页面') })
 }, { immediate: true })
+watch([() => route.fullPath, () => tabs.value.length], async () => {
+  await nextTick()
+  tabsRef.value?.querySelector('.workspace-tab--active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+}, { immediate: true, flush: 'post' })
 </script>
 
 <style scoped>

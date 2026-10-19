@@ -9,7 +9,7 @@
       <aside class="message-list-pane">
         <div class="message-list-heading"><div><strong>{{ managing ? '公告记录' : '我的公告' }}</strong><small>共 {{ total }} 条</small></div><el-button v-if="!managing" link :disabled="busy || loading" @click="readAll">全部已读</el-button></div>
         <div class="message-search"><el-input v-model="keyword" clearable :maxlength="managing ? 100 : 20" placeholder="搜索标题或内容" @keyup.enter="search" @clear="search" /><el-button @click="search">搜索</el-button></div>
-        <div v-if="managing" class="message-filters"><el-select v-model="noticeStatus" @change="search"><el-option label="已发布" :value="1" /><el-option :disabled="!permissions.canViewDrafts" label="草稿" :value="0" /><el-option label="已撤回" :value="2" /></el-select></div>
+        <div v-if="managing" class="message-filters"><el-select v-model="noticeStatus" @change="search"><el-option label="已发布" :value="1" /><el-option :disabled="!permissions.canViewDrafts" label="草稿" :value="0" /><el-option :disabled="!permissions.canViewDrafts" label="已撤回" :value="2" /></el-select></div>
         <div v-else class="message-filter-read"><el-checkbox v-model="onlyUnread" @change="search">只看未读</el-checkbox></div>
         <div v-loading="loading" class="message-list" :aria-busy="loading">
           <button v-for="item in rows" :key="item.id" type="button" class="message-list-item" :class="{ selected: selected?.id === item.id, unread: !managing && item.status === 0 }" @click="selectMessage(item.id)">
@@ -34,7 +34,7 @@
       </article>
     </section>
     <el-dialog v-model="editorOpen" :title="`${editingId ? '编辑' : '新增'}公告`" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :before-close="closeEditor">
-      <el-form ref="editorForm" :model="draft" :rules="rules" label-position="top">
+      <el-form ref="editorForm" :model="draft" :rules="rules" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top">
         <el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="draft.userIds" :disabled="!permissions.canSend || (saving)" @loading="recipientsLoading = $event" /><p class="message-editor-hint">保存草稿可不选接收人，发布时至少选择一人。</p></el-form-item>
         <el-form-item label="标题" prop="title"><el-input v-model="draft.title" maxlength="200" show-word-limit /></el-form-item>
         <el-form-item label="正文" prop="content"><el-input v-model="draft.content" type="textarea" :rows="12" maxlength="20000" show-word-limit /></el-form-item>
@@ -43,7 +43,7 @@
       <template #footer><el-button :disabled="saving || recipientsLoading" @click="editorOpen = false">取消</el-button><el-button :loading="saving" :disabled="!(editingId ? permissions.canEdit : permissions.canCreate) || (recipientsLoading)" @click="save(false)">保存草稿</el-button><el-button type="primary" :loading="saving" :disabled="!(editingId ? permissions.canEdit : permissions.canCreate) || (!permissions.canSend || (recipientsLoading))" @click="save(true)">保存并发布</el-button></template>
     </el-dialog>
     <el-dialog v-model="sendDialog.open" title="发布公告" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :before-close="closeSendDialog">
-      <el-form ref="sendForm" :model="sendDialog" :rules="{ userIds: recipientRules }" label-position="top"><el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="sendDialog.userIds" :disabled="busy" @loading="recipientsLoading = $event" /></el-form-item></el-form>
+      <el-form ref="sendForm" :model="sendDialog" :rules="{ userIds: recipientRules }" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top"><el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="sendDialog.userIds" :disabled="busy" @loading="recipientsLoading = $event" /></el-form-item></el-form>
       <p v-if="error" class="resource-error" role="alert">{{ error }}</p>
       <template #footer><el-button :disabled="busy || recipientsLoading" @click="sendDialog.open = false">取消</el-button><el-button type="primary" :loading="busy" :disabled="!permissions.canSend || (recipientsLoading)" @click="confirmSendNotice">发布</el-button></template>
     </el-dialog>
@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -100,7 +101,7 @@ async function load() {
     if (sequence !== listSequence) return
     rows.value = page?.records || []
     total.value = Number(page?.total) || 0
-  } catch (cause) { if (sequence === listSequence) error.value = cause?.response?.status === 503 ? '消息服务暂不可用，请稍后重试' : cause.message || '消息加载失败' }
+  } catch (cause) { if (sequence === listSequence) error.value = cause.message || '消息加载失败' }
   finally { if (sequence === listSequence) loading.value = false }
 }
 function clearSelection() {
@@ -215,7 +216,7 @@ async function save(sendNow) {
     await load()
     await openMessage(editingId.value)
     void center.refresh()
-  } catch (cause) { ElMessage.error(cause.message || '保存失败') }
+  } catch (cause) { showRequestError(cause, '保存失败') }
   finally { saving.value = false }
 }
 watch(() => route.query.id, id => { if (id) { if (managing.value) { management.value = false; current.value = 1; void load() } void openMessage(String(id)) } })

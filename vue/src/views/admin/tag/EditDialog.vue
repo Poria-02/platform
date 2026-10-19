@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" v-model="editor.open" :title="editor.editing ? '编辑标签' : '新增标签'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="标签键" prop="tagKey">
         <el-input v-model="editor.form.tagKey" placeholder="请输入标签键" @update:model-value="clearFieldError('tagKey')" />
       </el-form-item>

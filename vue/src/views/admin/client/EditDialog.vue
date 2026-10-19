@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" v-model="editor.open" :title="editor.editing ? '编辑终端' : '新增终端'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="客户端 ID" prop="clientId">
         <el-input v-model="editor.form.clientId" :disabled="editor.editing" placeholder="请输入客户端 ID" @update:model-value="clearFieldError('clientId')" />
       </el-form-item>

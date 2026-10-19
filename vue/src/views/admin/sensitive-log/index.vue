@@ -90,7 +90,7 @@ async function load() {
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = (error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }
