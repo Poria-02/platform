@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="editor.open" class="business-dialog" :title="editor.mode === 'phone' ? '修改手机号' : '修改密码'" width="min(480px, calc(100vw - 28px))" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" :show-close="!editor.saving" append-to-body @closed="clearSecrets">
-    <el-form ref="formRef" :model="editor.form" :rules="rules" label-position="top" :validate-on-rule-change="false" @submit.prevent="save">
+    <el-form ref="formRef" :model="editor.form" :rules="rules" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" :validate-on-rule-change="false" @submit.prevent="save">
       <template v-if="editor.mode === 'phone'">
         <p class="profile-edit-hint">当前手机号：{{ editor.currentPhone || '未设置' }}。请输入新的完整手机号。</p>
         <el-form-item label="新手机号" prop="phone"><el-input v-model="editor.form.phone" inputmode="tel" autocomplete="tel" maxlength="11" placeholder="请输入11位手机号" /></el-form-item>

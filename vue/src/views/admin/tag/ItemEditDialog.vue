@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!itemEditor.saving" :close-on-press-escape="!itemEditor.saving" v-model="itemEditor.open" :title="itemEditor.editing ? '编辑标签项' : '新增标签项'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="itemFormRef" :model="itemEditor.form" :rules="itemFormRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="itemFormRef" :model="itemEditor.form" :rules="itemFormRules" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="名称" prop="name">
         <el-input v-model="itemEditor.form.name" placeholder="请输入名称" @update:model-value="clearItemFieldError('name')" />
       </el-form-item>

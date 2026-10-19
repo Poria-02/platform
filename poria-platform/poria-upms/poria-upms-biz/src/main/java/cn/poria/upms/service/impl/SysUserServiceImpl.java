@@ -249,6 +249,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 return R.failed("原密码错误，修改失败");
             } else if (ENCODER.matches(userDto.getNewpassword1(), existUser.getPassword())) {
                 return R.failed("新密码不能与原密码相同");
+            } else if (!Pattern.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9\\s])\\S{8,20}$", userDto.getNewpassword1())) {
+                return R.failed("密码必须包含大小写字母、数字和特殊符号，长度为8–20位");
             } else {
                 this.weakPwdCheck(userDto.getNewpassword1());
                 return R.ok(this.update(new LambdaUpdateWrapper<SysUser>().set(SysUser::getPassword, ENCODER.encode(userDto.getNewpassword1())).set(SysUser::getLastPwdUpdateTime, new Date()).eq(SysUser::getUserId, existUser.getUserId())));

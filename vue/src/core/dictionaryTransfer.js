@@ -1,11 +1,11 @@
-import { http } from './http'
+import { http, requestErrorMessage } from './http'
 
 async function responseError(error) {
   let body = error.response?.data
   if (body instanceof Blob) {
     try { body = JSON.parse(await body.text()) } catch { body = null }
   }
-  return new Error(body?.msg || error.message || '字典文件请求失败')
+  return new Error(requestErrorMessage({ ...error, message: error.message, response: { ...error.response, data: body } }, '字典文件请求失败'))
 }
 
 export async function importDictionary(url, file) {

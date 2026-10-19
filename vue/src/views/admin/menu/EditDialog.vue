@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" v-model="editor.open" :title="editor.editing ? '编辑菜单' : '新增菜单'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="菜单名称" prop="name">
         <el-input v-model="editor.form.name" placeholder="请输入菜单名称" @update:model-value="clearFieldError('name')" />
       </el-form-item>

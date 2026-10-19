@@ -5,7 +5,7 @@
     </header>
     <div class="resource-toolbar">
       <div class="filter-bar">
-        <el-input :disabled="!canRead" v-model="query.type" placeholder="搜索字典类型" clearable @keyup.enter="search" />
+        <el-input :disabled="!canRead" v-model="query.type" placeholder="请输入完整字典类型" clearable @keyup.enter="search" />
         <el-select :disabled="!canRead" v-model="query.system" placeholder="选择所属系统" clearable><el-option v-for="option in systemChoices" :key="option.value" :label="option.label" :value="option.value" /></el-select>
         <el-button :disabled="!canRead" type="primary" plain @click="search">查询</el-button>
         <el-button :disabled="!canRead" @click="resetSearch">重置</el-button>
@@ -53,6 +53,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import ItemsDialog from './ItemsDialog.vue'
 import EditDialog from './EditDialog.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -93,7 +94,7 @@ async function importFile(event) {
     await api.importDict(file)
     ElMessage.success('字典导入成功')
     refreshImported()
-  } catch (error) { ElMessage.error(error.message || '字典导入失败') }
+  } catch (error) { showRequestError(error, '字典导入失败') }
   finally { importing.value = false }
 }
 
@@ -101,7 +102,7 @@ async function exportFile(codes = []) {
   if (transferBusy.value || !canExport.value) return
   exporting.value = true
   try { saveDictionary(await api.exportDict(codes), 'dictionary.dict') }
-  catch (error) { ElMessage.error(error.message || '字典导出失败') }
+  catch (error) { showRequestError(error, '字典导出失败') }
   finally { exporting.value = false }
 }
 
@@ -153,7 +154,7 @@ async function load() {
 
     loadError.value = ''
   } catch (error) {
-    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.status === 503 ? '当前服务暂不可用，请稍后重试' : (error?.response?.data?.msg || error?.message || '数据加载失败')
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = (error?.message || '数据加载失败')
   } finally {
     if (sequence === loadSequence) loading.value = false
   }

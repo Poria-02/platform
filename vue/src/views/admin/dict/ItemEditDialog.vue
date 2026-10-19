@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog" :close-on-click-modal="!itemEditor.saving" :close-on-press-escape="!itemEditor.saving" v-model="itemEditor.open" :title="itemEditor.editing ? '编辑字典项' : '新增字典项'" width="min(680px, calc(100vw - 32px))" append-to-body>
-    <el-form ref="itemFormRef" :model="itemEditor.form" :rules="itemFormRules" :validate-on-rule-change="false" label-position="top" class="editor-form">
+    <el-form ref="itemFormRef" :model="itemEditor.form" :rules="itemFormRules" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form">
       <el-form-item label="显示名称" prop="label">
         <el-input v-model="itemEditor.form.label" placeholder="请输入显示名称" @update:model-value="clearItemFieldError('label')" />
       </el-form-item>

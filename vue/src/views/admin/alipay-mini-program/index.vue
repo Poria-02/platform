@@ -40,6 +40,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useSession } from '@/core/session'
@@ -82,7 +83,7 @@ async function load() {
     const lastPage = Math.max(1, Math.ceil(total.value / page.size))
     if (page.current > lastPage) { page.current = lastPage; await load() }
   } catch (error) {
-    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error?.response?.data?.msg || error.message || '支付宝账号加载失败'
+    if (sequence === loadSequence && error?.code !== 'ERR_CANCELED') loadError.value = error.message || '支付宝账号加载失败'
   } finally { if (sequence === loadSequence) loading.value = false }
 }
 
@@ -99,7 +100,7 @@ async function remove(row) {
     if (result === false) { ElMessage.error('删除未完成'); return }
     ElMessage.success('删除成功')
     await load()
-  } catch (error) { ElMessage.error(error?.response?.data?.msg || error.message || '删除失败') }
+  } catch (error) { showRequestError(error, '删除失败') }
   finally { removingId.value = null }
 }
 

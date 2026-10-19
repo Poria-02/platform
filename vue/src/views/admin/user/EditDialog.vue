@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="business-dialog user-editor-dialog" :close-on-click-modal="!editor.saving" :close-on-press-escape="!editor.saving" :show-close="!editor.saving" v-model="editor.open" :title="editor.editing ? '编辑用户' : '新增用户'" width="min(720px, calc(100vw - 32px))" align-center append-to-body @closed="clearPasswords">
-    <el-form ref="formRef" :model="editor.form" :rules="formRules" :disabled="editor.saving" :validate-on-rule-change="false" label-position="top" class="editor-form user-editor-form" @submit.prevent="save">
+    <el-form ref="formRef" :model="editor.form" :rules="formRules" :disabled="editor.saving" :validate-on-rule-change="false" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top" class="editor-form user-editor-form" @submit.prevent="save">
       <section class="user-editor-section">
         <div class="section-heading"><h3>基本资料</h3><p>维护用户的登录账号和联系方式。</p></div>
         <div class="user-editor-grid">

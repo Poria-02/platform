@@ -30,7 +30,7 @@
       </article>
     </section>
     <el-dialog v-model="editorOpen" title="发布站内信" width="min(680px, 94vw)" destroy-on-close :close-on-click-modal="false" :close-on-press-escape="!saving && !recipientsLoading" :before-close="closeEditor">
-      <el-form ref="editorForm" :model="draft" :rules="rules" :disabled="saving" label-position="top">
+      <el-form ref="editorForm" :model="draft" :rules="rules" :disabled="saving" scroll-to-error :scroll-into-view-options="{ block: 'center', inline: 'nearest' }" label-position="top">
         <el-form-item label="接收人" prop="userIds"><MessageRecipients v-model="draft.userIds" :disabled="saving" @loading="recipientsLoading = $event" /></el-form-item>
         <el-form-item label="站内信模板" prop="templateKey"><el-select v-model="draft.templateKey" filterable remote clearable :remote-method="loadTemplates" :loading="templatesLoading" placeholder="搜索模板名称或key" style="width:100%" @change="selectTemplate"><el-option v-for="template in templates" :key="template.templateKey" :label="(template.title || '站内信模板') + '（' + template.templateKey + '）'" :value="template.templateKey" /></el-select></el-form-item>
         <p class="message-editor-hint">请先在消息模板管理配置并启用站内信模板。</p>
@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+import { showRequestError } from '@/core/http'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -77,7 +78,7 @@ let detailSequence = 0
 function taskTypeName(type) { return displayResourceValue(type, {}, taskTypes.value) }
 async function loadTaskTypes() {
   try { taskTypes.value = await fetchDictionary('pending_task_type') }
-  catch (cause) { ElMessage.error(cause?.response?.data?.msg || cause.message || '待办类型加载失败') }
+  catch (cause) { showRequestError(cause, '待办类型加载失败') }
 }
 
 function date(value, short = false) {
@@ -95,7 +96,7 @@ async function load() {
     if (sequence !== listSequence) return
     rows.value = page?.records || []
     total.value = Number(page?.total) || 0
-  } catch (cause) { if (sequence === listSequence) error.value = cause?.response?.status === 503 ? '消息服务暂不可用，请稍后重试' : cause.message || '消息加载失败' }
+  } catch (cause) { if (sequence === listSequence) error.value = cause.message || '消息加载失败' }
   finally { if (sequence === listSequence) loading.value = false }
 }
 function clearSelection() {
@@ -211,7 +212,7 @@ async function save() {
     clearSelection()
     await load()
     void center.refresh()
-  } catch (cause) { ElMessage.error(cause.message || '发布失败') }
+  } catch (cause) { showRequestError(cause, '发布失败') }
   finally { saving.value = false }
 }
 watch(() => route.query.id, id => { if (id) void openMessage(String(id)) })

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * @Author: yuhaitao
  * @Date 2020/5/27 9:37 下午
  */
 public interface BaseFeignClient {
