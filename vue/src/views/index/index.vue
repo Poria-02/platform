@@ -6,23 +6,47 @@
         <span class="hero-tag">统一管理平台</span>
         <div class="hero-title-row">
           <h2>从这里开始，<br>掌握你的工作空间。</h2>
-          <router-link class="hero-entry" to="/functions/index"><MenuIcon name="grid" /><span>全部功能</span><span class="hero-entry__count">{{ functionCount }} 项</span><span class="hero-entry__arrow" aria-hidden="true">→</span></router-link>
+          <router-link class="hero-entry" to="/functions/index"><MenuIcon name="grid" /><span>全部功能</span><span class="hero-entry__count">{{ session.menusReady ? `${functionCount} 项` : '加载中…' }}</span><span class="hero-entry__arrow" aria-hidden="true">→</span></router-link>
         </div>
         <p>人员、权限与平台配置集中在一个清晰的界面中，进入所需模块即可开始处理。</p>
       </div>
     </section>
-    <section class="dashboard-section calendar-section"><div class="section-heading"><span class="page-eyebrow">CALENDAR</span><div class="calendar-heading"><h2>日历</h2><time class="calendar-clock">{{ clockText }}</time></div></div><MonthCalendar /></section>
+    <section class="dashboard-section calendar-section"><div class="section-heading"><span class="page-eyebrow">CALENDAR</span><div class="calendar-heading"><h2>日历</h2><time class="calendar-clock">{{ clockText }}</time></div></div><MonthCalendar v-if="calendarReady" /><div v-else class="calendar-placeholder" role="status">日历加载中…</div></section>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue'
 import { useSession } from '@/core/session'
 import { now } from '@/core/clock'
-import MonthCalendar from '@/components/MonthCalendar.vue'
 import MenuIcon from '@/ui/MenuIcon.vue'
 import { buildFunctionCatalog } from '@/core/functionCatalog'
 
+const MonthCalendar = defineAsyncComponent({
+  loader: () => import('@/components/MonthCalendar.vue'),
+  loadingComponent: { render: () => h('div', { class: 'calendar-placeholder', role: 'status' }, '日历加载中…') },
+  delay: 0
+})
+const calendarReady = ref(false)
+let calendarFrame
+let calendarIdle
+let calendarTimer
+onMounted(() => {
+  calendarFrame = requestAnimationFrame(() => {
+    calendarFrame = requestAnimationFrame(() => {
+      calendarTimer = window.setTimeout(() => {
+        const showCalendar = () => { calendarReady.value = true }
+        if (window.requestIdleCallback) calendarIdle = window.requestIdleCallback(showCalendar, { timeout: 2000 })
+        else showCalendar()
+      }, 800)
+    })
+  })
+})
+onUnmounted(() => {
+  cancelAnimationFrame(calendarFrame)
+  if (calendarIdle !== undefined) window.cancelIdleCallback(calendarIdle)
+  window.clearTimeout(calendarTimer)
+})
 const session = useSession()
 const functionCount = computed(() => buildFunctionCatalog(session.menus, { includeProfile: session.hasPermission('sys_user_profile') }).length)
 const clockText = computed(() => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(now.value))
@@ -54,6 +78,7 @@ const greeting = computed(() => {
 .hero p { max-width: 680px; margin: 0; color: #8b8b8b; line-height: 1.7; font-size: 13px; }
 .dashboard-section { margin-top: 32px; }
 .calendar-section { margin-top: 26px; }
+.calendar-placeholder { display: grid; min-height: 420px; place-items: center; border: 1px solid var(--line); border-radius: 4px; color: #909090; font-size: 13px; }
 .section-heading { margin-bottom: 16px; }
 .calendar-heading { display: flex; align-items: baseline; gap: 16px; }
 .section-heading h2 { margin: 6px 0 0; color: #363636; font-size: 21px; letter-spacing: -.025em; }

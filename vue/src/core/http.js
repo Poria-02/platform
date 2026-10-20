@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index.mjs'
 import { readSession } from './token'
 
 export const http = axios.create({
@@ -19,7 +19,7 @@ export function requestErrorMessage(error, fallback = '网络连接失败，请�
   if (!config.skipAuthRedirect && (status === 401 || (status === 424 && body?.msg === '无效的权限'))) {
     return '登录已失效，请重新登录'
   }
-  if (status === 504 || ['ECONNABORTED', 'ETIMEDOUT'].includes(error.code) || /^(?:timeout of \d+ms exceeded)$|\b(?:connect|read) timed out\b/i.test(message)) {
+  if (status === 504 || ['ECONNABORTED', 'ETIMEDOUT'].includes(error.code) || /^timeout of \d+ms exceeded$|\b(?:connect|read) timed out\b/i.test(message)) {
     return '请求超时，请稍后重试'
   }
   if ([502, 503].includes(status) || /\b(?:Connection refused|ECONNREFUSED)\b|No servers available for service|Unable to find instance for/i.test(message)) {

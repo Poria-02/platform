@@ -68,6 +68,8 @@ const BASE_LOCATIONS = [
 ]
 const LOCATIONS_KEY = 'poria.weather.locations'
 const DEFAULT_KEY = 'poria.weather.default'
+const REFRESH_INTERVAL = 30 * 60 * 1000
+const RETRY_INTERVAL = 60 * 1000
 const root = ref(null)
 const locations = ref([...BASE_LOCATIONS])
 const selectedLocation = ref(BASE_LOCATIONS[0])
@@ -89,6 +91,7 @@ let searchRequest
 let searchTimer
 let refreshTimer
 let lastWeatherAt = 0
+let lastWeatherAttemptAt = 0
 
 const condition = computed(() => {
   const code = weather.value?.weather_code
@@ -110,8 +113,10 @@ onMounted(() => {
   document.addEventListener('pointerdown', handleOutside)
   document.addEventListener('keydown', handleKeydown)
   document.addEventListener('visibilitychange', refreshIfStale)
+  window.addEventListener('online', refreshIfStale)
+  window.addEventListener('focus', refreshIfStale)
   refreshWeather()
-  refreshTimer = window.setInterval(refreshIfStale, 30 * 60 * 1000)
+  refreshTimer = window.setInterval(refreshIfStale, RETRY_INTERVAL)
 })
 onUnmounted(() => {
   closeMenu()
@@ -120,10 +125,14 @@ onUnmounted(() => {
   document.removeEventListener('pointerdown', handleOutside)
   document.removeEventListener('keydown', handleKeydown)
   document.removeEventListener('visibilitychange', refreshIfStale)
+  window.removeEventListener('online', refreshIfStale)
+  window.removeEventListener('focus', refreshIfStale)
 })
 
-function refreshIfStale() {
-  if (!document.hidden && !weatherLoading.value && (!lastWeatherAt || Date.now() - lastWeatherAt >= 30 * 60 * 1000)) void refreshWeather()
+function refreshIfStale(event) {
+  const now = Date.now()
+  if (!document.hidden && !weatherLoading.value && (!lastWeatherAt || now - lastWeatherAt >= REFRESH_INTERVAL) &&
+      (event?.type === 'online' || !lastWeatherAttemptAt || now - lastWeatherAttemptAt >= RETRY_INTERVAL)) void refreshWeather()
 }
 
 watch(query, value => {
@@ -179,6 +188,8 @@ function rememberLocation(location) {
 function selectLocation(location) {
   rememberLocation(location)
   selectedLocation.value = location
+  weather.value = null
+  lastWeatherAt = 0
   closeMenu()
   refreshWeather()
 }
@@ -228,9 +239,9 @@ async function refreshWeather() {
   weatherRequest?.abort()
   const controller = new AbortController()
   weatherRequest = controller
+  lastWeatherAttemptAt = Date.now()
   const timeout = window.setTimeout(() => controller.abort(), 12000)
   weatherLoading.value = true
-  weather.value = null
   try {
     let location = selectedLocation.value
     if (location.code && (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude))) {
@@ -246,14 +257,17 @@ async function refreshWeather() {
     if (!response.ok) throw new Error('天气查询失败')
     const data = await response.json()
     if (!['temperature_2m', 'apparent_temperature', 'relative_humidity_2m', 'weather_code', 'is_day'].every(key => Number.isFinite(data?.current?.[key])) || typeof data?.current?.time !== 'string') throw new Error('天气数据无效')
-    if (weatherRequest === controller) {
+    if (weatherRequest === controller && !controller.signal.aborted) {
       weather.value = data.current
       lastWeatherAt = Date.now()
     }
   } catch { /* 天气属于辅助信息，获取失败时仅显示空状态。 */ }
   finally {
     window.clearTimeout(timeout)
-    if (weatherRequest === controller) weatherLoading.value = false
+    if (weatherRequest === controller) {
+      weatherLoading.value = false
+      weatherRequest = undefined
+    }
   }
 }
 </script>

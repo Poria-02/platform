@@ -9,6 +9,7 @@ import cn.poria.base.vo.response.version.AppVersionVo;
 import cn.poria.common.core.constant.CacheConstants;
 import cn.poria.common.core.util.R;
 import cn.poria.common.core.validate.Create;
+import cn.poria.common.core.validate.Update;
 import cn.poria.common.log.annotation.SysLog;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -99,7 +100,7 @@ public class AppVersionApiController {
     @PutMapping
     @PreAuthorize("@pms.hasPermission('base_version_edit')")
     @Operation(summary = "修改APP版本管理", description = "修改APP版本管理 (权限：base_version_edit)")
-    public R update(@RequestBody @Validated(Create.class) BaseAppVersionModel appVersionModel) {
+    public R update(@RequestBody @Validated(Update.class) BaseAppVersionModel appVersionModel) {
         baseAppVersionService.updateAppVersion(appVersionModel);
         return R.ok();
     }

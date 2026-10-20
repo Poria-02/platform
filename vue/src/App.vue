@@ -7,6 +7,6 @@
 </template>
 
 <script setup>
-import { ElConfigProvider } from 'element-plus'
+import { ElConfigProvider } from 'element-plus/es/components/config-provider/index.mjs'
 import locale from 'element-plus/es/locale/lang/zh-cn'
 </script>

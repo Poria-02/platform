@@ -6,6 +6,8 @@ import cn.poria.base.vo.request.BaseAppVersionModel;
 import cn.poria.base.vo.response.version.AppVersionVo;
 import cn.poria.base.vo.response.version.CheckVersionVo;
 
+import java.util.List;
+
 /**
  * (BaseAppVersion)表服务接口
  *
@@ -44,4 +46,13 @@ public interface BaseAppVersionService extends IService<BaseAppVersion> {
      * @return
      */
     AppVersionVo selectVersionDetial(String id);
+
+    /**
+     * 查询应用版本列表
+     *
+     * @param appName
+     * @param appOs
+     * @return
+     */
+    List<AppVersionVo> appVersionVoList(String appName, String appOs);
 }

@@ -349,7 +349,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 } else {
                     String code = RandomUtil.randomNumbers(Integer.parseInt("4"));
                     log.debug("手机号生成验证码成功:{},{}, {}", model.getMobile(), code, model.getType());
-                    String body = HttpUtil.createPost("http://poria-message:8007/inner/sms/send").body(JSONUtil.createObj().set("key", "VERIFY_CODE").set("phones", model.getMobile()).set("param", MapUtil.builder("code", code).build()).toString()).header("from", "Y").execute().body();
+                    String body = HttpUtil.createPost("http://poria-message:8001/inner/sms/send").body(JSONUtil.createObj().set("key", "VERIFY_CODE").set("phones", model.getMobile()).set("param", MapUtil.builder("code", code).build()).toString()).header("from", "Y").execute().body();
                     log.info("发送短信，手机号： {},验证码： {}, 响应结果：{}", model.getMobile(), code, body);
                     JSONObject bodyJson = JSONUtil.parseObj(body);
                     if (bodyJson.getInt("code") != 0) {

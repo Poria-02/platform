@@ -6,9 +6,10 @@
       <nav class="sidebar-nav" aria-label="主菜单">
         <router-link class="menu-link" to="/index" @click="mobileOpen = false"><span class="menu-symbol"><MenuIcon name="house" /></span><span>工作台</span></router-link>
         <div v-if="session.menuError" class="sidebar-menu-error" role="alert"><span>菜单加载失败</span><el-button link :loading="retryingMenus" @click="retryMenus">重试</el-button></div>
+        <div v-else-if="!session.menusReady" class="sidebar-menu-loading" role="status">菜单加载中…</div>
         <MenuItem v-for="item in menuRoots" :key="item.id || item.path" :item="item" />
       </nav>
-      <div class="sidebar-weather"><WeatherWidget /></div>
+      <div class="sidebar-weather"><WeatherWidget v-if="widgetsReady" /></div>
       <div class="sidebar-account">
         <router-link class="sidebar-account__profile" to="/profile/index" aria-label="打开个人中心" title="个人中心" @click="mobileOpen = false">
           <span class="account-avatar">{{ initial }}</span>
@@ -23,7 +24,7 @@
       <header class="console-header">
         <button class="nav-toggle" type="button" aria-label="切换菜单" @click="toggleSidebar">☰</button>
         <div class="header-location"><span>工作空间</span><span class="breadcrumb-sep">/</span><strong>{{ currentTitle }}</strong></div>
-        <MessagePanel />
+        <MessagePanel v-if="widgetsReady" />
       </header>
       <div ref="tabsRef" class="workspace-tabs" role="tablist" aria-label="已打开页面">
         <div v-for="tab in tabs" :key="tab.path" class="workspace-tab" :class="{ 'workspace-tab--active': route.path === tab.path }" role="tab" tabindex="0" :aria-selected="route.path === tab.path" @click="openTab(tab.path)" @contextmenu.prevent="openContextMenu($event, tab.path)" @keydown.enter="openTab(tab.path)" @keydown.space.prevent="openTab(tab.path)">
@@ -54,18 +55,18 @@
 </template>
 
 <script setup>
-import { computed, defineComponent, h, markRaw, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, h, markRaw, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSession } from '@/core/session'
 import { startClock } from '@/core/clock'
 import { installMenuRoutes } from '@/core/router'
 import { consoleMenus } from '@/core/menu'
-import WeatherWidget from '@/components/WeatherWidget.vue'
 import RoutePage from '@/components/RoutePage.vue'
-import MessagePanel from '@/components/MessagePanel.vue'
 import MenuItem from './MenuItem.vue'
 import MenuIcon from '@/ui/MenuIcon.vue'
 
+const WeatherWidget = defineAsyncComponent(() => import('@/components/WeatherWidget.vue'))
+const MessagePanel = defineAsyncComponent(() => import('@/components/MessagePanel.vue'))
 const route = useRoute()
 const router = useRouter()
 const session = useSession()
@@ -74,6 +75,7 @@ const mobileOpen = ref(false)
 const tabs = ref([{ path: '/index', fullPath: '/index', title: '工作台' }])
 const tabsRef = ref(null)
 const retryingMenus = ref(false)
+const widgetsReady = ref(false)
 const pageWrappers = new Map()
 const pageName = path => `Page_${Array.from(path, character => character.codePointAt(0).toString(16)).join('_')}`
 const cachedPageNames = computed(() => tabs.value.map(tab => pageName(tab.path)))
@@ -100,15 +102,32 @@ const currentTitle = computed(() => route.meta.title || '工作台')
 const isMessagePage = computed(() => ['/message/announcement/index', '/message/station-letter/index'].includes(route.path))
 const initial = computed(() => session.displayName.slice(0, 1).toUpperCase())
 let stopClock
+let widgetFrame
+let widgetIdle
+let widgetTimer
 
 onMounted(() => {
   stopClock = startClock()
+  if (!session.menusReady) void retryMenus()
+  // 先展示工作台，再在空闲时加载辅助面板及其数据。
+  widgetFrame = requestAnimationFrame(() => {
+    widgetFrame = requestAnimationFrame(() => {
+      widgetTimer = window.setTimeout(() => {
+        const showWidgets = () => { widgetsReady.value = true }
+        if (window.requestIdleCallback) widgetIdle = window.requestIdleCallback(showWidgets, { timeout: 2000 })
+        else showWidgets()
+      }, 800)
+    })
+  })
   window.addEventListener('pointerdown', dismissContextMenu)
   window.addEventListener('keydown', handleContextKeydown)
   window.addEventListener('scroll', dismissContextMenu, true)
 })
 onUnmounted(() => {
   stopClock?.()
+  cancelAnimationFrame(widgetFrame)
+  if (widgetIdle !== undefined) window.cancelIdleCallback(widgetIdle)
+  window.clearTimeout(widgetTimer)
   window.removeEventListener('pointerdown', dismissContextMenu)
   window.removeEventListener('keydown', handleContextKeydown)
   window.removeEventListener('scroll', dismissContextMenu, true)
@@ -200,6 +219,7 @@ watch([() => route.fullPath, () => tabs.value.length], async () => {
 
 <style scoped>
 .sidebar-menu-error { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; color: #a94637; font-size: 12px; }
+.sidebar-menu-loading { padding: 12px; color: #909090; font-size: 12px; }
 .message-workspace .console-main { display: flex; flex-direction: column; height: 100dvh; }
 .message-workspace .console-header, .message-workspace .workspace-tabs { flex-shrink: 0; }
 .message-workspace .console-content { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; padding-bottom: 28px; }

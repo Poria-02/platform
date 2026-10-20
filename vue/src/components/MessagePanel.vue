@@ -19,6 +19,12 @@
   </div>
 </template>
 <script setup>
+import { ElBadge } from 'element-plus/es/components/badge/index.mjs'
+import { ElDrawer } from 'element-plus/es/components/drawer/index.mjs'
+import { ElTabs, ElTabPane } from 'element-plus/es/components/tabs/index.mjs'
+import 'element-plus/es/components/badge/style/css.mjs'
+import 'element-plus/es/components/drawer/style/css.mjs'
+import 'element-plus/es/components/tabs/style/css.mjs'
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Refresh } from '@element-plus/icons-vue'

@@ -12,9 +12,4 @@ public class AuthConfigProperties {
     public String encodeKey;
 
     public boolean enable;
-
-    public String cLHisTokenUrl;
-
-    public String tSHisTokenUrl;
-
 }

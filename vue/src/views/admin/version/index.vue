@@ -13,7 +13,7 @@
       <div class="page-heading__actions">
 
         <el-button :disabled="!canRead" @click="load">刷新</el-button>
-        <el-button :disabled="!canCreate" type="primary" @click="openCreate()">新增版本</el-button>
+        <el-button :disabled="!canCreate || editingVersionId !== null" type="primary" @click="openCreate()">新增版本</el-button>
       </div>
     </div>
     <section class="surface-card">
@@ -38,7 +38,7 @@
         <el-table-column label="操作" min-width="190" fixed="right">
           <template #default="scope">
 
-            <el-button :disabled="!canEdit" link type="primary" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button :disabled="!canEdit || editingVersionId !== null" link type="primary" v-stable-loading="editingVersionId === scope.row.id" :loading="editingVersionId === scope.row.id" @click="openEdit(scope.row)">编辑</el-button>
             <el-button :disabled="!canRemove" link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -70,6 +70,7 @@ const { canRead, canCreate, canEdit, canRemove } = useResourcePermissions('versi
 const loading = ref(false)
 const loadError = ref('')
 const rows = ref([])
+const editingVersionId = ref(null)
 let loadSequence = 0
 
 const total = ref(0)
@@ -145,9 +146,12 @@ onMounted(load)
 
 const editorRef = ref()
 function openCreate(defaults = {}) {
-  if (canCreate.value) editorRef.value?.openCreate(defaults)
+  if (canCreate.value && editingVersionId.value === null) editorRef.value?.openCreate(defaults)
 }
-function openEdit(row) {
-  if (canEdit.value) return editorRef.value?.openEdit(row)
+async function openEdit(row) {
+  if (!canEdit.value || editingVersionId.value !== null) return
+  editingVersionId.value = row.id
+  try { await editorRef.value?.openEdit(row) }
+  finally { editingVersionId.value = null }
 }
 </script>
