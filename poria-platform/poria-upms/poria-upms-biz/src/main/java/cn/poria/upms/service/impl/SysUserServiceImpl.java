@@ -260,6 +260,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class})
     @CacheEvict(value = {"user_details"}, key = "#userDto.username")
     public Boolean updateUser(UserDTO userDto) {
         SysUser one = this.getById(userDto.getUserId());

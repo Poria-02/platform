@@ -23,7 +23,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
@@ -66,16 +65,7 @@ public class SyncResponseFilter implements GlobalFilter, Ordered {
                         .headers(headers -> headers.putAll(httpHeaders))
                         .body(Flux.from(body)).build();
                 //修改body
-                Mono<String> modifiedBody = clientResponse.bodyToMono(String.class)
-                        .flatMap(originalBody -> {
-                            try {
-                                return modifyBody()
-                                        .apply(exchange, Mono.just(originalBody));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        });
+                Mono<String> modifiedBody = modifyBody().apply(exchange, clientResponse.bodyToMono(String.class));
                 BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody,
                         String.class);
                 CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(
@@ -97,14 +87,7 @@ public class SyncResponseFilter implements GlobalFilter, Ordered {
              * @return apply 返回Mono<String>，数据是修改后的body
              */
             private BiFunction<ServerWebExchange, Mono<String>, Mono<String>> modifyBody() {
-                return (exchange, json) -> {
-                    AtomicReference<String> result = new AtomicReference<>();
-                    json.subscribe(
-                            value -> result.set(encryptAes(value, new AES(key.getBytes()))),
-                            Throwable::printStackTrace
-                    );
-                    return Mono.just(result.get());
-                };
+                return (exchange, json) -> json.map(value -> encryptAes(value, new AES(key.getBytes())));
             }
 
             @Override

@@ -59,9 +59,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -90,34 +90,37 @@ public class PlatTokenEndpoint {
     private final CacheManager cacheManager;
 
     /**
-     * 认证页面
+     * 认证页面入口
      *
-     * @param modelAndView
      * @param error        表单登录失败处理回调的错误信息
-     * @return ModelAndView
+     * @return 认证页面数据
      */
     @GetMapping("/login")
-    public ModelAndView require(ModelAndView modelAndView, @RequestParam(required = false) String error) {
-        modelAndView.setViewName("ftl/login");
-        modelAndView.addObject("error", error);
-        return modelAndView;
+    public R<Map<String, Object>> require(@RequestParam(required = false) String error) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("error", error);
+        return R.ok(data);
     }
 
     @GetMapping("/confirm_access")
-    public ModelAndView confirm(Principal principal, ModelAndView modelAndView,
-                                @RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
-                                @RequestParam(OAuth2ParameterNames.SCOPE) String scope,
-                                @RequestParam(OAuth2ParameterNames.STATE) String state) {
+    public R<Map<String, Object>> confirm(Principal principal,
+                                          @RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
+                                          @RequestParam(OAuth2ParameterNames.SCOPE) String scope,
+                                          @RequestParam(OAuth2ParameterNames.STATE) String state) {
+        if (principal == null) {
+            return R.failed("请先登录");
+        }
+
         SysOauthClientDetails clientDetails = RetOps.of(clientDetailsService.getClientDetailsById(clientId)).getData()
                 .orElseThrow(() -> new OAuthClientException("clientId 不合法"));
 
         Set<String> authorizedScopes = StringUtils.commaDelimitedListToSet(clientDetails.getScope());
-        modelAndView.addObject("clientId", clientId);
-        modelAndView.addObject("state", state);
-        modelAndView.addObject("scopeList", authorizedScopes);
-        modelAndView.addObject("principalName", principal.getName());
-        modelAndView.setViewName("ftl/confirm");
-        return modelAndView;
+        Map<String, Object> data = new HashMap<>();
+        data.put("clientId", clientId);
+        data.put("state", state);
+        data.put("scopeList", authorizedScopes);
+        data.put("principalName", principal.getName());
+        return R.ok(data);
     }
 
     /**

@@ -1,6 +1,7 @@
 package cn.poria.common.gateway.configuration;
 
 import cn.poria.common.core.constant.CacheConstants;
+import cn.poria.common.core.dto.RouteDto;
 import cn.poria.common.core.util.SpringContextHolder;
 import cn.poria.common.gateway.support.RouteCacheHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,14 @@ import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 
 /**
@@ -22,6 +28,18 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 @ComponentScan("cn.poria.common.gateway")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class DynamicRouteAutoConfiguration {
+
+	@Bean
+	public ReactiveRedisTemplate<String, RouteDto> routeRedisTemplate(ReactiveRedisConnectionFactory redisConnectionFactory) {
+		Jackson2JsonRedisSerializer<RouteDto> routeSerializer = new Jackson2JsonRedisSerializer<>(RouteDto.class);
+		RedisSerializationContext<String, RouteDto> serializationContext = RedisSerializationContext
+				.<String, RouteDto>newSerializationContext(RedisSerializer.string())
+				.value(routeSerializer)
+				.hashKey(RedisSerializer.string())
+				.hashValue(routeSerializer)
+				.build();
+		return new ReactiveRedisTemplate<>(redisConnectionFactory, serializationContext);
+	}
 
 	/**
 	 * redis 监听配置

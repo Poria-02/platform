@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 
 /**
  * 网关配置
@@ -35,7 +35,7 @@ public class GatewayConfiguration {
 	}
 
 	@Bean
-	public ImageCodeHandler imageCodeHandler(StringRedisTemplate redisTemplate) {
+	public ImageCodeHandler imageCodeHandler(ReactiveStringRedisTemplate redisTemplate) {
 		return new ImageCodeHandler(redisTemplate);
 	}
 
