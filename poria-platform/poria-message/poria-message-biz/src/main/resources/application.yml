@@ -1,0 +1,78 @@
+server:
+  port: ${SERVER_PORT:8007}
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+#    include: kafka
+  data:
+    redis:
+      host: ${REDIS_HOST:43.136.75.223}
+      port: ${REDIS_PORT:26379}
+      password: ${REDIS_PASSWORD:zyt20260831aA;}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    username: ${MYSQL_USERNAME:admin}
+    password: ${MYSQL_PASSWORD:zyt20260831aA;}
+    url: jdbc:mysql://${MYSQL_HOST:43.136.75.223}:${MYSQL_PORT:23306}/${MESSAGE_DATABASE:poria_message}?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      minimum-idle: 1
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      auto-startup: ${MESSAGE_KAFKA_ENABLED:false}
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLE:true}
+
+logging:
+  level:
+    cn.poria.message.dao: ${MESSAGE_SQL_LOG_LEVEL:info}
+
+message:
+  mas:
+    ecName: ${SMS_MAS_EC_NAME:}
+    apId: ${SMS_MAS_AP_ID:}
+    sign: ${SMS_MAS_SIGN:}
+    secretKey: ${SMS_MAS_SECRET_KEY:}
+    url: ${SMS_MAS_URL:}
+  alis:
+    apId: ${SMS_ALI_ACCESS_KEY_ID:}
+    sign: ${SMS_ALI_SIGN:}
+    secretKey: ${SMS_ALI_ACCESS_KEY_SECRET:}
+  lt:
+    loginName: ${SMS_LT_LOGIN_NAME:}
+    password: ${SMS_LT_PASSWORD:}
+    url: ${SMS_LT_URL:}
+  esurfing:
+    plat:
+      url: ${SMS_ESURFING_URL:}
+      appKey: ${SMS_ESURFING_APP_KEY:}
+      appSecret: ${SMS_ESURFING_APP_SECRET:}
+      reportUrl: ${SMS_ESURFING_REPORT_URL:}
+      moUrl: ${SMS_ESURFING_MO_URL:}
+  ntes:
+    url: ${SMS_NTES_URL:}
+    appKey: ${SMS_NTES_APP_KEY:}
+    appSecret: ${SMS_NTES_APP_SECRET:}
+    nonce: ${SMS_NTES_NONCE:}
+    businessId: ${SMS_NTES_BUSINESS_ID:}
+
+convert:
+  url: ${MESSAGE_CONVERT_URL:}
+tx:
+  im:
+    sdkAppId: ${TX_IM_SDK_APP_ID:0}
+    secretKey: ${TX_IM_SECRET_KEY:}
+    adminAccountName: ${TX_IM_ADMIN_ACCOUNT:administrator}
+    singExpireTime: ${TX_IM_SIGN_EXPIRE_TIME:604800}
+    callbackToken: ${TX_IM_CALLBACK_TOKEN:}
