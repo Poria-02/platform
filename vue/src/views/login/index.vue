@@ -40,7 +40,7 @@
 import { showRequestError } from '@/core/http'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index.mjs'
 import { useSession } from '@/core/session'
 import { captcha } from './api'
 import ExpiredPasswordDialog from './ExpiredPasswordDialog.vue'
@@ -147,7 +147,6 @@ h2 { margin: 0 0 12px; color: #242424; font-size: 32px; line-height: 44px; lette
 .login-card :deep(.el-input__wrapper) { min-height: 48px; padding: 0 15px; border-radius: 3px; background: var(--login-input-fill); box-shadow: 0 0 0 1px #e1e1e1 inset; transition: box-shadow .18s ease; }
 .login-card :deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px #a0a0a0 inset; }
 .login-card :deep(.el-input__wrapper.is-focus) { box-shadow: 0 0 0 1px #303030 inset; }
-.login-card :deep(.el-form-item.is-error .el-input__wrapper) { box-shadow: 0 0 0 1px var(--el-color-danger) inset; }
 .login-card :deep(.el-form-item__error) { padding-top: 6px; font-size: 12px; line-height: 16px; }
 .login-card :deep(.el-input__inner) { color: #242424; font-size: 14px; }
 .login-card :deep(.el-input__inner::placeholder) { color: #a0a0a0; }

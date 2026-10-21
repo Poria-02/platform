@@ -58,6 +58,9 @@ public class RouteCacheHolder {
 			vo.setFilters(filterDefinitionList);
 			vo.setUri(URI.create(route.getUri()));
 			vo.setOrder( route.getOrder());
+			if (route.getMetadata() != null) {
+				vo.setMetadata(JSONUtil.parseObj(route.getMetadata()));
+			}
 			cache.put(vo.getId(), vo);
 		});
 

@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useSession } from './session'
 import { firstPagePath, flattenMenus, isPageMenu, pageFiles, pageFor } from './menu'
-import ConsoleLayout from '@/layout/ConsoleLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/login', name: 'login', component: () => import('@/views/login/index.vue'), meta: { public: true } },
     {
-      path: '/', name: 'console', component: ConsoleLayout, redirect: '/index',
+      path: '/', name: 'console', component: () => import('@/layout/ConsoleLayout.vue'), redirect: '/index',
       children: [
         { path: 'index', name: 'home', component: () => import('@/views/index/index.vue'), meta: { title: '工作台' } },
         { path: 'functions/index', name: 'functions', component: () => import('@/views/functions/index.vue'), meta: { title: '全部功能' } },
@@ -46,7 +45,8 @@ router.beforeEach(async to => {
   const session = useSession()
   if (to.meta.public) return session.authenticated ? '/index' : true
   if (!session.authenticated) return { path: '/login', query: { redirect: to.fullPath } }
-  if (!session.menusReady && !(to.path === '/index' && session.menuError)) {
+  if (to.name === 'home') return true
+  if (!session.menusReady) {
     try {
       installMenuRoutes(await session.ensureMenus())
       return { path: to.fullPath, replace: true }

@@ -14,7 +14,7 @@
 <script setup>
 import { showRequestError } from '@/core/http'
 import { onBeforeUnmount, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index.mjs'
 import { updateExpiredPassword } from './api'
 
 const emit = defineEmits(['saved'])

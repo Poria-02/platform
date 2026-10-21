@@ -6,7 +6,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.poria.base.oss.service.OssTemplate;
-import cn.poria.base.config.AudioConverter;
 import cn.poria.base.constant.FileTypeConstant;
 import cn.poria.base.entity.BaseFile;
 import cn.poria.base.util.AssetFileTypeUtil;
@@ -27,8 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.HashMap;
@@ -64,9 +61,6 @@ public class UploadService {
     @Value("${oss.secret-key}")
     public String secretKey;
 
-    @Autowired
-    private AudioConverter audioConverter;
-
     /**
      * 上传公共文件
      *
@@ -86,22 +80,7 @@ public class UploadService {
         }
 
         template.createBucket(publicBucket);
-        if (audioConverter.isSupportedFormat(extension)) {
-            File targetfile = audioConverter.convertToMp3(file, simpleUUID, extension);
-            if (targetfile == null) {
-                throw new ServiceException("音频转换失败");
-            }
-            fileName = path + "/" + simpleUUID + ".mp3";
-
-            FileInputStream fileInputStream = new FileInputStream(targetfile);
-            if (targetfile.exists()) {
-                targetfile.delete();
-                log.info("删除成功");
-            }
-            template.putObject(publicBucket, fileName, fileInputStream, file.getSize(), file.getContentType());
-        } else {
-            template.putObject(publicBucket, fileName, file.getInputStream(), file.getSize(), file.getContentType());
-        }
+        template.putObject(publicBucket, fileName, file.getInputStream(), file.getSize(), file.getContentType());
 
         String url = template.getObjectURL(publicBucket, fileName, 7);
 
@@ -133,22 +112,7 @@ public class UploadService {
         }
         template.createBucket(privateBucket);
 
-        if (audioConverter.isSupportedFormat(extension)) {
-            File targetfile = audioConverter.convertToMp3(file, simpleUUID, extension);
-            if (targetfile == null) {
-                throw new ServiceException("音频转换失败");
-            }
-            fileName = path + "/" + simpleUUID + ".mp3";
-
-            FileInputStream fileInputStream = new FileInputStream(targetfile);
-            if (targetfile.exists()) {
-                targetfile.delete();
-                log.info("删除成功");
-            }
-            template.putObject(privateBucket, fileName, fileInputStream, file.getSize(), file.getContentType());
-        } else {
-            template.putObject(privateBucket, fileName, file.getInputStream(), file.getSize(), file.getContentType());
-        }
+        template.putObject(privateBucket, fileName, file.getInputStream(), file.getSize(), file.getContentType());
 
         BaseFile baseFile = baseFileService.saveBaseFile(file, fileName, privateBucket, FileTypeConstant.PRIVATE);
 

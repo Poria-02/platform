@@ -55,11 +55,6 @@ public class OssProperties {
     private String secretKey;
 
     /**
-     * 默认的存储桶名称
-     */
-    private String bucketName = "ihospital";
-
-    /**
      * 最大线程数，默认： 100
      */
     private Integer maxConnections = 100;

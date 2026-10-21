@@ -16,7 +16,7 @@ const permissions = {
   tagItem: { read: 'admin_tagItem_page', create: 'admin_tagItem_add', edit: 'admin_tagItem_edit', remove: 'admin_tagItem_del' },
   param: { read: 'admin_syspublicparam_page', create: 'admin_syspublicparam_add', edit: 'admin_syspublicparam_edit', remove: 'admin_syspublicparam_del' },
   route: { read: 'sys_route_get', create: 'sys_route_insert', edit: 'sys_route_insert', remove: 'sys_route_del', refresh: 'sys_route_edit' },
-  version: { read: 'base_version_page', create: 'base_version_add', edit: 'base_version_edit', remove: 'base_version_del' },
+  version: { read: 'base_version_page', create: 'base_version_add', edit: ['base_version_edit', 'base_version_get'], remove: 'base_version_del' },
   log: { read: 'sys_log_get', remove: 'sys_log_del' },
   token: { read: 'sys_token_get', remove: 'sys_token_del' },
   sensitiveLog: { read: 'sys_sensitive_page', detail: 'sys_sensitive_get' },

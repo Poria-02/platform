@@ -1,5 +1,5 @@
 import { watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index.mjs'
 import { useSession } from './session'
 import { activityKey, idleTimeout, saveSession } from './token'
 

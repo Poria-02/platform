@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import elementPlus from './ui/elementPlus'
+import elementPlus, { loadPageComponents } from './ui/elementPlus'
 import App from './App.vue'
 import router from './core/router'
 import { startIdleMonitor } from './core/idle'
@@ -12,7 +12,11 @@ import './styles/motion.css'
 import './styles/loading.css'
 
 initializePageSession()
-createApp(App).use(createPinia()).use(router).use(elementPlus).directive('stable-loading', stableLoading).mount('#app')
+const app = createApp(App).use(createPinia()).use(elementPlus).directive('stable-loading', stableLoading)
+router.beforeResolve(to => {
+  if (to.name !== 'home' && to.matched.some(route => route.name === 'console')) return loadPageComponents(app)
+})
+app.use(router).mount('#app')
 startIdleMonitor()
 startTokenRefreshMonitor()
 startPageSessionMonitor()
