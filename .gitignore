@@ -62,13 +62,3 @@ gen_code
 node_modules
 /poria-organization/poria-organization-biz/target/
 /poria-platform/.git.disabled/
-
-### local private configuration ###
-/poria-platform/poria-auth/src/main/resources/application.yml
-/poria-platform/poria-base/poria-base-biz/src/main/resources/application.yml
-/poria-platform/poria-gateway/src/main/resources/application.yml
-/poria-platform/poria-job/src/main/resources/application.yml
-/poria-platform/poria-message/poria-message-biz/src/main/resources/application.yml
-/poria-platform/poria-upms/poria-upms-biz/src/main/resources/application.yml
-/vue/.env.development
-/vue/.env.production
