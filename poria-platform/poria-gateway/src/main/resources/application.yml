@@ -1,0 +1,51 @@
+server:
+  port: 9999
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+  data:
+    redis:
+#      host: ${REDIS_HOST:poria-redis}
+#      port: ${REDIS_PORT:6380}
+      host: ${REDIS_HOST:43.136.75.223}
+      port: ${REDIS_PORT:26379}
+      password: ${REDIS_PASSWORD:zyt20260831aA;}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  http:
+    codecs:
+      max-in-memory-size: 100MB
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowed-origin-patterns: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
+                allow-credentials: true
+                exposed-headers: "Content-Disposition,Content-Type,Cache-Control"
+
+
+springdoc:
+  api-docs:
+    path: /swagger-ui.html
+    enabled: ${SWAGGER_API_DOCS_ENABLE:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLE:true}
+
+
+sync-encrypt-key: ${SYNC_ENCRYPT_KEY:qwerzxcv12347890}
+
+logging:
+  level:
+    cn.poria.gateway.filter: debug
